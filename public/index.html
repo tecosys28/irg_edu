@@ -666,9 +666,9 @@
     // ==================== EMAILJS CONFIG ====================
     // Setup: https://emailjs.com → Add Email Service → Add Template → copy keys here
     const EMAILJS_CONFIG = {
-      PUBLIC_KEY:  'YOUR_EMAILJS_PUBLIC_KEY',
-      SERVICE_ID:  'YOUR_SERVICE_ID',
-      TEMPLATE_ID: 'YOUR_TEMPLATE_ID',
+      PUBLIC_KEY:  'RNQkgYG-QatqjAzEZ',
+      SERVICE_ID:  'service_aj07rsg',
+      TEMPLATE_ID: 'template_xvnpxbs',
     };
     if (EMAILJS_CONFIG.PUBLIC_KEY !== 'YOUR_EMAILJS_PUBLIC_KEY') {
       emailjs.init({ publicKey: EMAILJS_CONFIG.PUBLIC_KEY });
@@ -726,19 +726,18 @@
     };
 
     async function sendWelcomeEmail(name, email, role) {
-      if (EMAILJS_CONFIG.PUBLIC_KEY === 'YOUR_EMAILJS_PUBLIC_KEY') return; // not configured yet
+      if (EMAILJS_CONFIG.TEMPLATE_ID === 'YOUR_TEMPLATE_ID') return;
       try {
         const content = ROLE_EMAIL_CONTENT[role] || ROLE_EMAIL_CONTENT.student;
-        const stepsHtml = content.steps
-          .map((s, i) => `${i + 1}. ${s}`)
-          .join('\n');
         await emailjs.send(EMAILJS_CONFIG.SERVICE_ID, EMAILJS_CONFIG.TEMPLATE_ID, {
           to_name:    name,
           to_email:   email,
           role:       role.charAt(0).toUpperCase() + role.slice(1),
           title:      content.title,
           intro:      content.intro,
-          steps:      stepsHtml,
+          step3:      content.steps[2],
+          step4:      content.steps[3],
+          step5:      content.steps[4],
           note:       content.note,
           signin_url: 'https://irgedu-dde86.web.app',
           year:       new Date().getFullYear(),
