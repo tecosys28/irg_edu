@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}TROT Edu Admin{% endblock %}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #000052;
+      --gold: #D4AF37;
+      --sidebar-w: 240px;
+    }
+    body { background: #f4f6fb; font-family: 'Segoe UI', system-ui, sans-serif; }
+
+    /* Sidebar */
+    #sidebar {
+      position: fixed; top: 0; left: 0; height: 100vh; width: var(--sidebar-w);
+      background: var(--navy); z-index: 100; overflow-y: auto;
+      transition: transform .25s ease;
+    }
+    #sidebar .brand {
+      padding: 1.25rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,.08);
+      display: flex; align-items: center; gap: .75rem;
+    }
+    #sidebar .brand-icon {
+      width: 36px; height: 36px; background: var(--gold); border-radius: 8px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    #sidebar .brand-text { color: #fff; font-weight: 700; font-size: 1rem; line-height: 1.1; }
+    #sidebar .brand-sub  { color: rgba(255,255,255,.4); font-size: .68rem; }
+
+    #sidebar .nav-section { padding: .75rem 1rem .25rem; color: rgba(255,255,255,.35);
+      font-size: .65rem; text-transform: uppercase; letter-spacing: .08em; }
+    #sidebar .nav-link {
+      display: flex; align-items: center; gap: .65rem;
+      padding: .6rem 1.25rem; color: rgba(255,255,255,.65); border-radius: 0;
+      font-size: .875rem; transition: all .2s; border-left: 3px solid transparent;
+    }
+    #sidebar .nav-link:hover, #sidebar .nav-link.active {
+      color: #fff; background: rgba(255,255,255,.06); border-left-color: var(--gold);
+    }
+    #sidebar .nav-link i { font-size: 1rem; width: 20px; flex-shrink: 0; }
+
+    /* Main content */
+    #main { margin-left: var(--sidebar-w); min-height: 100vh; }
+
+    /* Top bar */
+    #topbar {
+      background: #fff; border-bottom: 1px solid #e8eaf0;
+      padding: .75rem 1.5rem; display: flex; align-items: center;
+      justify-content: space-between; position: sticky; top: 0; z-index: 50;
+    }
+    #topbar .page-title { font-weight: 600; color: var(--navy); font-size: 1rem; }
+    #topbar .user-badge {
+      display: flex; align-items: center; gap: .5rem; font-size: .85rem; color: #555;
+    }
+
+    /* Content area */
+    .content { padding: 1.5rem; }
+
+    /* Cards */
+    .stat-card {
+      background: #fff; border-radius: 12px; padding: 1.25rem 1.5rem;
+      border: 1px solid #e8eaf0; transition: box-shadow .2s;
+    }
+    .stat-card:hover { box-shadow: 0 4px 20px rgba(0,0,82,.07); }
+    .stat-card .stat-icon {
+      width: 44px; height: 44px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; font-size: 1.3rem;
+    }
+    .stat-card .stat-value { font-size: 1.75rem; font-weight: 700; color: var(--navy); }
+    .stat-card .stat-label { font-size: .78rem; color: #888; text-transform: uppercase; letter-spacing: .05em; }
+
+    /* Table */
+    .data-table { background: #fff; border-radius: 12px; border: 1px solid #e8eaf0; overflow: hidden; }
+    .data-table .table { margin: 0; font-size: .875rem; }
+    .data-table .table th { background: #f8f9fd; color: var(--navy); font-weight: 600;
+      font-size: .75rem; text-transform: uppercase; letter-spacing: .05em; border-bottom: 1px solid #e8eaf0; }
+    .data-table .table td { vertical-align: middle; border-color: #f0f1f5; }
+    .data-table .table tbody tr:hover { background: #f8f9fd; }
+
+    /* Toolbar */
+    .toolbar { background: #fff; border-radius: 12px 12px 0 0; border: 1px solid #e8eaf0;
+      border-bottom: none; padding: 1rem 1.25rem; display: flex; align-items: center;
+      gap: .75rem; flex-wrap: wrap; }
+    .toolbar .input-group { max-width: 280px; }
+
+    /* Role badge */
+    .badge-role-institute { background: #e8f4fd; color: #0369a1; }
+    .badge-role-sponsor   { background: #fef3c7; color: #92400e; }
+    .badge-role-household { background: #d1fae5; color: #065f46; }
+    .badge-role-student   { background: #ede9fe; color: #5b21b6; }
+    .badge-role-unknown   { background: #f3f4f6; color: #374151; }
+
+    .badge-ftr  { background: #dbeafe; color: #1d4ed8; }
+    .badge-su   { background: #fce7f3; color: #9d174d; }
+    .badge-active   { background: #d1fae5; color: #065f46; }
+    .badge-redeemed { background: #e0e7ff; color: #3730a3; }
+    .badge-cancelled{ background: #fee2e2; color: #991b1b; }
+
+    /* Gold btn */
+    .btn-gold { background: linear-gradient(135deg,#D4AF37,#F4CF67); color: #000;
+      font-weight: 600; border: none; }
+    .btn-gold:hover { opacity: .9; color: #000; }
+
+    /* Select-all row highlight */
+    tr.selected { background: #fffbeb !important; }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      #sidebar { transform: translateX(-100%); }
+      #sidebar.open { transform: translateX(0); }
+      #main { margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<nav id="sidebar">
+  <div class="brand">
+    <div class="brand-icon">
+      <svg width="20" height="20" fill="none" stroke="#000" stroke-width="2.5" viewBox="0 0 24 24">
+        <path d="M12 14l9-5-9-5-9 5 9 5z"/>
+        <path d="M12 14l6.16-3.42A12.08 12.08 0 0118.82 17 11.95 11.95 0 0112 20.06 11.95 11.95 0 015.18 17a12.08 12.08 0 01.66-6.42L12 14z"/>
+      </svg>
+    </div>
+    <div>
+      <div class="brand-text">TROT Edu</div>
+      <div class="brand-sub">Admin Console</div>
+    </div>
+  </div>
+
+  <div class="nav-section">Overview</div>
+  <a href="{% url 'index' %}" class="nav-link {% if request.resolver_match.url_name == 'index' %}active{% endif %}">
+    <i class="bi bi-speedometer2"></i> Dashboard
+  </a>
+
+  <div class="nav-section">Data</div>
+  <a href="{% url 'users_list' %}" class="nav-link {% if 'user' in request.resolver_match.url_name %}active{% endif %}">
+    <i class="bi bi-people"></i> Users
+  </a>
+  <a href="{% url 'issuances_list' %}" class="nav-link {% if 'issuance' in request.resolver_match.url_name %}active{% endif %}">
+    <i class="bi bi-file-earmark-check"></i> Issuances
+  </a>
+
+  <div class="nav-section">Tools</div>
+  <a href="{% url 'export_csv' %}?col=users" class="nav-link">
+    <i class="bi bi-download"></i> Export Users CSV
+  </a>
+  <a href="{% url 'export_csv' %}?col=issuances" class="nav-link">
+    <i class="bi bi-download"></i> Export Issuances CSV
+  </a>
+  <a href="{% url 'import_csv' %}" class="nav-link {% if request.resolver_match.url_name == 'import_csv' %}active{% endif %}">
+    <i class="bi bi-upload"></i> Import CSV
+  </a>
+
+  <div class="nav-section">Account</div>
+  <a href="{% url 'logout' %}" class="nav-link">
+    <i class="bi bi-box-arrow-left"></i> Sign Out
+  </a>
+</nav>
+
+<!-- Main -->
+<div id="main">
+  <!-- Topbar -->
+  <div id="topbar">
+    <div class="d-flex align-items-center gap-3">
+      <button class="btn btn-sm d-md-none" onclick="document.getElementById('sidebar').classList.toggle('open')">
+        <i class="bi bi-list fs-5"></i>
+      </button>
+      <span class="page-title">{% block page_title %}Dashboard{% endblock %}</span>
+    </div>
+    <div class="user-badge">
+      <i class="bi bi-person-circle"></i>
+      <span>{{ request.user.username }}</span>
+    </div>
+  </div>
+
+  <!-- Alerts -->
+  <div class="content pb-0">
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show py-2 mb-3" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- Page Content -->
+  <div class="content">
+    {% block content %}{% endblock %}
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // Select-all checkbox logic
+  function toggleSelectAll(master, name) {
+    document.querySelectorAll(`input[name="${name}"]`).forEach(cb => {
+      cb.checked = master.checked;
+      cb.closest('tr').classList.toggle('selected', cb.checked);
+    });
+  }
+  document.addEventListener('change', e => {
+    if (e.target.matches('input[type=checkbox][name="selected_ids"]')) {
+      e.target.closest('tr').classList.toggle('selected', e.target.checked);
+    }
+  });
+  // Auto-dismiss alerts after 4s
+  setTimeout(() => {
+    document.querySelectorAll('.alert').forEach(el => {
+      const bsAlert = bootstrap.Alert.getOrCreateInstance(el);
+      bsAlert.close();
+    });
+  }, 4000);
+</script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

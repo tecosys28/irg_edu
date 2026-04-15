@@ -1,0 +1,36 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Users: only the authenticated user can read/write their own profile
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Issuances: institutes can create; authenticated users can read
+    match /issuances/{issuanceId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null
+        && request.resource.data.instituteId == request.auth.uid;
+      allow update, delete: if request.auth != null
+        && resource.data.instituteId == request.auth.uid;
+    }
+
+    // FTR Holdings: owner can read/write their own holdings
+    match /holdings/{holdingId} {
+      allow read, write: if request.auth != null
+        && resource.data.ownerId == request.auth.uid;
+      allow create: if request.auth != null
+        && request.resource.data.ownerId == request.auth.uid;
+    }
+
+    // Sponsorships: sponsors can create; students and sponsors can read their own
+    match /sponsorships/{sponsorshipId} {
+      allow read: if request.auth != null
+        && (resource.data.sponsorId == request.auth.uid
+            || resource.data.studentId == request.auth.uid);
+      allow create: if request.auth != null
+        && request.resource.data.sponsorId == request.auth.uid;
+    }
+  }
+}

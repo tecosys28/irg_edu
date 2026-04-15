@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TROT Edu • Future Tuition Rights &amp; Sponsorship Units</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+    :root {
+      --navy: #000052;
+      --navy-dark: #000033;
+      --gold: #D4AF37;
+      --gold-light: #F4CF67;
+    }
+    body { background: var(--navy); min-height: 100vh; }
+    .glass { background: rgba(255,255,255,0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); }
+    .gold-gradient { background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%); }
+    .btn-gold { background: linear-gradient(135deg, #D4AF37 0%, #F4CF67 100%); color: #000; font-weight: 600; transition: all 0.3s; }
+    .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 10px 40px rgba(212,175,55,0.3); }
+    .btn-gold:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
+    .card-hover { transition: all 0.3s ease; }
+    .card-hover:hover { transform: translateY(-4px); border-color: var(--gold); }
+    .nav-link { position: relative; transition: all 0.3s; }
+    .nav-link::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px; background: var(--gold); transition: width 0.3s; }
+    .nav-link:hover::after { width: 100%; }
+    .nav-link:hover { color: var(--gold); }
+    .modal { animation: modalSlide 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+    @keyframes modalSlide { from { opacity: 0; transform: translateY(20px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    .course-pill { transition: all 0.3s; }
+    .course-pill:hover { background: rgba(212,175,55,0.2); border-color: var(--gold); }
+    .input-field { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); transition: all 0.3s; }
+    .input-field:focus { border-color: var(--gold); outline: none; box-shadow: 0 0 0 3px rgba(212,175,55,0.2); }
+    .select-field { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); }
+    .select-field:focus { border-color: var(--gold); outline: none; }
+    .faq-item { border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+    .faq-answer.open { max-height: 500px; }
+    .chatbot-btn { position: fixed; bottom: 24px; right: 24px; z-index: 1000; }
+    .chatbot-window { position: fixed; bottom: 90px; right: 24px; width: 380px; max-height: 500px; z-index: 1000; }
+    .scrollbar-hide::-webkit-scrollbar { display: none; }
+    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+    .footer-link { color: rgba(255,255,255,0.6); text-decoration: none; font-size: 14px; transition: color 0.3s; }
+    .footer-link:hover { color: #fff; }
+    .social-link { width: 36px; height: 36px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; transition: all 0.3s; }
+    .social-link:hover { background: rgba(212,175,55,0.2); border-color: var(--gold); }
+  </style>
+</head>
+<body class="text-white overflow-x-hidden">
+  <!-- Navigation -->
+  <nav class="fixed top-0 w-full z-50 glass">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+      <div class="flex items-center gap-3 cursor-pointer" onclick="navigateTo('landing')">
+        <div class="w-12 h-12 rounded-xl overflow-hidden flex items-center justify-center">
+          <img src="Logo__Transperancy.png" alt="TROT Edu" class="w-full h-full object-contain" onerror="this.parentElement.innerHTML='<div class=\'w-full h-full gold-gradient rounded-xl flex items-center justify-center\'><svg class=\'w-7 h-7 text-black\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M12 14l9-5-9-5-9 5 9 5z\'/><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z\'/></svg></div>'">
+        </div>
+        <div>
+          <span class="text-2xl font-bold tracking-tight">TROT Edu</span>
+          <p class="text-xs text-white/50">by Intech Research Group</p>
+        </div>
+      </div>
+      <div class="hidden md:flex items-center gap-8 text-sm font-medium">
+        <a onclick="navigateTo('landing')" class="nav-link cursor-pointer">Home</a>
+        <a onclick="navigateTo('howItWorks')" class="nav-link cursor-pointer">How It Works</a>
+        <a onclick="navigateTo('faq')" class="nav-link cursor-pointer">FAQ</a>
+        <a onclick="showAuthModal('signin')" class="px-5 py-2.5 border border-white/30 hover:border-white/60 rounded-full transition-all cursor-pointer">Sign In</a>
+        <button onclick="showAuthModal('signup')" class="btn-gold px-6 py-2.5 rounded-full">Sign On</button>
+      </div>
+      <button onclick="toggleMobileMenu()" class="md:hidden text-white">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div id="mobileMenu" class="hidden fixed inset-0 z-40 glass pt-20">
+    <div class="flex flex-col items-center gap-6 p-8 text-lg">
+      <a onclick="navigateTo('landing'); toggleMobileMenu();" class="cursor-pointer">Home</a>
+      <a onclick="navigateTo('howItWorks'); toggleMobileMenu();" class="cursor-pointer">How It Works</a>
+      <a onclick="navigateTo('faq'); toggleMobileMenu();" class="cursor-pointer">FAQ</a>
+      <button onclick="showAuthModal('signin'); toggleMobileMenu();" class="border border-white/30 px-8 py-3 rounded-full">Sign In</button>
+      <button onclick="showAuthModal('signup'); toggleMobileMenu();" class="btn-gold px-8 py-3 rounded-full">Sign On</button>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <main id="mainContent">
+    <!-- Landing Page -->
+    <section id="landingPage" class="min-h-screen pt-24">
+      <!-- Hero Section -->
+      <div class="max-w-7xl mx-auto px-6 pt-16 pb-24">
+        <div class="max-w-4xl mx-auto text-center space-y-8">
+          <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] tracking-tight">
+            Lock Today's Education Cost.
+            <span class="text-transparent bg-clip-text gold-gradient block mt-2">For Any Future Seat.</span>
+          </h1>
+          <p class="text-xl text-white/70 max-w-3xl mx-auto leading-relaxed">
+            Future Tuition Rights (FTRs) &amp; Sponsorship Units (SUs) — blockchain-registered instruments enabling debt-free education funding for post-12th programmes with full transparency and global interchangeability.
+          </p>
+          <div class="flex flex-wrap justify-center gap-4 pt-4">
+            <button onclick="showAuthModal('signup')" class="btn-gold px-10 py-4 rounded-full text-lg">
+              Get Started
+              <svg class="w-5 h-5 inline ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+            </button>
+            <button onclick="navigateTo('howItWorks')" class="px-10 py-4 rounded-full border border-white/30 hover:border-white/60 transition-all">
+              Learn More
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Supported Programmes -->
+      <div class="py-16 glass">
+        <div class="max-w-7xl mx-auto px-6">
+          <p class="text-[#D4AF37] text-sm tracking-widest text-center mb-8 font-medium">SUPPORTED POST-12TH PROGRAMMES</p>
+          <div class="flex flex-wrap justify-center gap-3">
+            <span class="course-pill px-6 py-3 rounded-full glass border border-white/10 text-sm">Engineering</span>
+            <span class="course-pill px-6 py-3 rounded-full glass border border-white/10 text-sm">Medical</span>
+            <span class="course-pill px-6 py-3 rounded-full glass border border-white/10 text-sm">Management</span>
+            <span class="course-pill px-6 py-3 rounded-full glass border border-white/10 text-sm">Law</span>
+            <span class="course-pill px-6 py-3 rounded-full glass border border-white/10 text-sm">IT Diplomas</span>
+            <span class="course-pill px-6 py-3 rounded-full glass border border-white/10 text-sm">Healthcare Technician</span>
+            <span class="course-pill px-6 py-3 rounded-full glass border border-white/10 text-sm">Hospitality</span>
+            <span class="course-pill px-6 py-3 rounded-full glass border border-white/10 text-sm">Aviation</span>
+            <span class="course-pill px-6 py-3 rounded-full glass border border-white/10 text-sm">Arts &amp; Economics</span>
+            <span class="course-pill px-6 py-3 rounded-full glass border border-white/10 text-sm">Vocational Certificates</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Two Instruments -->
+      <div class="py-24 max-w-7xl mx-auto px-6">
+        <h2 class="text-4xl font-bold text-center mb-4">Two Blockchain-Registered Instruments</h2>
+        <p class="text-white/60 text-center mb-16 max-w-2xl mx-auto">TROT Edu offers two distinct instruments to address different stakeholder needs</p>
+        <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+          <!-- FTR -->
+          <div class="glass rounded-3xl p-8 card-hover">
+            <div class="w-14 h-14 gold-gradient rounded-2xl flex items-center justify-center mb-6">
+              <svg class="w-7 h-7 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            </div>
+            <h3 class="text-2xl font-bold mb-3 text-[#D4AF37]">Future Tuition Rights (FTRs)</h3>
+            <p class="text-white/70 mb-4">Tradable entitlements that lock today's tuition fee for any future eligible student. Pre-paid, locked-fee entitlement.</p>
+            <ul class="space-y-2 text-sm text-white/60">
+              <li class="flex items-start gap-2"><span class="text-emerald-400 mt-1">✓</span> Tradable and transferable</li>
+              <li class="flex items-start gap-2"><span class="text-emerald-400 mt-1">✓</span> Locks current fee for future use</li>
+              <li class="flex items-start gap-2"><span class="text-emerald-400 mt-1">✓</span> Hedges against fee inflation</li>
+              <li class="flex items-start gap-2"><span class="text-emerald-400 mt-1">✓</span> Global interchangeability</li>
+            </ul>
+          </div>
+          <!-- SU -->
+          <div class="glass rounded-3xl p-8 card-hover">
+            <div class="w-14 h-14 gold-gradient rounded-2xl flex items-center justify-center mb-6">
+              <svg class="w-7 h-7 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+            </div>
+            <h3 class="text-2xl font-bold mb-3 text-[#D4AF37]">Sponsorship Units (SUs)</h3>
+            <p class="text-white/70 mb-4">Non-enforceable, non-tradable rights allowing sponsors to fully fund a deserving student's education at zero cost to the student.</p>
+            <ul class="space-y-2 text-sm text-white/60">
+              <li class="flex items-start gap-2"><span class="text-emerald-400 mt-1">✓</span> Pure philanthropic instrument</li>
+              <li class="flex items-start gap-2"><span class="text-emerald-400 mt-1">✓</span> 80G + CSR eligible (India)</li>
+              <li class="flex items-start gap-2"><span class="text-emerald-400 mt-1">✓</span> Merit-based allocation</li>
+              <li class="flex items-start gap-2"><span class="text-emerald-400 mt-1">✓</span> Full transparency via blockchain</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Who Benefits -->
+      <div class="py-24 glass">
+        <div class="max-w-7xl mx-auto px-6">
+          <h2 class="text-4xl font-bold text-center mb-4">Who Benefits?</h2>
+          <p class="text-white/60 text-center mb-16 max-w-2xl mx-auto">TROT Edu creates value for every stakeholder in the education ecosystem</p>
+          <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Institutes -->
+            <div class="glass rounded-3xl p-8 card-hover">
+              <div class="w-14 h-14 gold-gradient rounded-2xl flex items-center justify-center mb-6">
+                <svg class="w-7 h-7 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+              </div>
+              <h3 class="text-xl font-bold mb-3">Educational Institutes</h3>
+              <p class="text-white/60 text-sm">Receive immediate, non-debt corpus. No interest or repayment obligations. Tax-exempt funding with no management control dilution.</p>
+            </div>
+            <!-- Sponsors -->
+            <div class="glass rounded-3xl p-8 card-hover">
+              <div class="w-14 h-14 gold-gradient rounded-2xl flex items-center justify-center mb-6">
+                <svg class="w-7 h-7 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+              </div>
+              <h3 class="text-xl font-bold mb-3">Corporates &amp; Sponsors</h3>
+              <p class="text-white/60 text-sm">100% deductible expense (Section 37 + CSR). Talent retention tool. Real-time, verifiable impact dashboards for transparency.</p>
+            </div>
+            <!-- Households -->
+            <div class="glass rounded-3xl p-8 card-hover">
+              <div class="w-14 h-14 gold-gradient rounded-2xl flex items-center justify-center mb-6">
+                <svg class="w-7 h-7 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+              </div>
+              <h3 class="text-xl font-bold mb-3">Households &amp; Parents</h3>
+              <p class="text-white/60 text-sm">Build FTR holdings over time to hedge children's future education costs. Flexibility to swap between institutes. Predictable family budgeting.</p>
+            </div>
+            <!-- Students -->
+            <div class="glass rounded-3xl p-8 card-hover">
+              <div class="w-14 h-14 gold-gradient rounded-2xl flex items-center justify-center mb-6">
+                <svg class="w-7 h-7 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+              </div>
+              <h3 class="text-xl font-bold mb-3">Students</h3>
+              <p class="text-white/60 text-sm">Merit-based admission. Full-cost sponsorship through SUs with zero financial liability. No burden of education loans.</p>
+            </div>
+            <!-- NRI/Global -->
+            <div class="glass rounded-3xl p-8 card-hover">
+              <div class="w-14 h-14 gold-gradient rounded-2xl flex items-center justify-center mb-6">
+                <svg class="w-7 h-7 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              </div>
+              <h3 class="text-xl font-bold mb-3">NRI &amp; Global Philanthropists</h3>
+              <p class="text-white/60 text-sm">Fund education across borders with real-time, verifiable impact. Unified dashboards for transparent tracking of contributions.</p>
+            </div>
+            <!-- Society -->
+            <div class="glass rounded-3xl p-8 card-hover">
+              <div class="w-14 h-14 gold-gradient rounded-2xl flex items-center justify-center mb-6">
+                <svg class="w-7 h-7 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+              </div>
+              <h3 class="text-xl font-bold mb-3">Society</h3>
+              <p class="text-white/60 text-sm">Breaks the affordability paradox in education. Reduces student debt burden. Improves access to quality education for deserving students.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Key Safeguards -->
+      <div class="py-24 max-w-7xl mx-auto px-6">
+        <h2 class="text-4xl font-bold text-center mb-4">Key Safeguards</h2>
+        <p class="text-white/60 text-center mb-16 max-w-2xl mx-auto">Strict compliance and transparency measures</p>
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div class="glass rounded-2xl p-6 text-center">
+            <div class="text-3xl mb-3">⚖️</div>
+            <h4 class="font-semibold mb-2">Merit-Based Only</h4>
+            <p class="text-sm text-white/60">Fully AICTE/UGC/NBA compliant. No capitation fees.</p>
+          </div>
+          <div class="glass rounded-2xl p-6 text-center">
+            <div class="text-3xl mb-3">🔒</div>
+            <h4 class="font-semibold mb-2">Non-Security</h4>
+            <p class="text-sm text-white/60">Not a security, CIS, or VDA investment product.</p>
+          </div>
+          <div class="glass rounded-2xl p-6 text-center">
+            <div class="text-3xl mb-3">🏦</div>
+            <h4 class="font-semibold mb-2">Escrow Banking</h4>
+            <p class="text-sm text-white/60">Secure collection and corpus fund management.</p>
+          </div>
+          <div class="glass rounded-2xl p-6 text-center">
+            <div class="text-3xl mb-3">📊</div>
+            <h4 class="font-semibold mb-2">Blockchain Audit</h4>
+            <p class="text-sm text-white/60">End-to-end traceable from sponsor to student to institute.</p>
+          </div>
+        </div>
+        <div class="mt-8 glass rounded-2xl p-6 max-w-3xl mx-auto">
+          <h4 class="font-semibold mb-3 text-center text-[#D4AF37]">Parametric Controls</h4>
+          <div class="grid md:grid-cols-3 gap-4 text-sm text-center">
+            <div>
+              <p class="text-white/60">Maximum Issuance Cap</p>
+              <p class="font-semibold">600% of annual intake</p>
+            </div>
+            <div>
+              <p class="text-white/60">SU Merit Allocation</p>
+              <p class="font-semibold">Minimum 70% to merit/needy</p>
+            </div>
+            <div>
+              <p class="text-white/60">Earmarked Admissions</p>
+              <p class="font-semibold">Default 55% for FTR/SU holders</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- IPR & Disclaimer Section (Above Footer Navigation/Contact) -->
+      <div class="py-16 border-t border-white/10">
+        <div class="max-w-5xl mx-auto px-6">
+          <div class="grid md:grid-cols-2 gap-12 text-sm text-white/70">
+            <div>
+              <h4 class="font-semibold text-[#D4AF37] mb-3 text-base uppercase tracking-wide">Intellectual Property Rights</h4>
+              <p class="leading-relaxed">IPRs of the FTRs and the system built around it are registered in the name of Mr. Rohit Tidke. He has exclusively assigned them to Intech Research Group.</p>
+            </div>
+            <div>
+              <h4 class="font-semibold text-[#D4AF37] mb-3 text-base uppercase tracking-wide">Disclaimer</h4>
+              <p class="leading-relaxed">The FTR is a solution to facilitate the respective ecosystems. It is not a 'Collective Investment Scheme' under SEBI regulations, and no returns or profits are promised. It is not a digital asset or cryptocurrency. The platform is not a payment aggregator. The services or goods provider on the FTR terms is solely responsible for transactions conducted through the platform. Use of this platform does not create any client or customer relationship between the user and the platform provider, Intech Research Group. It disclaims any liability for any disputes or damages arising from any transaction on the platform.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer Navigation & Contact (After IPR/Disclaimer, Before Copyright) -->
+      <div class="border-t border-white/10 py-16">
+        <div class="max-w-7xl mx-auto px-6">
+          <div class="grid md:grid-cols-4 gap-12">
+            <!-- Brand -->
+            <div>
+              <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 gold-gradient rounded-xl flex items-center justify-center">
+                  <svg class="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/></svg>
+                </div>
+                <span class="text-xl font-bold">TROT Edu</span>
+              </div>
+              <p class="text-sm text-white/60 leading-relaxed mb-4">Blockchain-registered Future Tuition Rights (FTRs) and Sponsorship Units (SUs) for debt-free education funding.</p>
+              <div class="flex gap-3">
+                <a href="#" class="social-link">
+                  <svg class="w-4 h-4 text-white/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
+                </a>
+                <a href="#" class="social-link">
+                  <svg class="w-4 h-4 text-white/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"/></svg>
+                </a>
+                <a href="mailto:contact@trotedu.com" class="social-link">
+                  <svg class="w-4 h-4 text-white/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                </a>
+              </div>
+            </div>
+            <!-- Quick Links -->
+            <div>
+              <h5 class="font-semibold text-[#D4AF37] mb-4 text-sm uppercase tracking-wide">Quick Links</h5>
+              <ul class="space-y-3">
+                <li><a onclick="navigateTo('landing')" class="footer-link cursor-pointer">Home</a></li>
+                <li><a onclick="navigateTo('howItWorks')" class="footer-link cursor-pointer">How It Works</a></li>
+                <li><a onclick="navigateTo('faq')" class="footer-link cursor-pointer">FAQs</a></li>
+                <li><a onclick="showAuthModal('signin')" class="footer-link cursor-pointer">Sign In</a></li>
+                <li><a onclick="showAuthModal('signup')" class="footer-link cursor-pointer">Sign On</a></li>
+              </ul>
+            </div>
+            <!-- For Stakeholders -->
+            <div>
+              <h5 class="font-semibold text-[#D4AF37] mb-4 text-sm uppercase tracking-wide">For Stakeholders</h5>
+              <ul class="space-y-3">
+                <li><a onclick="showAuthModal('signup')" class="footer-link cursor-pointer">Institutes</a></li>
+                <li><a onclick="showAuthModal('signup')" class="footer-link cursor-pointer">Corporates / Sponsors</a></li>
+                <li><a onclick="showAuthModal('signup')" class="footer-link cursor-pointer">Households / Parents</a></li>
+                <li><a onclick="showAuthModal('signup')" class="footer-link cursor-pointer">Students</a></li>
+                <li><a onclick="showAuthModal('signup')" class="footer-link cursor-pointer">NRI / Global Philanthropists</a></li>
+              </ul>
+            </div>
+            <!-- Contact -->
+            <div>
+              <h5 class="font-semibold text-[#D4AF37] mb-4 text-sm uppercase tracking-wide">Contact Us</h5>
+              <div class="space-y-3 text-sm text-white/60">
+                <p class="flex items-start gap-3">
+                  <svg class="w-4 h-4 mt-1 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                  Intech Research Group<br>Mumbai, India
+                </p>
+                <p class="flex items-start gap-3">
+                  <svg class="w-4 h-4 mt-1 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                  <a href="mailto:contact@trotedu.com" class="hover:text-white transition-colors">contact@trotedu.com</a>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Copyright (Last Line) -->
+      <div class="border-t border-white/10 py-6">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+          <p class="text-xs text-white/40">© 2026 Intech Research Group. All rights reserved. | TROT Edu Platform</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- How It Works Page -->
+    <section id="howItWorksPage" class="hidden min-h-screen pt-24 pb-16">
+      <div class="max-w-5xl mx-auto px-6">
+        <h1 class="text-4xl font-bold text-center mb-4">How TROT Edu Works</h1>
+        <p class="text-white/60 text-center mb-16 max-w-2xl mx-auto">A step-by-step overview of the FTR and Sponsorship Unit ecosystem</p>
+        
+        <div class="space-y-12">
+          <!-- Step 1 -->
+          <div class="glass rounded-2xl p-8">
+            <div class="flex items-start gap-6">
+              <div class="w-12 h-12 gold-gradient rounded-full flex items-center justify-center text-black font-bold text-xl shrink-0">1</div>
+              <div>
+                <h3 class="text-xl font-bold mb-2">Institute Registration</h3>
+                <p class="text-white/70">Accredited post-12th institutes (Engineering, Medical, Law, Management, etc.) register on the TROT Edu platform with their accreditation documents, course offerings, annual intake capacity, and escrow banking details.</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Step 2 -->
+          <div class="glass rounded-2xl p-8">
+            <div class="flex items-start gap-6">
+              <div class="w-12 h-12 gold-gradient rounded-full flex items-center justify-center text-black font-bold text-xl shrink-0">2</div>
+              <div>
+                <h3 class="text-xl font-bold mb-2">FTR/SU Generation</h3>
+                <p class="text-white/70">Institutes generate FTRs or SUs against their seats. Each unit is minted on a permissioned blockchain with a locked fee amount. Issuance is capped at 600% of annual sanctioned intake to prevent oversupply.</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Step 3 -->
+          <div class="glass rounded-2xl p-8">
+            <div class="flex items-start gap-6">
+              <div class="w-12 h-12 gold-gradient rounded-full flex items-center justify-center text-black font-bold text-xl shrink-0">3</div>
+              <div>
+                <h3 class="text-xl font-bold mb-2">Purchase/Donation</h3>
+                <p class="text-white/70"><strong>FTRs:</strong> Households, corporates, or NRIs purchase FTRs to lock current fees for future use.<br><strong>SUs:</strong> Sponsors/philanthropists donate to receive SUs as return gifts (80G + CSR eligible). Minimum 70% of SUs must be allocated to merit/needy students.</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Step 4 -->
+          <div class="glass rounded-2xl p-8">
+            <div class="flex items-start gap-6">
+              <div class="w-12 h-12 gold-gradient rounded-full flex items-center justify-center text-black font-bold text-xl shrink-0">4</div>
+              <div>
+                <h3 class="text-xl font-bold mb-2">Hold, Swap, or Trade</h3>
+                <p class="text-white/70"><strong>FTRs:</strong> Can be held, swapped between institutes, or traded on the platform. Global interchangeability allows use at any participating institute worldwide.<br><strong>SUs:</strong> Non-tradable but can be used to nominate a deserving student for sponsorship.</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Step 5 -->
+          <div class="glass rounded-2xl p-8">
+            <div class="flex items-start gap-6">
+              <div class="w-12 h-12 gold-gradient rounded-full flex items-center justify-center text-black font-bold text-xl shrink-0">5</div>
+              <div>
+                <h3 class="text-xl font-bold mb-2">Redemption</h3>
+                <p class="text-white/70">When a student meets eligibility criteria and seeks admission, the FTR/SU holder presents units for redemption. The student pays only the locked historical fee (for FTRs) or nothing at all (for SUs). Upon redemption, seats are replenished for fresh issuance.</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Step 6 -->
+          <div class="glass rounded-2xl p-8">
+            <div class="flex items-start gap-6">
+              <div class="w-12 h-12 gold-gradient rounded-full flex items-center justify-center text-black font-bold text-xl shrink-0">6</div>
+              <div>
+                <h3 class="text-xl font-bold mb-2">Perpetual Funding Loop</h3>
+                <p class="text-white/70">Every redeemed FTR/SU frees up a seat, allowing the institute to issue a fresh unit. This creates a self-replenishing, perpetual funding mechanism. Institutes receive immediate corpus, students get affordable education, and the cycle continues.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-12 text-center">
+          <button onclick="showAuthModal('signup')" class="btn-gold px-10 py-4 rounded-full text-lg">Register Now</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ Page -->
+    <section id="faqPage" class="hidden min-h-screen pt-24 pb-16">
+      <div class="max-w-4xl mx-auto px-6">
+        <h1 class="text-4xl font-bold text-center mb-4">Frequently Asked Questions</h1>
+        <p class="text-white/60 text-center mb-12">Find answers to common questions about TROT Edu</p>
+        
+        <!-- FAQ Categories -->
+        <div class="flex flex-wrap justify-center gap-3 mb-8">
+          <button onclick="filterFAQ('all')" class="faq-filter px-4 py-2 rounded-full glass border border-white/20 text-sm btn-gold text-black" data-category="all">All</button>
+          <button onclick="filterFAQ('general')" class="faq-filter px-4 py-2 rounded-full glass border border-white/20 text-sm" data-category="general">General</button>
+          <button onclick="filterFAQ('institute')" class="faq-filter px-4 py-2 rounded-full glass border border-white/20 text-sm" data-category="institute">Institutes</button>
+          <button onclick="filterFAQ('sponsor')" class="faq-filter px-4 py-2 rounded-full glass border border-white/20 text-sm" data-category="sponsor">Sponsors</button>
+          <button onclick="filterFAQ('household')" class="faq-filter px-4 py-2 rounded-full glass border border-white/20 text-sm" data-category="household">Households</button>
+          <button onclick="filterFAQ('student')" class="faq-filter px-4 py-2 rounded-full glass border border-white/20 text-sm" data-category="student">Students</button>
+          <button onclick="filterFAQ('technical')" class="faq-filter px-4 py-2 rounded-full glass border border-white/20 text-sm" data-category="technical">Technical</button>
+        </div>
+
+        <div id="faqContainer" class="space-y-4">
+          <!-- General FAQs -->
+          <div class="faq-item glass rounded-xl" data-category="general">
+            <button onclick="toggleFAQ(this)" class="w-full p-6 text-left flex justify-between items-center">
+              <span class="font-semibold">What is TROT Edu?</span>
+              <svg class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div class="faq-answer px-6 pb-6 text-white/70">
+              TROT Edu is a blockchain-based platform that introduces Future Tuition Rights (FTRs) and Sponsorship Units (SUs) — two instruments that enable debt-free education funding. FTRs allow you to lock today's tuition fee for future use, while SUs enable sponsors to fully fund deserving students' education. Both are issued by accredited post-12th educational institutes.
+            </div>
+          </div>
+
+          <div class="faq-item glass rounded-xl" data-category="general">
+            <button onclick="toggleFAQ(this)" class="w-full p-6 text-left flex justify-between items-center">
+              <span class="font-semibold">What is the difference between FTR and Sponsorship Unit?</span>
+              <svg class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div class="faq-answer px-6 pb-6 text-white/70">
+              <strong>FTR (Future Tuition Right):</strong> A tradable, locked-fee entitlement that preserves current tuition fees. The student pays the historical locked fee at redemption. FTRs can be traded, swapped between institutes, or held as an inflation hedge.<br><br>
+              <strong>Sponsorship Unit (SU):</strong> A non-tradable, philanthropic instrument. The sponsor pays the full fee upfront; the sponsored student pays nothing. SUs are 80G + CSR eligible and at least 70% must be allocated to merit/needy students.
+            </div>
+          </div>
+
+          <div class="faq-item glass rounded-xl" data-category="general">
+            <button onclick="toggleFAQ(this)" class="w-full p-6 text-left flex justify-between items-center">
+              <span class="font-semibold">Is this a form of capitation fee?</span>
+              <svg class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div class="faq-answer px-6 pb-6 text-white/70">
+              No. TROT Edu is strictly merit-based and compliant with AICTE/UGC/NBA regulations. Key distinctions: (1) The donor/purchaser has not applied for any admission while donating/purchasing; (2) A unit holder may never seek admission or sponsor anyone; (3) Admission is contingent on eligibility — there is no guarantee or assurance of admission; (4) SUs are offered as return gifts for donations — there is no quid-pro-quo; (5) The institute has no role in subsequent FTR transactions.
+            </div>
+          </div>
+
+          <div class="faq-item glass rounded-xl" data-category="general">
+            <button onclick="toggleFAQ(this)" class="w-full p-6 text-left flex justify-between items-center">
+              <span class="font-semibold">Is TROT Edu a security or investment scheme?</span>
+              <svg class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div class="faq-answer px-6 pb-6 text-white/70">
+              No. TROT Edu is not a 'Collective Investment Scheme' under SEBI regulations. No returns or profits are promised. It is not a digital asset or cryptocurrency. The platform is not a payment aggregator. FTRs are locked-fee educational entitlements, not financial instruments promising appreciation.
+            </div>
+          </div>
+
+          <!-- Institute FAQs -->
+          <div class="faq-item glass rounded-xl" data-category="institute">
+            <button onclick="toggleFAQ(this)" class="w-full p-6 text-left flex justify-between items-center">
+              <span class="font-semibold">How can my institute participate?</span>
+              <svg class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div class="faq-answer px-6 pb-6 text-white/70">
+              Institutes offering accredited post-12th programmes (Engineering, Medical, Management, Law, IT Diplomas, Healthcare Technician, Hospitality, Aviation, Arts, Economics, Vocational Certificates) can register on the platform. You'll need to provide accreditation documents, list of courses offered, annual sanctioned intake per course, and escrow banking details. After verification, you can begin issuing FTRs and SUs.
+            </div>
+          </div>
+
+          <div class="faq-item glass rounded-xl" data-category="institute">
+            <button onclick="toggleFAQ(this)" class="w-full p-6 text-left flex justify-between items-center">
+              <span class="font-semibold">What is the 600% issuance cap?</span>
+              <svg class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div class="faq-answer px-6 pb-6 text-white/70">
+              Institutes can issue a maximum of 600% of their annual sanctioned intake. This is calculated as 50% of seats per year × 12 years of future eligibility. For example, if an institute has 100 seats annually, it can issue up to 600 FTRs/SUs total. This cap prevents oversupply and ensures seat availability for redemption.
+            </div>
+          </div>
+
+          <!-- Sponsor FAQs -->
+          <div class="faq-item glass rounded-xl" data-category="sponsor">
+            <button onclick="toggleFAQ(this)" class="w-full p-6 text-left flex justify-between items-center">
+              <span class="font-semibold">What tax benefits are available for sponsors?</span>
+              <svg class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div class="faq-answer px-6 pb-6 text-white/70">
+              Sponsorship Units (SUs) are pure donations to charitable educational trusts. In India, sponsors can claim: (1) 80G deduction for donations to registered charitable trusts; (2) CSR expenditure eligibility under Section 135 of Companies Act; (3) 100% deductible expense under Section 37 for FTRs purchased as employee benefits.
+            </div>
+          </div>
+
+          <div class="faq-item glass rounded-xl" data-category="sponsor">
+            <button onclick="toggleFAQ(this)" class="w-full p-6 text-left flex justify-between items-center">
+              <span class="font-semibold">How can I track the impact of my sponsorship?</span>
+              <svg class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div class="faq-answer px-6 pb-6 text-white/70">
+              The platform provides real-time impact dashboards for sponsors. You can track: number of students sponsored, institutes benefited, courses covered, and overall contribution metrics. Every unit is traceable on the blockchain from sponsor to student to institute, ensuring complete transparency.
+            </div>
+          </div>
+
+          <div class="faq-item glass rounded-xl" data-category="sponsor">
+            <button onclick="toggleFAQ(this)" class="w-full p-6 text-left flex justify-between items-center">
+              <span class="font-semibold">Why must 70% of SUs go to merit/needy students?</span>
+              <svg class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div class="faq-answer px-6 pb-6 text-white/70">
+              This parametric rule ensures that the philanthropic intent of SUs is preserved. A minimum of 70% of issued Sponsorship Units must be allocated to public merit or economically needy students. The remaining 30% may be used by corporates as employee retention benefits. This balance ensures societal impact while allowing corporate participation.
+            </div>
+          </div>
+
+          <!-- Household FAQs -->
+          <div class="faq-item glass rounded-xl" data-category="household">
+            <button onclick="toggleFAQ(this)" class="w-full p-6 text-left flex justify-between items-center">
+              <span class="font-semibold">How do FTRs hedge against fee inflation?</span>
+              <svg class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div class="faq-answer px-6 pb-6 text-white/70">
+              When you purchase an FTR, you lock in the current tuition fee. Even if fees increase by 8-12% annually over the years, your child will only pay the original locked fee at the time of redemption. This protects families from unpredictable fee escalations and enables better financial planning.
+            </div>
+          </div>
+
+          <div class="faq-item glass rounded-xl" data-category="household">
+            <button onclick="toggleFAQ(this)" class="w-full p-6 text-left flex justify-between items-center">
+              <span class="font-semibold">Can I use FTRs at any institute?</span>
+              <svg class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div class="faq-answer px-6 pb-6 text-white/70">
+              Yes, FTRs offer global interchangeability. You can swap or redeem FTRs at any participating institute worldwide — for example, purchase from an Engineering college in Delhi today and redeem at a Medical college in Bangalore or even a Hospitality institute in Singapore later. This flexibility is a key differentiator of TROT Edu.
+            </div>
+          </div>
+
+          <div class="faq-item glass rounded-xl" data-category="household">
+            <button onclick="toggleFAQ(this)" class="w-full p-6 text-left flex justify-between items-center">
+              <span class="font-semibold">What if my child doesn't meet eligibility criteria?</span>
+              <svg class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div class="faq-answer px-6 pb-6 text-white/70">
+              FTRs do not guarantee admission — they only guarantee fee locking. The student must still meet the institute's and regulatory body's eligibility criteria for admission. If your child doesn't qualify, you can: (1) Trade or sell the FTR on the platform; (2) Swap it for a different course/institute where eligibility is met; (3) Transfer it to another family member; (4) Hold it for future use.
+            </div>
+          </div>
+
+          <!-- Student FAQs -->
+          <div class="faq-item glass rounded-xl" data-category="student">
+            <button onclick="toggleFAQ(this)" class="w-full p-6 text-left flex justify-between items-center">
+              <span class="font-semibold">How do I get sponsored through an SU?</span>
+              <svg class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div class="faq-answer px-6 pb-6 text-white/70">
+              Students can register on the platform and indicate they are looking for sponsorship. SU holders (sponsors, corporates, or philanthropists) can nominate deserving students for sponsorship based on merit and need criteria. Once nominated and the student meets eligibility requirements, the SU is redeemed and the student receives admission with zero fee liability.
+            </div>
+          </div>
+
+          <div class="faq-item glass rounded-xl" data-category="student">
+            <button onclick="toggleFAQ(this)" class="w-full p-6 text-left flex justify-between items-center">
+              <span class="font-semibold">Do I need to repay anything if sponsored via SU?</span>
+              <svg class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div class="faq-answer px-6 pb-6 text-white/70">
+              No. Sponsorship Units are pure philanthropy — the sponsor has already paid the full fee upfront. You have zero financial liability. There is no loan, no EMI, no repayment obligation. Focus on your education without the burden of debt.
+            </div>
+          </div>
+
+          <!-- Technical FAQs -->
+          <div class="faq-item glass rounded-xl" data-category="technical">
+            <button onclick="toggleFAQ(this)" class="w-full p-6 text-left flex justify-between items-center">
+              <span class="font-semibold">How does blockchain ensure transparency?</span>
+              <svg class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div class="faq-answer px-6 pb-6 text-white/70">
+              TROT Edu uses a permissioned blockchain for all transactions. Every FTR/SU issuance, transfer, swap, and redemption is recorded on an immutable ledger. This creates an end-to-end audit trail traceable from sponsor → student → institute, ensuring complete transparency for all stakeholders and regulators.
+            </div>
+          </div>
+
+          <div class="faq-item glass rounded-xl" data-category="technical">
+            <button onclick="toggleFAQ(this)" class="w-full p-6 text-left flex justify-between items-center">
+              <span class="font-semibold">How is my data protected?</span>
+              <svg class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div class="faq-answer px-6 pb-6 text-white/70">
+              The platform implements industry-standard security measures including: encrypted data storage, secure authentication with OTP verification, password requirements (12+ characters with mixed case, numbers, and special characters), and escrow banking for fund management. All sensitive operations require confirmation to prevent accidental actions.
+            </div>
+          </div>
+
+          <div class="faq-item glass rounded-xl" data-category="technical">
+            <button onclick="toggleFAQ(this)" class="w-full p-6 text-left flex justify-between items-center">
+              <span class="font-semibold">What happens if an institute closes down?</span>
+              <svg class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div class="faq-answer px-6 pb-6 text-white/70">
+              A reserve pool of sponsorship units (approximately 5% of issued units) is maintained in the TROT system's name. If an institute ceases operations, these reserve units can be allotted to affected unit holders, allowing them to use their entitlements at other participating institutes. The global interchangeability of FTRs also provides flexibility to swap to other institutes.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Dashboard Container -->
+    <section id="dashboardPage" class="hidden min-h-screen pt-24">
+      <div id="dashboardContainer" class="max-w-7xl mx-auto px-6 py-8"></div>
+    </section>
+  </main>
+
+  <!-- Auth Modal -->
+  <div id="authModal" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+    <div class="modal glass rounded-3xl w-full max-w-md p-8 relative">
+      <h2 id="authModalTitle" class="text-2xl font-bold text-center mb-6">Sign On</h2>
+      
+      <!-- Sign Up Form -->
+      <div id="signupForm" class="space-y-4">
+        <div>
+          <label class="block text-white/70 text-sm mb-2">Select Your Role</label>
+          <select id="roleSelect" onchange="updateRoleFields()" class="w-full select-field rounded-xl p-4 text-white">
+            <option value="">Choose your role...</option>
+            <option value="institute">Institute (Engineering / Law / Medical etc.)</option>
+            <option value="sponsor">Sponsor / Corporate</option>
+            <option value="household">Household / Parent</option>
+            <option value="student">Student</option>
+          </select>
+        </div>
+        <div id="roleSpecificFields" class="space-y-4"></div>
+        <div>
+          <label class="block text-white/70 text-sm mb-2">Full Name</label>
+          <input type="text" id="signupName" class="w-full input-field rounded-xl p-4" placeholder="Enter your name">
+        </div>
+        <div>
+          <label class="block text-white/70 text-sm mb-2">Email</label>
+          <input type="email" id="signupEmail" class="w-full input-field rounded-xl p-4" placeholder="your@email.com">
+        </div>
+        <div>
+          <label class="block text-white/70 text-sm mb-2">Mobile (for OTP verification)</label>
+          <input type="tel" id="signupMobile" class="w-full input-field rounded-xl p-4" placeholder="+91 XXXXXXXXXX">
+        </div>
+        <div>
+          <label class="block text-white/70 text-sm mb-2">Password</label>
+          <input type="password" id="signupPassword" class="w-full input-field rounded-xl p-4" placeholder="Min 12 chars, mixed case, number, special">
+          <p class="text-xs text-white/50 mt-1">Must contain: 12+ characters, uppercase, lowercase, number, special character</p>
+        </div>
+        <button onclick="handleSignup()" id="signupBtn" class="w-full btn-gold py-4 rounded-xl font-semibold">Create Account</button>
+        <p class="text-center text-sm text-white/60">Already have an account? <a onclick="switchToSignin()" class="text-[#D4AF37] cursor-pointer hover:underline">Sign In</a></p>
+      </div>
+      
+      <!-- Sign In Form -->
+      <div id="signinForm" class="hidden space-y-4">
+        <div>
+          <label class="block text-white/70 text-sm mb-2">Email</label>
+          <input type="email" id="signinEmail" class="w-full input-field rounded-xl p-4" placeholder="your@email.com">
+        </div>
+        <div>
+          <label class="block text-white/70 text-sm mb-2">Password</label>
+          <input type="password" id="signinPassword" class="w-full input-field rounded-xl p-4" placeholder="Enter your password">
+        </div>
+        <button onclick="handleSignin()" id="signinBtn" class="w-full btn-gold py-4 rounded-xl font-semibold">Sign In</button>
+        <p class="text-center text-sm text-white/60">Don't have an account? <a onclick="switchToSignup()" class="text-[#D4AF37] cursor-pointer hover:underline">Sign On</a></p>
+      </div>
+      
+      <!-- OTP Form -->
+      <div id="otpForm" class="hidden space-y-4">
+        <p class="text-white/70 text-center">Enter the 6-digit OTP sent to your mobile</p>
+        <div class="flex justify-center gap-2">
+          <input type="text" maxlength="1" class="otp-input w-12 h-12 text-center input-field rounded-xl text-xl" oninput="handleOTPInput(this, 0)">
+          <input type="text" maxlength="1" class="otp-input w-12 h-12 text-center input-field rounded-xl text-xl" oninput="handleOTPInput(this, 1)">
+          <input type="text" maxlength="1" class="otp-input w-12 h-12 text-center input-field rounded-xl text-xl" oninput="handleOTPInput(this, 2)">
+          <input type="text" maxlength="1" class="otp-input w-12 h-12 text-center input-field rounded-xl text-xl" oninput="handleOTPInput(this, 3)">
+          <input type="text" maxlength="1" class="otp-input w-12 h-12 text-center input-field rounded-xl text-xl" oninput="handleOTPInput(this, 4)">
+          <input type="text" maxlength="1" class="otp-input w-12 h-12 text-center input-field rounded-xl text-xl" oninput="handleOTPInput(this, 5)">
+        </div>
+        <button onclick="verifyOTP()" id="otpVerifyBtn" class="w-full btn-gold py-4 rounded-xl font-semibold">Verify OTP</button>
+        <p class="text-center text-sm text-white/60">Didn't receive? <a onclick="resendOTP()" class="text-[#D4AF37] cursor-pointer hover:underline">Resend OTP</a></p>
+      </div>
+      
+      <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-white/50 hover:text-white">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Issuance Modal (for Institute Dashboard) -->
+  <div id="issuanceModal" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+    <div class="modal glass rounded-3xl w-full max-w-lg p-8">
+      <h2 class="text-2xl font-bold text-[#D4AF37] mb-6">Issue FTR / SU Units</h2>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-white/70 text-sm mb-2">Unit Type</label>
+          <div class="flex gap-3">
+            <button onclick="setUnitType('FTR')" id="btnFTR" class="flex-1 py-3 rounded-xl font-medium btn-gold">FTR</button>
+            <button onclick="setUnitType('SU')" id="btnSU" class="flex-1 py-3 rounded-xl font-medium glass border border-white/20">SU</button>
+          </div>
+        </div>
+        <div>
+          <label class="block text-white/70 text-sm mb-2">Course</label>
+          <select id="issueCourse" class="w-full select-field rounded-xl p-4 text-white">
+            <option value="Engineering">Engineering</option>
+            <option value="Medical">Medical</option>
+            <option value="Management">Management</option>
+            <option value="Law" selected>Law</option>
+            <option value="IT Diplomas">IT Diplomas</option>
+            <option value="Healthcare Technician">Healthcare Technician</option>
+            <option value="Hospitality">Hospitality</option>
+            <option value="Aviation">Aviation</option>
+            <option value="Arts">Arts &amp; Economics</option>
+            <option value="Vocational">Vocational Certificates</option>
+          </select>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-white/70 text-sm mb-2">Quantity</label>
+            <input type="number" id="issueQuantity" value="50" min="1" class="w-full input-field rounded-xl p-4">
+          </div>
+          <div>
+            <label class="block text-white/70 text-sm mb-2">Locked Fee (₹ per seat)</label>
+            <input type="number" id="issueLockedFee" value="450000" class="w-full input-field rounded-xl p-4">
+          </div>
+        </div>
+        <div class="glass rounded-xl p-4 text-sm">
+          <p class="text-white/60">Maximum allowed (600% cap): <span id="maxAllowedDisplay" class="font-semibold text-white">2,400</span></p>
+          <p id="meritNote" class="text-emerald-400 mt-1 hidden">Note: Minimum 70% of SUs must be allocated to merit/needy students</p>
+        </div>
+        <button onclick="handleIssuance()" id="issueBtn" class="w-full btn-gold py-4 rounded-xl font-semibold">Issue Units</button>
+        <button onclick="closeIssuanceModal()" class="w-full py-3 text-white/60 hover:text-white">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div id="confirmModal" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+    <div class="modal glass rounded-2xl w-full max-w-sm p-6 text-center">
+      <h3 class="text-xl font-bold mb-3" id="confirmTitle">Confirm Action</h3>
+      <p class="text-white/70 mb-6" id="confirmMessage">Are you sure you want to proceed?</p>
+      <div class="flex gap-3">
+        <button onclick="closeConfirmModal()" class="flex-1 py-3 rounded-xl glass border border-white/20">Cancel</button>
+        <button onclick="executeConfirmedAction()" id="confirmBtn" class="flex-1 py-3 rounded-xl btn-gold">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="hidden fixed bottom-8 left-1/2 -translate-x-1/2 z-50 glass rounded-xl px-6 py-4 flex items-center gap-3">
+    <span id="toastIcon"></span>
+    <span id="toastMessage"></span>
+  </div>
+
+  <!-- Chatbot -->
+  <button onclick="toggleChatbot()" class="chatbot-btn w-14 h-14 gold-gradient rounded-full flex items-center justify-center shadow-lg hover:scale-105 transition-transform">
+    <svg class="w-7 h-7 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+  </button>
+
+  <div id="chatbotWindow" class="hidden chatbot-window glass rounded-2xl overflow-hidden">
+    <div class="gold-gradient p-4 flex justify-between items-center">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 bg-black/20 rounded-full flex items-center justify-center">
+          <svg class="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/></svg>
+        </div>
+        <span class="font-semibold text-black">TROT Edu Assistant</span>
+      </div>
+      <button onclick="toggleChatbot()" class="text-black/60 hover:text-black">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div id="chatMessages" class="h-80 overflow-y-auto p-4 space-y-3 scrollbar-hide">
+      <div class="bg-white/10 rounded-xl p-3 text-sm max-w-[85%]">
+        Welcome to TROT Edu! I can help you understand Future Tuition Rights (FTRs), Sponsorship Units (SUs), and how to use the platform. What would you like to know?
+      </div>
+    </div>
+    <div class="p-4 border-t border-white/10">
+      <div class="flex gap-2">
+        <input type="text" id="chatInput" placeholder="Type your question..." class="flex-1 input-field rounded-xl p-3 text-sm" onkeypress="if(event.key==='Enter')sendChatMessage()">
+        <button onclick="sendChatMessage()" class="btn-gold px-4 rounded-xl">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ==================== APP STATE ====================
+    const AppState = {
+      currentPage: 'landing',
+      currentRole: null,
+      currentUser: null,
+      isProcessing: false,
+      pendingAuth: null,
+      unitType: 'FTR',
+      confirmCallback: null
+    };
+
+    const COURSES = [
+      "Engineering", "Medical", "Management", "Law",
+      "IT Diplomas", "Healthcare Technician",
+      "Hospitality", "Aviation", "Arts & Economics", "Vocational Certificates"
+    ];
+
+    // ==================== NAVIGATION ====================
+    function navigateTo(page) {
+      AppState.currentPage = page;
+      
+      document.getElementById('landingPage').classList.add('hidden');
+      document.getElementById('howItWorksPage').classList.add('hidden');
+      document.getElementById('faqPage').classList.add('hidden');
+      document.getElementById('dashboardPage').classList.add('hidden');
+      
+      if (page === 'landing') {
+        document.getElementById('landingPage').classList.remove('hidden');
+      } else if (page === 'howItWorks') {
+        document.getElementById('howItWorksPage').classList.remove('hidden');
+      } else if (page === 'faq') {
+        document.getElementById('faqPage').classList.remove('hidden');
+      } else if (page === 'dashboard') {
+        document.getElementById('dashboardPage').classList.remove('hidden');
+        renderDashboard();
+      }
+      
+      window.scrollTo(0, 0);
+    }
+
+    function toggleMobileMenu() {
+      document.getElementById('mobileMenu').classList.toggle('hidden');
+    }
+
+    // ==================== AUTH MODAL ====================
+    function showAuthModal(type) {
+      document.getElementById('authModal').classList.remove('hidden');
+      document.getElementById('signupForm').classList.add('hidden');
+      document.getElementById('signinForm').classList.add('hidden');
+      document.getElementById('otpForm').classList.add('hidden');
+      
+      if (type === 'signup') {
+        document.getElementById('signupForm').classList.remove('hidden');
+        document.getElementById('authModalTitle').textContent = 'Sign On';
+      } else {
+        document.getElementById('signinForm').classList.remove('hidden');
+        document.getElementById('authModalTitle').textContent = 'Sign In';
+      }
+    }
+
+    function closeAuthModal() {
+      document.getElementById('authModal').classList.add('hidden');
+      // Reset forms
+      document.getElementById('roleSelect').value = '';
+      document.getElementById('roleSpecificFields').innerHTML = '';
+      document.getElementById('signupName').value = '';
+      document.getElementById('signupEmail').value = '';
+      document.getElementById('signupMobile').value = '';
+      document.getElementById('signupPassword').value = '';
+      document.getElementById('signinEmail').value = '';
+      document.getElementById('signinPassword').value = '';
+      document.querySelectorAll('.otp-input').forEach(i => i.value = '');
+    }
+
+    function switchToSignin() {
+      document.getElementById('signupForm').classList.add('hidden');
+      document.getElementById('signinForm').classList.remove('hidden');
+      document.getElementById('authModalTitle').textContent = 'Sign In';
+    }
+
+    function switchToSignup() {
+      document.getElementById('signinForm').classList.add('hidden');
+      document.getElementById('signupForm').classList.remove('hidden');
+      document.getElementById('authModalTitle').textContent = 'Sign On';
+    }
+
+    function updateRoleFields() {
+      const role = document.getElementById('roleSelect').value;
+      const container = document.getElementById('roleSpecificFields');
+      
+      const fieldTemplates = {
+        institute: `
+          <div><label class="block text-white/70 text-sm mb-2">Institute Legal Name</label>
+          <input type="text" id="instituteName" class="w-full input-field rounded-xl p-4" placeholder="e.g., ABC Engineering College"></div>
+          <div><label class="block text-white/70 text-sm mb-2">Accreditation Type</label>
+          <select id="accreditationType" class="w-full select-field rounded-xl p-4 text-white">
+            <option value="">Select accreditation</option>
+            <option value="AICTE">AICTE Approved</option>
+            <option value="UGC">UGC Recognized</option>
+            <option value="NBA">NBA Accredited</option>
+            <option value="NAAC">NAAC Accredited</option>
+            <option value="Multiple">Multiple Accreditations</option>
+          </select></div>
+          <div><label class="block text-white/70 text-sm mb-2">Courses Offered</label>
+          <div class="grid grid-cols-2 gap-2 text-sm">
+            ${COURSES.map(c => `<label class="flex items-center gap-2 text-white/70"><input type="checkbox" value="${c}"> ${c}</label>`).join('')}
+          </div></div>
+        `,
+        sponsor: `
+          <div><label class="block text-white/70 text-sm mb-2">Organization Name</label>
+          <input type="text" id="orgName" class="w-full input-field rounded-xl p-4" placeholder="Company/Trust/Foundation name"></div>
+          <div><label class="block text-white/70 text-sm mb-2">Sponsor Type</label>
+          <select id="sponsorType" class="w-full select-field rounded-xl p-4 text-white">
+            <option value="">Select type</option>
+            <option value="Corporate">Corporate (CSR)</option>
+            <option value="Trust">Charitable Trust</option>
+            <option value="NRI">NRI/Diaspora</option>
+            <option value="HNI">High Net-worth Individual</option>
+          </select></div>
+        `,
+        household: `
+          <div><label class="block text-white/70 text-sm mb-2">Number of Children</label>
+          <select id="numChildren" class="w-full select-field rounded-xl p-4 text-white">
+            <option value="1">1 Child</option>
+            <option value="2">2 Children</option>
+            <option value="3">3 Children</option>
+            <option value="4+">4 or more</option>
+          </select></div>
+        `,
+        student: `
+          <div><label class="block text-white/70 text-sm mb-2">Current Education Level</label>
+          <select id="eduLevel" class="w-full select-field rounded-xl p-4 text-white">
+            <option value="">Select level</option>
+            <option value="10th">Completed 10th</option>
+            <option value="12th">Completed 12th</option>
+            <option value="UG">Pursuing Undergraduate</option>
+            <option value="Graduate">Graduate (seeking PG)</option>
+          </select></div>
+          <div><label class="block text-white/70 text-sm mb-2">Sponsorship Status</label>
+          <select id="hasSponsorship" class="w-full select-field rounded-xl p-4 text-white">
+            <option value="">Select</option>
+            <option value="Yes">I have FTR/SU sponsorship</option>
+            <option value="No">Looking for sponsorship</option>
+            <option value="Family">Family holds FTRs</option>
+          </select></div>
+        `
+      };
+      
+      container.innerHTML = fieldTemplates[role] || '';
+    }
+
+    function validatePassword(password) {
+      if (password.length < 12) return false;
+      if (!/[A-Z]/.test(password)) return false;
+      if (!/[a-z]/.test(password)) return false;
+      if (!/[0-9]/.test(password)) return false;
+      if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) return false;
+      return true;
+    }
+
+    function handleSignup() {
+      const btn = document.getElementById('signupBtn');
+      if (AppState.isProcessing) return;
+      
+      const role = document.getElementById('roleSelect').value;
+      const name = document.getElementById('signupName').value.trim();
+      const email = document.getElementById('signupEmail').value.trim();
+      const mobile = document.getElementById('signupMobile').value.trim();
+      const password = document.getElementById('signupPassword').value;
+      
+      if (!role) return showToast('Please select your role', 'error');
+      if (!name) return showToast('Please enter your name', 'error');
+      if (!email || !email.includes('@')) return showToast('Please enter a valid email', 'error');
+      if (!mobile || mobile.length < 10) return showToast('Please enter a valid mobile number', 'error');
+      if (!validatePassword(password)) return showToast('Password must be 12+ chars with uppercase, lowercase, number, and special character', 'error');
+      
+      AppState.isProcessing = true;
+      btn.disabled = true;
+      btn.innerHTML = '<span class="animate-pulse">Creating Account...</span>';
+      
+      setTimeout(() => {
+        AppState.pendingAuth = { role, name, email, mobile };
+        document.getElementById('signupForm').classList.add('hidden');
+        document.getElementById('otpForm').classList.remove('hidden');
+        document.getElementById('authModalTitle').textContent = 'Verify OTP';
+        
+        AppState.isProcessing = false;
+        btn.disabled = false;
+        btn.innerHTML = 'Create Account';
+        
+        showToast('OTP sent to ' + mobile, 'success');
+      }, 1500);
+    }
+
+    function handleSignin() {
+      const btn = document.getElementById('signinBtn');
+      if (AppState.isProcessing) return;
+      
+      const email = document.getElementById('signinEmail').value.trim();
+      const password = document.getElementById('signinPassword').value;
+      
+      if (!email) return showToast('Please enter your email', 'error');
+      if (!password) return showToast('Please enter your password', 'error');
+      
+      AppState.isProcessing = true;
+      btn.disabled = true;
+      btn.innerHTML = '<span class="animate-pulse">Signing In...</span>';
+      
+      setTimeout(() => {
+        let role = 'household';
+        if (email.includes('institute') || email.includes('college')) role = 'institute';
+        else if (email.includes('corp') || email.includes('sponsor')) role = 'sponsor';
+        else if (email.includes('student')) role = 'student';
+        
+        AppState.currentUser = { email, name: email.split('@')[0] };
+        AppState.currentRole = role;
+        
+        closeAuthModal();
+        navigateTo('dashboard');
+        showToast('Welcome!', 'success');
+        
+        AppState.isProcessing = false;
+        btn.disabled = false;
+        btn.innerHTML = 'Sign In';
+      }, 1500);
+    }
+
+    function handleOTPInput(input, index) {
+      if (input.value.length === 1) {
+        const inputs = document.querySelectorAll('.otp-input');
+        if (index < 5) inputs[index + 1].focus();
+      }
+    }
+
+    function verifyOTP() {
+      const btn = document.getElementById('otpVerifyBtn');
+      if (AppState.isProcessing) return;
+      
+      const inputs = document.querySelectorAll('.otp-input');
+      const otp = Array.from(inputs).map(i => i.value).join('');
+      
+      if (otp.length !== 6) return showToast('Please enter complete OTP', 'error');
+      
+      AppState.isProcessing = true;
+      btn.disabled = true;
+      btn.innerHTML = '<span class="animate-pulse">Verifying...</span>';
+      
+      setTimeout(() => {
+        AppState.currentUser = AppState.pendingAuth;
+        AppState.currentRole = AppState.pendingAuth.role;
+        
+        closeAuthModal();
+        navigateTo('dashboard');
+        showToast('Account created successfully!', 'success');
+        
+        AppState.isProcessing = false;
+        btn.disabled = false;
+        btn.innerHTML = 'Verify OTP';
+      }, 1500);
+    }
+
+    function resendOTP() {
+      if (AppState.isProcessing) return;
+      showToast('OTP resent to your mobile', 'success');
+    }
+
+    // ==================== CONFIRMATION MODAL ====================
+    function showConfirmModal(title, message, callback) {
+      document.getElementById('confirmTitle').textContent = title;
+      document.getElementById('confirmMessage').textContent = message;
+      AppState.confirmCallback = callback;
+      document.getElementById('confirmModal').classList.remove('hidden');
+    }
+
+    function closeConfirmModal() {
+      document.getElementById('confirmModal').classList.add('hidden');
+      AppState.confirmCallback = null;
+    }
+
+    function executeConfirmedAction() {
+      if (AppState.confirmCallback) {
+        AppState.confirmCallback();
+      }
+      closeConfirmModal();
+    }
+
+    // ==================== DASHBOARD ====================
+    function renderDashboard() {
+      const container = document.getElementById('dashboardContainer');
+      const role = AppState.currentRole;
+      
+      const dashboards = {
+        institute: renderInstituteDashboard,
+        sponsor: renderSponsorDashboard,
+        household: renderHouseholdDashboard,
+        student: renderStudentDashboard
+      };
+      
+      const renderer = dashboards[role] || renderHouseholdDashboard;
+      container.innerHTML = renderer();
+    }
+
+    function renderInstituteDashboard() {
+      return `
+        <div class="flex justify-between items-start mb-8">
+          <div>
+            <h1 class="text-3xl font-bold mb-2">Institute Dashboard</h1>
+            <p class="text-white/60">Welcome, ${AppState.currentUser?.name || 'Institute'}</p>
+          </div>
+          <button onclick="logout()" class="px-6 py-2 rounded-full glass border border-white/20 hover:border-white/40">Sign Out</button>
+        </div>
+        
+        <div class="glass rounded-2xl p-8 mb-8">
+          <h3 class="text-xl font-semibold mb-4">Get Started</h3>
+          <p class="text-white/70 mb-6">Issue Future Tuition Rights (FTRs) or Sponsorship Units (SUs) for your courses. All issuances are subject to the 600% cap and parametric validation.</p>
+          <button onclick="openIssuanceModal()" class="btn-gold px-8 py-4 rounded-xl font-semibold">Issue New FTR / SU Units</button>
+        </div>
+        
+        <div class="grid md:grid-cols-2 gap-8">
+          <div class="glass rounded-2xl p-6">
+            <h3 class="text-lg font-semibold mb-4">Your Activity</h3>
+            <p class="text-white/50 text-center py-8">No activity yet. Issue your first FTR/SU to get started.</p>
+          </div>
+          <div class="glass rounded-2xl p-6">
+            <h3 class="text-lg font-semibold mb-4">Platform Rules</h3>
+            <ul class="space-y-3 text-sm text-white/70">
+              <li class="flex items-start gap-2"><span class="text-[#D4AF37]">•</span> Max issuance: 600% of annual sanctioned intake</li>
+              <li class="flex items-start gap-2"><span class="text-[#D4AF37]">•</span> SU merit allocation: Minimum 70% to needy students</li>
+              <li class="flex items-start gap-2"><span class="text-[#D4AF37]">•</span> Earmarked seats: Default 55% for FTR/SU holders</li>
+              <li class="flex items-start gap-2"><span class="text-[#D4AF37]">•</span> All actions logged to blockchain audit trail</li>
+            </ul>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderSponsorDashboard() {
+      return `
+        <div class="flex justify-between items-start mb-8">
+          <div>
+            <h1 class="text-3xl font-bold mb-2">Sponsor Dashboard</h1>
+            <p class="text-white/60">Welcome, ${AppState.currentUser?.name || 'Sponsor'}</p>
+          </div>
+          <button onclick="logout()" class="px-6 py-2 rounded-full glass border border-white/20 hover:border-white/40">Sign Out</button>
+        </div>
+        
+        <div class="glass rounded-2xl p-8 mb-8">
+          <h3 class="text-xl font-semibold mb-4">Support Education</h3>
+          <p class="text-white/70 mb-6">Purchase FTRs for employee benefits or donate to receive Sponsorship Units (80G + CSR eligible). Your contributions directly fund deserving students' education.</p>
+          <div class="flex gap-4 flex-wrap">
+            <button onclick="showComingSoon('Purchase FTRs')" class="btn-gold px-8 py-4 rounded-xl font-semibold">Purchase FTRs</button>
+            <button onclick="showComingSoon('Donate for SUs')" class="glass border border-[#D4AF37] text-[#D4AF37] px-8 py-4 rounded-xl font-semibold hover:bg-[#D4AF37]/10">Donate for SUs</button>
+          </div>
+        </div>
+        
+        <div class="grid md:grid-cols-2 gap-8">
+          <div class="glass rounded-2xl p-6">
+            <h3 class="text-lg font-semibold mb-4">Your Impact</h3>
+            <p class="text-white/50 text-center py-8">No contributions yet. Start sponsoring to see your impact.</p>
+          </div>
+          <div class="glass rounded-2xl p-6">
+            <h3 class="text-lg font-semibold mb-4">Tax Benefits (India)</h3>
+            <ul class="space-y-3 text-sm text-white/70">
+              <li class="flex items-start gap-2"><span class="text-emerald-400">✓</span> 80G deduction for SU donations</li>
+              <li class="flex items-start gap-2"><span class="text-emerald-400">✓</span> CSR expenditure eligibility</li>
+              <li class="flex items-start gap-2"><span class="text-emerald-400">✓</span> Section 37 deduction for FTRs as employee benefits</li>
+            </ul>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderHouseholdDashboard() {
+      return `
+        <div class="flex justify-between items-start mb-8">
+          <div>
+            <h1 class="text-3xl font-bold mb-2">Household Dashboard</h1>
+            <p class="text-white/60">Welcome, ${AppState.currentUser?.name || 'Parent'}</p>
+          </div>
+          <button onclick="logout()" class="px-6 py-2 rounded-full glass border border-white/20 hover:border-white/40">Sign Out</button>
+        </div>
+        
+        <div class="glass rounded-2xl p-8 mb-8">
+          <h3 class="text-xl font-semibold mb-4">Secure Your Child's Future</h3>
+          <p class="text-white/70 mb-6">Build your FTR portfolio over time to hedge against education fee inflation. FTRs can be swapped between institutes and courses, providing flexibility for your child's future career choices.</p>
+          <button onclick="showComingSoon('Browse Available FTRs')" class="btn-gold px-8 py-4 rounded-xl font-semibold">Browse Available FTRs</button>
+        </div>
+        
+        <div class="grid md:grid-cols-2 gap-8">
+          <div class="glass rounded-2xl p-6">
+            <h3 class="text-lg font-semibold mb-4">Your FTR Portfolio</h3>
+            <p class="text-white/50 text-center py-8">No FTRs yet. Start building your portfolio today.</p>
+          </div>
+          <div class="glass rounded-2xl p-6">
+            <h3 class="text-lg font-semibold mb-4">Benefits</h3>
+            <ul class="space-y-3 text-sm text-white/70">
+              <li class="flex items-start gap-2"><span class="text-emerald-400">✓</span> Lock current fees against inflation</li>
+              <li class="flex items-start gap-2"><span class="text-emerald-400">✓</span> Swap between institutes globally</li>
+              <li class="flex items-start gap-2"><span class="text-emerald-400">✓</span> Trade or transfer to family members</li>
+              <li class="flex items-start gap-2"><span class="text-emerald-400">✓</span> Predictable education budgeting</li>
+            </ul>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderStudentDashboard() {
+      return `
+        <div class="flex justify-between items-start mb-8">
+          <div>
+            <h1 class="text-3xl font-bold mb-2">Student Dashboard</h1>
+            <p class="text-white/60">Welcome, ${AppState.currentUser?.name || 'Student'}</p>
+          </div>
+          <button onclick="logout()" class="px-6 py-2 rounded-full glass border border-white/20 hover:border-white/40">Sign Out</button>
+        </div>
+        
+        <div class="glass rounded-2xl p-8 mb-8">
+          <h3 class="text-xl font-semibold mb-4">Your Education Journey</h3>
+          <p class="text-white/70 mb-6">Check if you have FTR/SU coverage from family or sponsors. If you're looking for sponsorship, update your profile to be discoverable by potential sponsors.</p>
+          <button onclick="showComingSoon('Update Profile')" class="btn-gold px-8 py-4 rounded-xl font-semibold">Update Profile</button>
+        </div>
+        
+        <div class="glass rounded-2xl p-6">
+          <h3 class="text-lg font-semibold mb-4">Sponsorship Status</h3>
+          <p class="text-white/50 text-center py-8">No active sponsorship linked to your account.</p>
+        </div>
+      `;
+    }
+
+    function showComingSoon(feature) {
+      showToast(feature + ' - Coming Soon!', 'info');
+    }
+
+    function logout() {
+      showConfirmModal('Sign Out', 'Are you sure you want to sign out?', () => {
+        AppState.currentUser = null;
+        AppState.currentRole = null;
+        navigateTo('landing');
+        showToast('Signed out successfully', 'success');
+      });
+    }
+
+    // ==================== ISSUANCE MODAL ====================
+    function openIssuanceModal() {
+      document.getElementById('issuanceModal').classList.remove('hidden');
+      setUnitType('FTR');
+    }
+
+    function closeIssuanceModal() {
+      document.getElementById('issuanceModal').classList.add('hidden');
+    }
+
+    function setUnitType(type) {
+      AppState.unitType = type;
+      document.getElementById('btnFTR').className = type === 'FTR' ? 'flex-1 py-3 rounded-xl font-medium btn-gold' : 'flex-1 py-3 rounded-xl font-medium glass border border-white/20';
+      document.getElementById('btnSU').className = type === 'SU' ? 'flex-1 py-3 rounded-xl font-medium btn-gold' : 'flex-1 py-3 rounded-xl font-medium glass border border-white/20';
+      document.getElementById('meritNote').classList.toggle('hidden', type !== 'SU');
+    }
+
+    function handleIssuance() {
+      const btn = document.getElementById('issueBtn');
+      if (AppState.isProcessing) return;
+      
+      const quantity = parseInt(document.getElementById('issueQuantity').value);
+      const maxAllowed = 2400; // 600% of 400 annual intake (example)
+      
+      if (quantity > maxAllowed) {
+        return showToast('Quantity exceeds 600% cap (' + maxAllowed + ')', 'error');
+      }
+      if (AppState.unitType === 'SU' && quantity > maxAllowed * 0.7) {
+        return showToast('SU quantity exceeds 70% merit allocation limit', 'error');
+      }
+      
+      showConfirmModal('Confirm Issuance', `Issue ${quantity} ${AppState.unitType} units? This action will be recorded on the blockchain.`, () => {
+        AppState.isProcessing = true;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="animate-pulse">Processing...</span>';
+        
+        setTimeout(() => {
+          closeIssuanceModal();
+          showToast('Units issued successfully. Audit trail recorded.', 'success');
+          renderDashboard();
+          
+          AppState.isProcessing = false;
+          btn.disabled = false;
+          btn.innerHTML = 'Issue Units';
+        }, 1500);
+      });
+    }
+
+    // ==================== FAQ ====================
+    function toggleFAQ(button) {
+      const answer = button.nextElementSibling;
+      const icon = button.querySelector('svg');
+      answer.classList.toggle('open');
+      icon.style.transform = answer.classList.contains('open') ? 'rotate(180deg)' : '';
+    }
+
+    function filterFAQ(category) {
+      document.querySelectorAll('.faq-filter').forEach(btn => {
+        const isActive = btn.dataset.category === category;
+        btn.classList.toggle('btn-gold', isActive);
+        btn.classList.toggle('text-black', isActive);
+      });
+      
+      document.querySelectorAll('.faq-item').forEach(item => {
+        if (category === 'all' || item.dataset.category === category) {
+          item.classList.remove('hidden');
+        } else {
+          item.classList.add('hidden');
+        }
+      });
+    }
+
+    // ==================== CHATBOT ====================
+    function toggleChatbot() {
+      document.getElementById('chatbotWindow').classList.toggle('hidden');
+    }
+
+    function sendChatMessage() {
+      const input = document.getElementById('chatInput');
+      const message = input.value.trim();
+      if (!message) return;
+      
+      const container = document.getElementById('chatMessages');
+      
+      // User message
+      container.innerHTML += `<div class="bg-[#D4AF37]/20 rounded-xl p-3 text-sm max-w-[85%] ml-auto">${escapeHtml(message)}</div>`;
+      input.value = '';
+      
+      // Bot response
+      setTimeout(() => {
+        const response = getChatResponse(message.toLowerCase());
+        container.innerHTML += `<div class="bg-white/10 rounded-xl p-3 text-sm max-w-[85%]">${response}</div>`;
+        container.scrollTop = container.scrollHeight;
+      }, 500);
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function getChatResponse(msg) {
+      if (msg.includes('ftr') || msg.includes('future tuition')) {
+        return 'Future Tuition Rights (FTRs) are tradable entitlements that lock today\'s tuition fee for any future eligible student. You purchase at current fees and redeem later at the same locked price, hedging against inflation.';
+      }
+      if (msg.includes('sponsorship') || msg.includes(' su ') || msg.includes('sponsor')) {
+        return 'Sponsorship Units (SUs) are philanthropic instruments. Sponsors donate and receive SUs as return gifts. When used, they fully fund a deserving student\'s education at zero cost to the student. 80G + CSR eligible in India.';
+      }
+      if (msg.includes('600') || msg.includes('cap') || msg.includes('limit')) {
+        return 'Institutes can issue a maximum of 600% of their annual sanctioned intake (50% × 12 future years). This prevents oversupply and ensures seat availability for all students.';
+      }
+      if (msg.includes('70%') || msg.includes('merit')) {
+        return 'At least 70% of issued Sponsorship Units must be allocated to merit-based or economically needy students. This ensures the philanthropic intent is preserved.';
+      }
+      if (msg.includes('blockchain') || msg.includes('transparent')) {
+        return 'TROT Edu uses a permissioned blockchain for all transactions. Every issuance, transfer, and redemption is recorded on an immutable ledger, ensuring complete transparency and traceability.';
+      }
+      if (msg.includes('capitation')) {
+        return 'No, TROT Edu is NOT capitation. Key differences: donors don\'t apply for admission while donating, admission is contingent on eligibility (no guarantee), and SUs are return gifts for donations with no quid-pro-quo.';
+      }
+      if (msg.includes('register') || msg.includes('sign up')) {
+        return 'Click "Sign On" in the navigation to register. You\'ll select your role (Institute, Sponsor, Household, or Student), provide details, and verify via OTP. Password must be 12+ characters with mixed case, number, and special character.';
+      }
+      return 'I can help you understand FTRs, Sponsorship Units, registration, the 600% cap, 70% merit rule, blockchain transparency, and more. What would you like to know?';
+    }
+
+    // ==================== TOAST ====================
+    function showToast(message, type = 'info') {
+      const toast = document.getElementById('toast');
+      const icon = document.getElementById('toastIcon');
+      const msg = document.getElementById('toastMessage');
+      
+      const icons = {
+        success: '<svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>',
+        error: '<svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>',
+        info: '<svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>'
+      };
+      
+      icon.innerHTML = icons[type] || icons.info;
+      msg.textContent = message;
+      toast.classList.remove('hidden');
+      
+      setTimeout(() => toast.classList.add('hidden'), 4000);
+    }
+
+    // ==================== INIT ====================
+    function init() {
+      navigateTo('landing');
+      console.log('%c🎓 TROT Edu Platform Loaded', 'color: #D4AF37; font-size: 16px; font-weight: bold;');
+    }
+
+    window.onload = init;
+  </script>
+</body>
+</html>

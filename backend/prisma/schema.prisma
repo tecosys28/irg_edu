@@ -1,0 +1,1459 @@
+// IRG_FTR PLATFORM - Prisma Schema v6.0
+// TROT REGISTRATION PROTOCOL COMPLIANT
+// Supports: Multi-role, 5-Tier KYC, GDPR, Risk Scoring, Lifecycle Management
+// IPR Owner: Rohit Tidke | © 2026 Intech Research Group
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// REGISTRATION ENUMS (TROT Protocol Aligned)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+enum ParticipantArchetype {
+  TGDP_MINTER
+  TGDP_JEWELER
+  MARKET_MAKER
+  FTR_BUYER_HOUSEHOLD
+  FTR_BUYER_OTHER
+  SERVICE_PROVIDER
+  DAC_PARTICIPANT
+  CONSULTANT
+  BANK_TRUSTEE
+  INVESTOR
+}
+
+enum EntityType {
+  INDIVIDUAL
+  LISTED_COMPANY
+  UNLISTED_PUBLIC_COMPANY
+  PRIVATE_COMPANY
+  PUBLIC_TRUST
+  PRIVATE_TRUST
+  COOPERATIVE
+  PROPRIETORSHIP
+  PARTNERSHIP
+  LLP
+  GOVERNMENT_ENTITY
+}
+
+enum KycTier {
+  TIER_0_PROVISIONAL
+  TIER_1_BASIC
+  TIER_2_STANDARD
+  TIER_3_ENHANCED
+  TIER_4_INSTITUTIONAL
+}
+
+enum KycStatus {
+  NOT_STARTED
+  PENDING
+  DOCUMENTS_SUBMITTED
+  VIDEO_KYC_PENDING
+  UNDER_REVIEW
+  APPROVED
+  CONDITIONALLY_APPROVED
+  REJECTED
+  SUSPENDED
+  EXPIRED
+  UPGRADE_REQUIRED
+}
+
+enum KycDocumentType {
+  AADHAAR
+  PAN
+  VOTER_ID
+  DRIVING_LICENSE
+  PASSPORT
+  NATIONAL_ID
+  SSN_ITIN
+  EMIRATES_ID
+  NRIC
+  BVN_NIN
+  REGISTRATION_CERT
+  GST_CERTIFICATE
+  MOA_AOA
+  BOARD_RESOLUTION
+  UBO_DECLARATION
+  BANK_STATEMENT
+  TAX_RETURN
+  AUDITED_FINANCIALS
+  CREDIT_REPORT
+  SOURCE_OF_WEALTH
+  SOURCE_OF_FUNDS
+  REFERENCE_LETTER
+  INSURANCE_DEED
+  ESCROW_PROOF
+}
+
+enum RegistrationStatus {
+  DRAFT
+  PENDING_KYC
+  KYC_IN_PROGRESS
+  PENDING_ELIGIBILITY
+  PENDING_WALLET
+  PENDING_TERMS
+  ACTIVE
+  SUSPENDED
+  DEREGISTERED
+  COOLING_OFF
+  BLACKLISTED
+}
+
+enum RenewalType {
+  KYC
+  LICENCE
+  BIOMETRIC
+  BANK_VERIFICATION
+  CREDIT_CHECK
+}
+
+enum SanctionsListType {
+  OFAC
+  UN_CONSOLIDATED
+  EU_SANCTIONS
+  UK_SANCTIONS
+  MHA_INDIA
+  FATF_HIGH_RISK
+  LOCAL_WATCHLIST
+}
+
+enum GdprLawfulBasis {
+  CONSENT
+  CONTRACT
+  LEGAL_OBLIGATION
+  VITAL_INTERESTS
+  PUBLIC_TASK
+  LEGITIMATE_INTEREST
+}
+
+enum DataSubjectRight {
+  ACCESS
+  RECTIFICATION
+  ERASURE
+  RESTRICT_PROCESSING
+  PORTABILITY
+  OBJECT
+  WITHDRAW_CONSENT
+}
+
+enum RiskRating {
+  LOW
+  MEDIUM
+  HIGH
+  UNACCEPTABLE
+}
+
+enum WalletNamespace {
+  TGDP_SOVEREIGN
+  FTR_STANDARD
+  DAC_COMMERCE
+  TRCS_SETTLEMENT
+}
+
+enum UserRole {
+  HOLDER
+  MINTER
+  CONSULTANT
+  MARKET_MAKER
+  ADMIN
+  SUPER_ADMIN
+  BOARD_MEMBER
+  OMBUDSMAN
+  AGENCY
+}
+
+enum MinterStatus {
+  PENDING_VERIFICATION
+  ACTIVE
+  SUSPENDED
+  DEREGISTERED
+}
+
+enum ConsultantStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+  DEREGISTERED
+}
+
+enum ConsultantAvailability {
+  AVAILABLE
+  BUSY
+  ON_LEAVE
+  UNAVAILABLE
+}
+
+enum TaskType {
+  APPRAISAL
+  LEGAL_REVIEW
+  TECHNICAL_AUDIT
+  FINANCIAL_ANALYSIS
+  SITE_INSPECTION
+  COMPLIANCE_CHECK
+  CAPACITY_VERIFICATION
+}
+
+enum TaskStatus {
+  PENDING
+  ASSIGNED
+  IN_PROGRESS
+  SUBMITTED
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+  OVERDUE
+  CANCELLED
+}
+
+enum SwapStatus {
+  PENDING
+  INVENTORY_CHECK
+  SHORT_SALE_INITIATED
+  EXECUTED
+  FAILED
+  CANCELLED
+}
+
+enum InventorySource {
+  OPEN_MARKET
+  MINTER_CF
+  POOLED_CF
+  SHORT_SALE
+}
+
+enum CorpusStatus {
+  ACTIVE
+  LOCKED
+  RECALL_TRANSFERRED
+}
+
+enum SurrenderWalletStatus {
+  ACTIVE
+  LOCKED
+  BURNED
+  DEREGISTERED
+}
+
+enum FtrProductType {
+  K_FTR
+  TGDP
+  T_JR
+  AF_FTR
+  GIC
+  HOSP
+  HEALTH
+  EDU
+  TROT_REALTY
+  TAXI_FTR
+}
+
+enum FtrState {
+  UNMINTED
+  AVAILABLE
+  LISTED
+  EARMARKED
+  REDEEMED
+  SURRENDERED
+  DEREGISTERED
+  RECALLED
+  CANCELLED
+  EXPIRED
+}
+
+enum EarmarkPurpose {
+  REDEMPTION
+  SWAP
+  TRANSFER
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// REGISTRATION CORE MODELS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model Participant {
+  id                    String              @id @default(cuid())
+  registrationId        String              @unique
+  entityType            EntityType
+  status                RegistrationStatus  @default(DRAFT)
+  kycTier               KycTier             @default(TIER_0_PROVISIONAL)
+  kycStatus             KycStatus           @default(NOT_STARTED)
+  registeredAt          DateTime?
+  activatedAt           DateTime?
+  suspendedAt           DateTime?
+  deregisteredAt        DateTime?
+  lastActivityAt        DateTime            @default(now())
+  isEligible            Boolean             @default(false)
+  eligibilityCheckedAt  DateTime?
+  barredFromMinting     Boolean             @default(false)
+  barredReason          String?
+  coolingOffUntil       DateTime?
+  walletAddress         String?             @unique
+  walletNamespace       WalletNamespace?
+  walletCreatedAt       DateTime?
+  username              String              @unique
+  usernameAka           String?
+  passwordHash          String
+  twoFactorEnabled      Boolean             @default(false)
+  twoFactorSecret       String?
+  biometricHash         String?
+  gdprApplicable        Boolean             @default(false)
+  gdprConsents          Json?
+  dataRetentionUntil    DateTime?
+  compositeRiskScore    Decimal?            @db.Decimal(4, 3)
+  riskRating            RiskRating?
+  lastRiskAssessment    DateTime?
+  registrationSource    String?
+  referralCode          String?
+  metadata              Json?
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+
+  roles                 ParticipantRole[]
+  individualProfile     IndividualProfile?
+  corporateProfile      CorporateProfile?
+  contactDetails        ContactDetails?
+  bankAccounts          BankAccount[]
+  nominees              Nominee[]
+  emergencyContacts     EmergencyContact[]
+  kycDocuments          KycDocument[]
+  kycVerifications      KycVerification[]
+  sanctionsScreenings   SanctionsScreening[]
+  riskAssessments       RiskAssessment[]
+  renewalSchedules      RenewalSchedule[]
+  profileAmendments     ProfileAmendment[]
+  gdprRequests          GdprRequest[]
+  auditTrail            RegistrationAudit[]
+  walletRecovery        WalletRecovery?
+  user                  User?
+  minter                Minter?
+  consultant            Consultant?
+
+  @@index([registrationId])
+  @@index([status])
+  @@index([kycTier])
+  @@index([entityType])
+  @@index([walletAddress])
+}
+
+model ParticipantRole {
+  id                String              @id @default(cuid())
+  participantId     String
+  archetype         ParticipantArchetype
+  isActive          Boolean             @default(true)
+  activatedAt       DateTime            @default(now())
+  deactivatedAt     DateTime?
+  ftrCategories     String[]
+  ftrSubCategories  String[]
+  earmarkedLimit    Decimal?            @db.Decimal(18, 4)
+  termsAcceptedAt   DateTime?
+  termsVersion      String?
+  metadata          Json?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+
+  participant       Participant         @relation(fields: [participantId], references: [id], onDelete: Cascade)
+
+  @@unique([participantId, archetype])
+  @@index([participantId])
+  @@index([archetype])
+}
+
+model IndividualProfile {
+  id                String        @id @default(cuid())
+  participantId     String        @unique
+  salutation        String?
+  firstName         String
+  middleName        String?
+  lastName          String
+  fullName          String
+  dateOfBirth       DateTime
+  gender            String?
+  maritalStatus     String?
+  nationality       String
+  countryOfResidence String
+  education         String?
+  occupation        String?
+  annualIncome      String?
+  addressLine1      String
+  addressLine2      String?
+  city              String
+  stateProvince     String
+  countryCode       String
+  postalCode        String
+  isAddressVerified Boolean       @default(false)
+  addressVerifiedAt DateTime?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  participant       Participant   @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  familyMembers     FamilyMember[]
+}
+
+model FamilyMember {
+  id                  String            @id @default(cuid())
+  individualProfileId String
+  name                String
+  relation            String
+  dateOfBirth         DateTime?
+  contactPhone        String?
+  contactEmail        String?
+  isNominee           Boolean           @default(false)
+  nomineePercentage   Decimal?          @db.Decimal(5, 2)
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+
+  individualProfile   IndividualProfile @relation(fields: [individualProfileId], references: [id], onDelete: Cascade)
+}
+
+model CorporateProfile {
+  id                    String        @id @default(cuid())
+  participantId         String        @unique
+  legalName             String
+  tradingName           String?
+  businessType          EntityType
+  registrationNumber    String
+  registrationDate      DateTime
+  registrationAuthority String
+  registrationValidity  DateTime?
+  taxId                 String?
+  gstNumber             String?
+  regAddressLine1       String
+  regAddressLine2       String?
+  regCity               String
+  regStateProvince      String
+  regCountryCode        String
+  regPostalCode         String
+  opAddressLine1        String?
+  opAddressLine2        String?
+  opCity                String?
+  opStateProvince       String?
+  opCountryCode         String?
+  opPostalCode          String?
+  businessPhone         String
+  businessEmail         String
+  websiteUrl            String?
+  ocrExtractedData      Json?
+  ocrVerifiedAt         DateTime?
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+
+  participant           Participant   @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  authorizedSignatories AuthorizedSignatory[]
+  beneficialOwners      BeneficialOwner[]
+}
+
+model AuthorizedSignatory {
+  id                  String           @id @default(cuid())
+  corporateProfileId  String
+  name                String
+  designation         String
+  email               String
+  phone               String
+  effectiveFrom       DateTime
+  effectiveTo         DateTime?
+  username            String?          @unique
+  passwordHash        String?
+  canTransact         Boolean          @default(true)
+  transactionLimit    Decimal?         @db.Decimal(18, 4)
+  isVerified          Boolean          @default(false)
+  verifiedAt          DateTime?
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+
+  corporateProfile    CorporateProfile @relation(fields: [corporateProfileId], references: [id], onDelete: Cascade)
+}
+
+model BeneficialOwner {
+  id                  String           @id @default(cuid())
+  corporateProfileId  String
+  name                String
+  nationality         String
+  ownershipPercentage Decimal          @db.Decimal(5, 2)
+  controlType         String?
+  linkedParticipantId String?
+  hasOwnKyc           Boolean          @default(false)
+  dateOfBirth         DateTime?
+  nationalId          String?
+  address             String?
+  isPep               Boolean          @default(false)
+  pepDetails          String?
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+
+  corporateProfile    CorporateProfile @relation(fields: [corporateProfileId], references: [id], onDelete: Cascade)
+}
+
+model ContactDetails {
+  id                String      @id @default(cuid())
+  participantId     String      @unique
+  primaryMobile     String
+  primaryMobileVerified Boolean @default(false)
+  alternateMobile   String?
+  landline          String?
+  primaryEmail      String
+  primaryEmailVerified Boolean  @default(false)
+  alternateEmail    String?
+  socialMediaConsent Boolean    @default(false)
+  whatsappNumber    String?
+  telegramHandle    String?
+  linkedinUrl       String?
+  preferredContactMethod String @default("EMAIL")
+  preferredLanguage String      @default("EN")
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  participant       Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+}
+
+model BankAccount {
+  id                String      @id @default(cuid())
+  participantId     String
+  bankName          String
+  bankCode          String?
+  branchName        String?
+  accountNumber     String
+  accountHolderName String
+  accountType       String
+  currency          String      @default("INR")
+  isPrimary         Boolean     @default(false)
+  isVerified        Boolean     @default(false)
+  verifiedAt        DateTime?
+  verificationMethod String?
+  trcsEnabled       Boolean     @default(false)
+  corpusFundLinked  Boolean     @default(false)
+  isActive          Boolean     @default(true)
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  participant       Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+
+  @@index([participantId])
+}
+
+model Nominee {
+  id                String      @id @default(cuid())
+  participantId     String
+  name              String
+  relation          String
+  dateOfBirth       DateTime?
+  phone             String
+  email             String?
+  address           String?
+  percentage        Decimal     @db.Decimal(5, 2)
+  isVerified        Boolean     @default(false)
+  verifiedAt        DateTime?
+  canAssistRecovery Boolean     @default(false)
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  participant       Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+
+  @@index([participantId])
+}
+
+model EmergencyContact {
+  id                String      @id @default(cuid())
+  participantId     String
+  name              String
+  relation          String
+  phone             String
+  email             String?
+  priority          Int         @default(1)
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  participant       Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+
+  @@index([participantId])
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// KYC/AML ENGINE MODELS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model KycDocument {
+  id                String          @id @default(cuid())
+  participantId     String
+  documentType      KycDocumentType
+  documentNumber    String?
+  frontImageUrl     String?
+  backImageUrl      String?
+  documentUrl       String?
+  ocrExtractedData  Json?
+  ocrConfidence     Decimal?        @db.Decimal(4, 3)
+  isOcrVerified     Boolean         @default(false)
+  issueDate         DateTime?
+  expiryDate        DateTime?
+  issuingAuthority  String?
+  issuingCountry    String?
+  status            String          @default("PENDING")
+  rejectionReason   String?
+  verifiedAt        DateTime?
+  verifiedBy        String?
+  requiredForTier   KycTier
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  participant       Participant     @relation(fields: [participantId], references: [id], onDelete: Cascade)
+
+  @@index([participantId])
+  @@index([documentType])
+}
+
+model KycVerification {
+  id                  String      @id @default(cuid())
+  participantId       String
+  verificationType    String
+  tier                KycTier
+  countryCode         String
+  jurisdictionRules   Json?
+  verificationMethod  String
+  verificationProvider String?
+  providerReference   String?
+  status              String      @default("PENDING")
+  score               Decimal?    @db.Decimal(4, 3)
+  confidence          Decimal?    @db.Decimal(4, 3)
+  livenessScore       Decimal?    @db.Decimal(4, 3)
+  faceMatchScore      Decimal?    @db.Decimal(4, 3)
+  failureReasons      String[]
+  initiatedAt         DateTime    @default(now())
+  completedAt         DateTime?
+  slaDeadline         DateTime?
+  slaBreached         Boolean     @default(false)
+  reviewedBy          String?
+  reviewNotes         String?
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+
+  participant         Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+
+  @@index([participantId])
+  @@index([tier])
+  @@index([status])
+}
+
+model SanctionsScreening {
+  id                String            @id @default(cuid())
+  participantId     String
+  screeningType     SanctionsListType
+  screenedName      String
+  screenedAt        DateTime          @default(now())
+  isMatch           Boolean           @default(false)
+  matchScore        Decimal?          @db.Decimal(4, 3)
+  matchedEntity     String?
+  matchDetails      Json?
+  isFalsePositive   Boolean?
+  resolvedBy        String?
+  resolvedAt        DateTime?
+  resolutionNotes   String?
+  batchId           String?
+  createdAt         DateTime          @default(now())
+
+  participant       Participant       @relation(fields: [participantId], references: [id], onDelete: Cascade)
+
+  @@index([participantId])
+  @@index([screenedAt])
+  @@index([isMatch])
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// RISK SCORING MODELS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model RiskAssessment {
+  id                    String      @id @default(cuid())
+  participantId         String
+  assessmentType        String
+  triggerEvent          String?
+  creditBureauScore     Decimal?    @db.Decimal(4, 3)
+  creditBureauSource    String?
+  behaviouralScore      Decimal?    @db.Decimal(4, 3)
+  adverseMediaScore     Decimal?    @db.Decimal(4, 3)
+  sowSofScore           Decimal?    @db.Decimal(4, 3)
+  crossBorderScore      Decimal?    @db.Decimal(4, 3)
+  pepFamilyScore        Decimal?    @db.Decimal(4, 3)
+  defaultCascadeMultiplier Decimal? @db.Decimal(3, 2)
+  deliveryPerformanceMultiplier Decimal? @db.Decimal(3, 2)
+  jurisdictionMultiplier Decimal?   @db.Decimal(3, 2)
+  compositeRiskScore    Decimal     @db.Decimal(4, 3)
+  riskRating            RiskRating
+  modelVersion          String
+  modelHash             String?
+  aiDecision            String?
+  consultantReview      Boolean     @default(false)
+  consultantId          String?
+  consultantDecision    String?
+  consultantNotes       String?
+  explanationText       String?
+  factorContributions   Json?
+  blockchainTxHash      String?
+  assessedAt            DateTime    @default(now())
+
+  participant           Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+
+  @@index([participantId])
+  @@index([assessedAt])
+  @@index([riskRating])
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// LIFECYCLE MANAGEMENT MODELS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model RenewalSchedule {
+  id                String      @id @default(cuid())
+  participantId     String
+  renewalType       RenewalType
+  lastRenewalDate   DateTime?
+  nextRenewalDate   DateTime
+  gracePeriodDays   Int         @default(7)
+  reminder30DaysSent Boolean    @default(false)
+  reminder15DaysSent Boolean    @default(false)
+  reminder7DaysSent  Boolean    @default(false)
+  status            String      @default("ACTIVE")
+  autoSuspendedAt   DateTime?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  participant       Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+
+  @@unique([participantId, renewalType])
+  @@index([nextRenewalDate])
+}
+
+model ProfileAmendment {
+  id                String      @id @default(cuid())
+  participantId     String
+  fieldName         String
+  oldValue          String?
+  newValue          String?
+  isMaterialChange  Boolean     @default(false)
+  requiresReKyc     Boolean     @default(false)
+  reKycTriggered    Boolean     @default(false)
+  requiresApproval  Boolean     @default(false)
+  approvedBy        String?
+  approvedAt        DateTime?
+  blockchainTxHash  String?
+  previousVersionHash String?
+  amendedBy         String
+  amendedAt         DateTime    @default(now())
+
+  participant       Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+
+  @@index([participantId])
+  @@index([amendedAt])
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// GDPR COMPLIANCE MODELS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model GdprRequest {
+  id                String          @id @default(cuid())
+  participantId     String
+  rightType         DataSubjectRight
+  requestedAt       DateTime        @default(now())
+  requestDetails    String?
+  status            String          @default("PENDING")
+  processingNotes   String?
+  slaDeadline       DateTime
+  slaBreached       Boolean         @default(false)
+  completedAt       DateTime?
+  responseProvided  String?
+  dataExportUrl     String?
+  rejectionReason   String?
+  escalatedToOmbudsman Boolean      @default(false)
+  ombudsmanCaseId   String?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  participant       Participant     @relation(fields: [participantId], references: [id], onDelete: Cascade)
+
+  @@index([participantId])
+  @@index([status])
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// WALLET & RECOVERY MODELS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model WalletRecovery {
+  id                    String      @id @default(cuid())
+  participantId         String      @unique
+  recoveryMethod        String
+  socialRecoveryEnabled Boolean     @default(false)
+  nominee1Id            String?
+  nominee2Id            String?
+  nominee3Id            String?
+  requiredApprovals     Int         @default(2)
+  recoveryDelayHours    Int         @default(72)
+  seedPhraseHint        String?
+  hardwareWalletLinked  Boolean     @default(false)
+  hardwareWalletType    String?
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+
+  participant           Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// AUDIT TRAIL
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model RegistrationAudit {
+  id                String      @id @default(cuid())
+  participantId     String
+  action            String
+  category          String
+  description       String
+  oldState          Json?
+  newState          Json?
+  performedBy       String
+  performedByRole   String?
+  ipAddress         String?
+  userAgent         String?
+  blockchainTxHash  String?
+  timestamp         DateTime    @default(now())
+  retainUntil       DateTime
+
+  participant       Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+
+  @@index([participantId])
+  @@index([timestamp])
+  @@index([category])
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// FTR CATEGORIES
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model FtrCategory {
+  id                String      @id @default(cuid())
+  code              String      @unique
+  name              String
+  description       String
+  parentCategoryId  String?
+  isParent          Boolean     @default(false)
+  isApproved        Boolean     @default(true)
+  approvedAt        DateTime?
+  isPending         Boolean     @default(false)
+  requestedBy       String?
+  aiDraftedDescription String?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  parentCategory    FtrCategory? @relation("CategoryHierarchy", fields: [parentCategoryId], references: [id])
+  subCategories     FtrCategory[] @relation("CategoryHierarchy")
+
+  @@index([code])
+  @@index([parentCategoryId])
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// COUNTRY-SPECIFIC KYC RULES
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model CountryKycConfig {
+  id                    String      @id @default(cuid())
+  countryCode           String      @unique
+  countryName           String
+  tier0Documents        String[]
+  tier1Documents        String[]
+  tier2Documents        String[]
+  tier3Documents        String[]
+  tier4Documents        String[]
+  tier0Limit            Decimal     @db.Decimal(18, 2)
+  tier1Limit            Decimal     @db.Decimal(18, 2)
+  tier2Limit            Decimal     @db.Decimal(18, 2)
+  primaryRegulator      String
+  regulatoryFramework   String
+  sanctionsLists        String[]
+  dataRetentionYears    Int         @default(7)
+  isEeaCountry          Boolean     @default(false)
+  gdprApplicable        Boolean     @default(false)
+  specialRules          Json?
+  lastGazetteUpdate     DateTime?
+  lastAiValidation      DateTime?
+  isActive              Boolean     @default(true)
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+
+  @@index([countryCode])
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// LEGACY MODELS (Backward Compatibility)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model User {
+  id              String    @id @default(cuid())
+  participantId   String?   @unique
+  email           String    @unique
+  phone           String?   @unique
+  name            String
+  walletAddress   String?   @unique
+  passwordHash    String
+  role            UserRole  @default(HOLDER)
+  kycStatus       KycStatus @default(PENDING)
+  kycExpiresAt    DateTime?
+  isActive        Boolean   @default(true)
+  lastLoginAt     DateTime?
+  twoFactorEnabled Boolean  @default(false)
+  twoFactorSecret String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  participant     Participant? @relation(fields: [participantId], references: [id])
+  tokens          FtrToken[]
+  minter          Minter?
+  consultant      Consultant?
+  notifications   Notification[]
+  auditLogs       AuditLog[]
+  swapRequests    SwapRequest[]
+
+  @@index([email])
+  @@index([walletAddress])
+}
+
+model Minter {
+  id                  String       @id @default(cuid())
+  userId              String       @unique
+  participantId       String?      @unique
+  businessName        String
+  businessType        String
+  registrationNumber  String       @unique
+  gstNumber           String?
+  panNumber           String?
+  countryCode         String
+  stateCode           String?
+  status              MinterStatus @default(PENDING_VERIFICATION)
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+
+  user                User         @relation(fields: [userId], references: [id])
+  participant         Participant? @relation(fields: [participantId], references: [id])
+  projects            Project[]
+  tokens              FtrToken[]
+  corpusFund          CorpusFund?
+  surrenderWallet     SurrenderWallet?
+
+  @@index([countryCode])
+  @@index([status])
+}
+
+model Consultant {
+  id                  String                  @id @default(cuid())
+  userId              String                  @unique
+  participantId       String?                 @unique
+  registrationNumber  String                  @unique
+  businessName        String
+  specializations     String[]
+  categories          String[]
+  countryCode         String
+  stateCode           String?
+  geoScore            Float                   @default(50)
+  rating              Float                   @default(0)
+  totalReviews        Int                     @default(0)
+  rankingPosition     Int?
+  onTimePercentage    Float                   @default(100)
+  availabilityStatus  ConsultantAvailability  @default(AVAILABLE)
+  status              ConsultantStatus        @default(PENDING)
+  baseFeePercent      Float                   @default(2)
+  createdAt           DateTime                @default(now())
+  updatedAt           DateTime                @updatedAt
+
+  user                User                    @relation(fields: [userId], references: [id])
+  participant         Participant?            @relation(fields: [participantId], references: [id])
+  tasks               ConsultantTask[]
+  offers              ConsultantOffer[]
+
+  @@index([countryCode])
+  @@index([status])
+  @@index([rating])
+}
+
+model Project {
+  id              String         @id @default(cuid())
+  minterId        String
+  name            String
+  description     String
+  productType     FtrProductType
+  countryCode     String
+  stateCode       String?
+  totalCapacity   Int
+  mintedTokens    Int            @default(0)
+  faceValue       Decimal        @db.Decimal(18, 4)
+  validityYears   Int
+  expectedRoi     Decimal        @db.Decimal(5, 2)
+  status          String         @default("DRAFT")
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  minter          Minter         @relation(fields: [minterId], references: [id])
+  tokens          FtrToken[]
+  batches         FtrBatch[]
+
+  @@index([minterId])
+  @@index([productType])
+}
+
+model FtrToken {
+  id                    String          @id @default(cuid())
+  tokenId               String          @unique
+  publicId              String          @unique
+  productType           FtrProductType
+  minterId              String
+  holderId              String
+  projectId             String?
+  batchId               String?
+  faceValue             Decimal         @db.Decimal(18, 4)
+  currency              String          @default("INR")
+  state                 FtrState        @default(UNMINTED)
+  earmarkedAt           DateTime?
+  earmarkedUntil        DateTime?
+  earmarkedFor          EarmarkPurpose?
+  isSurrendered         Boolean         @default(false)
+  surrenderWalletId     String?
+  surrenderedAt         DateTime?
+  redemptionOrderId     String?
+  holderOptionExercised Boolean         @default(false)
+  deregisteredAt        DateTime?
+  blockchainTxHash      String?
+  metadata              Json?
+  validFrom             DateTime
+  validUntil            DateTime
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
+
+  minter                Minter          @relation(fields: [minterId], references: [id])
+  holder                User            @relation(fields: [holderId], references: [id])
+  project               Project?        @relation(fields: [projectId], references: [id])
+  batch                 FtrBatch?       @relation(fields: [batchId], references: [id])
+  surrenderWallet       SurrenderWallet? @relation(fields: [surrenderWalletId], references: [id])
+
+  @@index([minterId])
+  @@index([holderId])
+  @@index([state])
+  @@index([productType])
+}
+
+model FtrBatch {
+  id            String     @id @default(cuid())
+  projectId     String
+  batchNumber   Int
+  totalTokens   Int
+  faceValue     Decimal    @db.Decimal(18, 4)
+  createdAt     DateTime   @default(now())
+
+  project       Project    @relation(fields: [projectId], references: [id])
+  tokens        FtrToken[]
+
+  @@unique([projectId, batchNumber])
+}
+
+model ConsultantOffer {
+  id              String    @id @default(cuid())
+  consultantId    String
+  applicationId   String?
+  taskType        TaskType
+  scope           String
+  feeQuoted       Decimal   @db.Decimal(18, 4)
+  estimatedDays   Int
+  deliverables    String[]
+  status          String    @default("PENDING")
+  validUntil      DateTime
+  respondedAt     DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  consultant      Consultant @relation(fields: [consultantId], references: [id])
+
+  @@index([consultantId])
+  @@index([status])
+}
+
+model ConsultantTask {
+  id                  String     @id @default(cuid())
+  consultantId        String
+  applicationId       String?
+  taskType            TaskType
+  description         String
+  deadline            DateTime
+  status              TaskStatus @default(PENDING)
+  reportUrls          String[]
+  reportHash          String?
+  findings            String?
+  recommendation      String?
+  feeQuoted           Decimal    @db.Decimal(18, 4)
+  feeApproved         Decimal?   @db.Decimal(18, 4)
+  feePaidAt           DateTime?
+  aiScore             Float?
+  onTimeBonus         Float      @default(0)
+  peerRank            Float?
+  minterFeedback      Float?
+  finalRating         Float?
+  doubleEntryVerified Boolean    @default(false)
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+
+  consultant          Consultant @relation(fields: [consultantId], references: [id])
+
+  @@index([consultantId])
+  @@index([status])
+}
+
+model SwapRequest {
+  id                  String          @id @default(cuid())
+  initiatorId         String
+  offeredTokenId      String?
+  requestedMinterId   String
+  requestedService    Json
+  status              SwapStatus      @default(PENDING)
+  marketRateOffered   Decimal?        @db.Decimal(18, 4)
+  marketRateRequested Decimal?        @db.Decimal(18, 4)
+  fxRate              Decimal?        @db.Decimal(12, 6)
+  fxSpread            Decimal?        @db.Decimal(18, 4)
+  platformFee         Decimal?        @db.Decimal(18, 4)
+  shortSaleTriggered  Boolean         @default(false)
+  corpusAccountId     String?
+  inventorySource     InventorySource?
+  failureReason       String?
+  confirmationToken   String?
+  confirmedAt         DateTime?
+  executedAt          DateTime?
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+
+  initiator           User            @relation(fields: [initiatorId], references: [id])
+  transactions        SwapTransaction[]
+
+  @@index([initiatorId])
+  @@index([status])
+}
+
+model SwapTransaction {
+  id              String    @id @default(cuid())
+  swapRequestId   String
+  type            String
+  amount          Decimal   @db.Decimal(18, 4)
+  currency        String
+  fxRate          Decimal?  @db.Decimal(12, 6)
+  status          String    @default("PENDING")
+  blockchainTxHash String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  swapRequest     SwapRequest @relation(fields: [swapRequestId], references: [id])
+
+  @@index([swapRequestId])
+}
+
+model FxRate {
+  id            String    @id @default(cuid())
+  fromCurrency  String
+  toCurrency    String
+  rate          Decimal   @db.Decimal(12, 6)
+  source        String
+  validFrom     DateTime
+  validTo       DateTime?
+  createdAt     DateTime  @default(now())
+
+  @@unique([fromCurrency, toCurrency, validFrom])
+  @@index([fromCurrency, toCurrency])
+}
+
+model CorpusFund {
+  id                String       @id @default(cuid())
+  minterId          String       @unique
+  totalBalance      Decimal      @db.Decimal(18, 4)
+  shortSaleBalance  Decimal      @default(0) @db.Decimal(18, 4)
+  fxReserve         Decimal      @default(0) @db.Decimal(18, 4)
+  perUnitValue      Decimal      @db.Decimal(18, 4)
+  outstandingUnits  Int
+  marketMakerLimit  Decimal      @db.Decimal(18, 4)
+  investmentReturns Decimal      @default(0) @db.Decimal(18, 4)
+  status            CorpusStatus @default(ACTIVE)
+  lastSnapshotAt    DateTime     @default(now())
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  minter            Minter       @relation(fields: [minterId], references: [id])
+
+  @@index([minterId])
+}
+
+model SurrenderWallet {
+  id            String                @id @default(cuid())
+  minterId      String                @unique
+  walletAddress String                @unique
+  totalTokens   Int                   @default(0)
+  totalValue    Decimal               @default(0) @db.Decimal(18, 4)
+  status        SurrenderWalletStatus @default(ACTIVE)
+  createdAt     DateTime              @default(now())
+  updatedAt     DateTime              @updatedAt
+
+  minter        Minter                @relation(fields: [minterId], references: [id])
+  tokens        FtrToken[]
+
+  @@index([minterId])
+}
+
+model RoiConfig {
+  id            String    @id @default(cuid())
+  countryCode   String    @unique
+  roiPercent    Decimal   @db.Decimal(5, 2)
+  effectiveFrom DateTime
+  effectiveTo   DateTime?
+  reason        String?
+  updatedBy     String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([countryCode])
+}
+
+model RoiHistory {
+  id            String    @id @default(cuid())
+  countryCode   String
+  oldRoi        Decimal   @db.Decimal(5, 2)
+  newRoi        Decimal   @db.Decimal(5, 2)
+  reason        String?
+  changedBy     String
+  changedAt     DateTime  @default(now())
+
+  @@index([countryCode])
+  @@index([changedAt])
+}
+
+model Notification {
+  id        String    @id @default(cuid())
+  userId    String
+  type      String
+  title     String
+  message   String
+  read      Boolean   @default(false)
+  metadata  Json?
+  createdAt DateTime  @default(now())
+
+  user      User      @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([read])
+}
+
+model AuditLog {
+  id            String    @id @default(cuid())
+  userId        String?
+  action        String
+  resourceType  String
+  resourceId    String?
+  oldValue      Json?
+  newValue      Json?
+  ipAddress     String?
+  userAgent     String?
+  metadata      Json?
+  createdAt     DateTime  @default(now())
+
+  user          User?     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([action])
+  @@index([resourceType])
+  @@index([createdAt])
+}
+
+model SystemConfig {
+  id        String    @id @default(cuid())
+  key       String    @unique
+  value     Json
+  category  String
+  updatedBy String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([category])
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ROI MODULE MODELS
+// Dynamic ROI Configuration with Consultant Justification
+// ═══════════════════════════════════════════════════════════════════════════════
+
+enum RoiJustificationCategory {
+  MARKET_CONDITIONS
+  ASSET_QUALITY
+  RISK_ASSESSMENT
+  REGULATORY_REQUIREMENT
+  COMPETITIVE_ANALYSIS
+  HISTORICAL_PERFORMANCE
+  SECTOR_SPECIFIC
+  GEOGRAPHIC_FACTOR
+  OTHER
+}
+
+enum RoiOverrideStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum RoiChangeType {
+  ADMIN_UPDATE
+  CONSULTANT_OVERRIDE
+  SYSTEM_ADJUSTMENT
+}
+
+model CountryRoiConfig {
+  id                    String    @id @default(cuid())
+  countryCode           String    @unique @db.Char(2)
+  countryName           String
+  baseRoiPercent        Float     @default(9.2)
+  minRoiPercent         Float     @default(0)
+  maxRoiPercent         Float     @default(100)
+  effectiveFrom         DateTime  @default(now())
+  effectiveTo           DateTime?
+  regulatoryFramework   String?
+  notes                 String?
+  isActive              Boolean   @default(true)
+  updatedBy             String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  // Relations
+  updatedByUser         User?     @relation("RoiConfigUpdatedBy", fields: [updatedBy], references: [id])
+  roiOverrides          ProjectRoiOverride[]
+  roiHistory            RoiChangeHistory[]
+
+  @@index([countryCode])
+  @@index([isActive])
+}
+
+model ProjectRoiOverride {
+  id                    String                  @id @default(cuid())
+  projectId             String
+  minterId              String
+  minterCountry         String                  @db.Char(2)
+  baseRoi               Float
+  approvedRoi           Float
+  roiDelta              Float
+  consultantId          String
+  consultantName        String
+  justificationCategory RoiJustificationCategory
+  justificationText     String                  @db.Text
+  supportingEvidence    String[]
+  approvalStatus        RoiOverrideStatus       @default(PENDING)
+  approvedBy            String?
+  approvedAt            DateTime?
+  rejectionReason       String?
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime                @updatedAt
+
+  // Relations
+  countryConfig         CountryRoiConfig        @relation(fields: [minterCountry], references: [countryCode])
+  consultant            User                    @relation("ConsultantRoiOverrides", fields: [consultantId], references: [id])
+  approver              User?                   @relation("ApprovedRoiOverrides", fields: [approvedBy], references: [id])
+  project               MintingApplication?     @relation(fields: [projectId], references: [id])
+  minter                User                    @relation("MinterRoiOverrides", fields: [minterId], references: [id])
+
+  @@index([projectId])
+  @@index([minterId])
+  @@index([consultantId])
+  @@index([approvalStatus])
+  @@index([minterCountry])
+}
+
+model RoiChangeHistory {
+  id              String          @id @default(cuid())
+  entityType      String          // 'COUNTRY' or 'PROJECT'
+  entityId        String
+  previousRoi     Float
+  newRoi          Float
+  changeType      RoiChangeType
+  changedBy       String
+  changedByRole   String
+  justification   String?         @db.Text
+  ipAddress       String?
+  metadata        Json?
+  timestamp       DateTime        @default(now())
+
+  // Relations
+  countryConfig   CountryRoiConfig? @relation(fields: [entityId], references: [countryCode])
+  changedByUser   User              @relation("RoiChangedBy", fields: [changedBy], references: [id])
+
+  @@index([entityType])
+  @@index([entityId])
+  @@index([changedBy])
+  @@index([timestamp])
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// CONSULTANT APPROVAL MODELS
+// Extended approval workflow with ROI justification
+// ═══════════════════════════════════════════════════════════════════════════════
+
+enum ProjectApprovalStatus {
+  PENDING_REVIEW
+  UNDER_REVIEW
+  APPROVED
+  CONDITIONALLY_APPROVED
+  REJECTED
+  REVISION_REQUESTED
+}
+
+enum ConsultantRecommendation {
+  APPROVE
+  REJECT
+  CONDITIONAL_APPROVE
+  REQUEST_REVISION
+}
+
+model ProjectConsultantApproval {
+  id                    String                    @id @default(cuid())
+  projectId             String
+  consultantId          String
+  consultantName        String
+  
+  // ROI Assessment
+  baseRoi               Float
+  recommendedRoi        Float
+  roiDelta              Float
+  roiJustificationCategory RoiJustificationCategory?
+  roiJustification      String?                   @db.Text
+  
+  // Technical Assessment
+  technicalAssessment   String                    @db.Text
+  riskRating            RiskRating
+  marketAnalysis        String?                   @db.Text
+  financialViability    String?                   @db.Text
+  
+  // Recommendation
+  recommendation        ConsultantRecommendation
+  conditions            String[]
+  supportingDocuments   String[]
+  
+  // Status
+  approvalStatus        ProjectApprovalStatus     @default(PENDING_REVIEW)
+  reviewNotes           String?                   @db.Text
+  reviewedBy            String?
+  reviewedAt            DateTime?
+  
+  createdAt             DateTime                  @default(now())
+  updatedAt             DateTime                  @updatedAt
+
+  // Relations
+  project               MintingApplication        @relation(fields: [projectId], references: [id])
+  consultant            Consultant                @relation(fields: [consultantId], references: [id])
+  reviewer              User?                     @relation("ApprovalReviewer", fields: [reviewedBy], references: [id])
+
+  @@index([projectId])
+  @@index([consultantId])
+  @@index([approvalStatus])
+  @@index([recommendation])
+}

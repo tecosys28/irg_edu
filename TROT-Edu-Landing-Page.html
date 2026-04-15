@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TROT Edu • IRG Edu FTRs & Sponsorship Units</title>
+  <meta name="description" content="TROT Edu - Blockchain-registered IRG Edu FTRs and Sponsorship Units (SUs) for debt-free education funding">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif; }
+    :root {
+      --navy: #000052;
+      --navy-dark: #000033;
+      --gold: #D4AF37;
+      --gold-light: #F4CF67;
+      --white: #ffffff;
+    }
+    body { background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 100%); color: var(--white); line-height: 1.6; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    
+    /* Navigation */
+    nav { position: fixed; top: 0; width: 100%; background: rgba(0,0,51,0.95); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.1); z-index: 100; }
+    .nav-inner { display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; max-width: 1200px; margin: 0 auto; }
+    .logo { display: flex; align-items: center; gap: 12px; }
+    .logo-icon { width: 48px; height: 48px; }
+    .logo-icon img { width: 100%; height: 100%; object-fit: contain; }
+    .logo-text { font-size: 24px; font-weight: 700; letter-spacing: -0.5px; }
+    .logo-sub { font-size: 11px; color: rgba(255,255,255,0.5); display: block; }
+    .nav-links { display: flex; align-items: center; gap: 32px; }
+    .nav-links a { color: var(--white); text-decoration: none; font-size: 14px; font-weight: 500; opacity: 0.8; transition: opacity 0.3s; }
+    .nav-links a:hover { opacity: 1; color: var(--gold); }
+    .btn { display: inline-block; padding: 12px 28px; border-radius: 50px; font-weight: 600; text-decoration: none; transition: all 0.3s; cursor: pointer; border: none; font-size: 14px; }
+    .btn-gold { background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%); color: #000; }
+    .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(212,175,55,0.3); }
+    .btn-outline { border: 1px solid rgba(255,255,255,0.3); color: var(--white); background: transparent; }
+    .btn-outline:hover { border-color: var(--white); }
+    
+    /* Hero */
+    .hero { padding: 160px 0 100px; text-align: center; }
+    .hero h1 { font-size: clamp(40px, 6vw, 72px); font-weight: 800; line-height: 1.1; letter-spacing: -2px; margin-bottom: 24px; }
+    .hero h1 span { display: block; background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero p { font-size: 20px; color: rgba(255,255,255,0.7); max-width: 800px; margin: 0 auto 40px; }
+    .hero-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    
+    /* Programmes */
+    .programmes { padding: 60px 0; background: rgba(0,0,0,0.2); }
+    .section-label { text-align: center; font-size: 12px; letter-spacing: 3px; color: var(--gold); margin-bottom: 24px; font-weight: 600; }
+    .pills { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+    .pill { padding: 14px 24px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 50px; font-size: 14px; transition: all 0.3s; }
+    .pill:hover { border-color: var(--gold); background: rgba(212,175,55,0.1); }
+    
+    /* Instruments */
+    .instruments { padding: 100px 0; }
+    .section-title { text-align: center; font-size: 40px; font-weight: 700; margin-bottom: 16px; }
+    .section-subtitle { text-align: center; color: rgba(255,255,255,0.6); margin-bottom: 60px; max-width: 600px; margin-left: auto; margin-right: auto; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 32px; max-width: 900px; margin: 0 auto; }
+    .card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; padding: 40px; transition: all 0.3s; }
+    .card:hover { transform: translateY(-4px); border-color: var(--gold); }
+    .card-icon { width: 56px; height: 56px; background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin-bottom: 24px; }
+    .card-icon svg { width: 28px; height: 28px; }
+    .card h3 { font-size: 24px; font-weight: 700; color: var(--gold); margin-bottom: 12px; }
+    .card p { color: rgba(255,255,255,0.7); margin-bottom: 20px; font-size: 15px; }
+    .card ul { list-style: none; }
+    .card li { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; font-size: 14px; color: rgba(255,255,255,0.6); }
+    .card li::before { content: "✓"; color: #10B981; margin-top: 2px; }
+    
+    /* Benefits */
+    .benefits { padding: 100px 0; background: rgba(255,255,255,0.02); }
+    .benefit-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+    .benefit-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 32px; transition: all 0.3s; }
+    .benefit-card:hover { border-color: var(--gold); transform: translateY(-4px); }
+    .benefit-icon { width: 48px; height: 48px; background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
+    .benefit-icon svg { width: 24px; height: 24px; }
+    .benefit-card h4 { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+    .benefit-card p { font-size: 14px; color: rgba(255,255,255,0.6); }
+    
+    /* How It Works */
+    .how-it-works { padding: 100px 0; }
+    .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 32px; max-width: 1000px; margin: 0 auto; }
+    .step { text-align: center; }
+    .step-number { width: 60px; height: 60px; background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 24px; font-weight: 700; color: #000; }
+    .step h4 { font-size: 18px; font-weight: 600; margin-bottom: 12px; }
+    .step p { font-size: 14px; color: rgba(255,255,255,0.6); }
+    
+    /* Safeguards */
+    .safeguards { padding: 100px 0; background: rgba(255,255,255,0.02); }
+    .safeguard-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; max-width: 900px; margin: 0 auto; }
+    .safeguard-item { display: flex; align-items: flex-start; gap: 16px; padding: 20px; background: rgba(255,255,255,0.03); border-radius: 16px; border: 1px solid rgba(255,255,255,0.08); }
+    .safeguard-icon { width: 40px; height: 40px; background: rgba(16, 185, 129, 0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .safeguard-icon svg { width: 20px; height: 20px; color: #10B981; }
+    .safeguard-item h5 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+    .safeguard-item p { font-size: 13px; color: rgba(255,255,255,0.6); }
+    
+    /* CTA */
+    .cta { padding: 100px 0; text-align: center; }
+    .cta h2 { font-size: 36px; font-weight: 700; margin-bottom: 16px; }
+    .cta p { color: rgba(255,255,255,0.6); margin-bottom: 32px; max-width: 500px; margin-left: auto; margin-right: auto; }
+    
+    /* Footer */
+    .footer { padding: 80px 0 0; border-top: 1px solid rgba(255,255,255,0.1); }
+    
+    /* Legal Section - IPR & Disclaimer (Above Navigation/Contact) */
+    .legal { padding: 60px 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
+    .legal-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 48px; }
+    .legal-section h5 { font-size: 14px; font-weight: 600; color: var(--gold); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
+    .legal-section p { font-size: 13px; color: rgba(255,255,255,0.6); line-height: 1.8; }
+    
+    /* Footer Content - Navigation, Links & Contact */
+    .footer-content { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; padding: 60px 0; }
+    .footer-brand { }
+    .footer-brand .logo { margin-bottom: 16px; }
+    .footer-brand p { font-size: 14px; color: rgba(255,255,255,0.6); max-width: 300px; line-height: 1.7; }
+    .footer-section h5 { font-size: 14px; font-weight: 600; color: var(--gold); margin-bottom: 20px; letter-spacing: 1px; }
+    .footer-section ul { list-style: none; }
+    .footer-section li { margin-bottom: 12px; }
+    .footer-section a { color: rgba(255,255,255,0.6); text-decoration: none; font-size: 14px; transition: color 0.3s; }
+    .footer-section a:hover { color: var(--white); }
+    .footer-contact p { font-size: 14px; color: rgba(255,255,255,0.6); margin-bottom: 8px; display: flex; align-items: flex-start; gap: 10px; }
+    .footer-contact svg { width: 16px; height: 16px; flex-shrink: 0; margin-top: 3px; opacity: 0.6; }
+    
+    /* Social Links */
+    .social-links { display: flex; gap: 12px; margin-top: 20px; }
+    .social-links a { width: 36px; height: 36px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; transition: all 0.3s; }
+    .social-links a:hover { background: rgba(212,175,55,0.2); border-color: var(--gold); }
+    .social-links svg { width: 18px; height: 18px; opacity: 0.7; }
+    
+    /* Copyright */
+    .copyright { padding: 24px 0; border-top: 1px solid rgba(255,255,255,0.08); text-align: center; }
+    .copyright p { font-size: 12px; color: rgba(255,255,255,0.4); }
+    
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .hero h1 { font-size: 36px; }
+      .footer-content { grid-template-columns: 1fr; gap: 32px; }
+      .legal-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav>
+    <div class="nav-inner">
+      <div class="logo">
+        <div class="logo-icon">
+          <img src="Logo__Transperancy.png" alt="TROT Edu Logo" onerror="this.style.display='none'">
+        </div>
+        <div>
+          <span class="logo-text">TROT Edu</span>
+          <span class="logo-sub">by Intech Research Group</span>
+        </div>
+      </div>
+      <div class="nav-links">
+        <a href="#programmes">Programmes</a>
+        <a href="#instruments">Instruments</a>
+        <a href="#benefits">Benefits</a>
+        <a href="#how-it-works">How It Works</a>
+        <a href="#safeguards">Safeguards</a>
+        <a href="TROT-Edu-App.html" class="btn btn-outline">Sign In</a>
+        <a href="TROT-Edu-App.html" class="btn btn-gold">Get Started</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container">
+      <h1><span>Secure Your Future Education Today</span></h1>
+      <p>
+        <span style="color: var(--gold); font-weight: 600;">IRG Edu FTRs</span> &amp; Sponsorship Units — blockchain-registered, tradable entitlements for Engineering, Medical, Management, Law, IT Diplomas, Healthcare Technician, Hospitality, Aviation, Arts, Economics and all accredited post-12th programmes.
+      </p>
+      <div class="hero-buttons">
+        <a href="TROT-Edu-App.html" class="btn btn-gold">Get Started Now</a>
+        <a href="#how-it-works" class="btn btn-outline">Learn More</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Supported Programmes -->
+  <section class="programmes" id="programmes">
+    <div class="container">
+      <p class="section-label">SUPPORTED PROGRAMMES</p>
+      <div class="pills">
+        <span class="pill">Engineering</span>
+        <span class="pill">Medical</span>
+        <span class="pill">Management</span>
+        <span class="pill">Law</span>
+        <span class="pill">IT Diplomas</span>
+        <span class="pill">Healthcare Technician</span>
+        <span class="pill">Hospitality</span>
+        <span class="pill">Aviation</span>
+        <span class="pill">Arts &amp; Economics</span>
+        <span class="pill">Vocational Certificates</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Instruments -->
+  <section class="instruments" id="instruments">
+    <div class="container">
+      <h2 class="section-title">Two Powerful Instruments</h2>
+      <p class="section-subtitle">Blockchain-registered entitlements that lock in pre-fixed educational costs for future eligibility-based admissions.</p>
+      <div class="cards">
+        <div class="card">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          </div>
+          <h3>IRG Edu FTRs</h3>
+          <p>Tradable entitlements that lock today's tuition fee for any future eligible student. Purchase at current fees, redeem later at the same locked price.</p>
+          <ul>
+            <li>Tradable and transferable globally</li>
+            <li>Locks current fee for future use</li>
+            <li>Hedges against fee inflation</li>
+            <li>Swap between participating institutes</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </div>
+          <h3>Sponsorship Units (SUs)</h3>
+          <p>Non-enforceable, non-tradable rights allowing sponsors to fully fund a deserving student's education at zero cost to the student.</p>
+          <ul>
+            <li>Pure philanthropic instrument</li>
+            <li>80G + CSR eligible (India)</li>
+            <li>Merit-based allocation (70% minimum)</li>
+            <li>Full transparency via blockchain</li>
+          </ul>
+        </div>
+      </div>
+      <p style="text-align: center; margin-top: 40px; color: rgba(255,255,255,0.8); font-size: 18px;">You may swap your <span style="color: var(--gold); font-weight: 600;">IRG_GDP units</span> for <span style="color: var(--gold); font-weight: 600;">IRG Edu FTRs</span> or any Sponsorship rights</p>
+    </div>
+  </section>
+
+  <!-- Benefits -->
+  <section class="benefits" id="benefits">
+    <div class="container">
+      <h2 class="section-title">Who Benefits?</h2>
+      <p class="section-subtitle">TROT Edu creates value for every stakeholder in the education ecosystem</p>
+      <div class="benefit-grid">
+        <div class="benefit-card">
+          <div class="benefit-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+          </div>
+          <h4>Educational Institutes</h4>
+          <p>Receive immediate, non-debt corpus. No interest or repayment obligations. Tax-exempt funding.</p>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+          </div>
+          <h4>Corporates &amp; Sponsors</h4>
+          <p>100% deductible expense under applicable sections. Talent retention tool with real-time impact dashboards.</p>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+          </div>
+          <h4>Households &amp; Parents</h4>
+          <p>Build IRG Edu FTR holdings over time. Hedge children's future education costs. Flexibility to swap between institutes.</p>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+          </div>
+          <h4>Students</h4>
+          <p>Merit-based admission. Full-cost sponsorship through SUs. Zero financial liability. No burden of education loans.</p>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <h4>NRI &amp; Global Philanthropists</h4>
+          <p>Fund education across borders. Real-time, verifiable impact. Unified dashboards for transparent tracking.</p>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+          </div>
+          <h4>Society</h4>
+          <p>Breaks the affordability paradox. Reduces student debt burden. Improves access to quality education.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section class="how-it-works" id="how-it-works">
+    <div class="container">
+      <h2 class="section-title">How It Works</h2>
+      <p class="section-subtitle">A simple, transparent process for all stakeholders</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-number">1</div>
+          <h4>Institute Registers</h4>
+          <p>Accredited institutes register with their courses, intake capacity, and escrow banking details.</p>
+        </div>
+        <div class="step">
+          <div class="step-number">2</div>
+          <h4>Units Generated</h4>
+          <p>Institutes generate IRG Edu FTRs or SUs against their seats, minted on a permissioned blockchain.</p>
+        </div>
+        <div class="step">
+          <div class="step-number">3</div>
+          <h4>Purchase/Donate</h4>
+          <p>Households purchase IRG Edu FTRs to lock fees. Sponsors donate to receive SUs for philanthropy.</p>
+        </div>
+        <div class="step">
+          <div class="step-number">4</div>
+          <h4>Redeem at Admission</h4>
+          <p>When eligibility is met, units are redeemed. Student pays locked historical fee or nothing (SU).</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Safeguards -->
+  <section class="safeguards" id="safeguards">
+    <div class="container">
+      <h2 class="section-title">Built-in Safeguards</h2>
+      <p class="section-subtitle">Strict compliance and transparency measures protect all stakeholders</p>
+      <div class="safeguard-list">
+        <div class="safeguard-item">
+          <div class="safeguard-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          </div>
+          <div>
+            <h5>Merit-Based Only</h5>
+            <p>Fully AICTE/UGC/NBA compliant. No capitation fees. Admission based on eligibility.</p>
+          </div>
+        </div>
+        <div class="safeguard-item">
+          <div class="safeguard-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+          </div>
+          <div>
+            <h5>600% Issuance Cap</h5>
+            <p>Maximum 600% of annual sanctioned intake to prevent oversupply and ensure seat availability.</p>
+          </div>
+        </div>
+        <div class="safeguard-item">
+          <div class="safeguard-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+          </div>
+          <div>
+            <h5>70% Merit Allocation</h5>
+            <p>Minimum 70% of SUs must be allocated to merit-based or economically needy students.</p>
+          </div>
+        </div>
+        <div class="safeguard-item">
+          <div class="safeguard-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+          </div>
+          <div>
+            <h5>Blockchain Audit Trail</h5>
+            <p>Every transaction recorded on immutable ledger. End-to-end traceable from sponsor to institute.</p>
+          </div>
+        </div>
+        <div class="safeguard-item">
+          <div class="safeguard-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/></svg>
+          </div>
+          <div>
+            <h5>Not a Security/CIS</h5>
+            <p>Not a 'Collective Investment Scheme' under SEBI. No returns or profits promised.</p>
+          </div>
+        </div>
+        <div class="safeguard-item">
+          <div class="safeguard-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <div>
+            <h5>Escrow Banking</h5>
+            <p>Secure collection and corpus fund management through regulated escrow accounts.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <div class="container">
+      <h2>Ready to Secure Education's Future?</h2>
+      <p>Join institutes, sponsors, and households already building a debt-free education ecosystem.</p>
+      <a href="TROT-Edu-App.html" class="btn btn-gold">Get Started Today</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      
+      <!-- Legal Section - IPR & Disclaimer (ABOVE Navigation/Contact as requested) -->
+      <div class="legal">
+        <div class="legal-grid">
+          <div class="legal-section">
+            <h5>Intellectual Property Rights</h5>
+            <p>IPRs of the FTRs and the system built around it are registered in the name of Mr. Rohit Tidke. He has exclusively assigned them to Intech Research Group.</p>
+          </div>
+          <div class="legal-section">
+            <h5>Disclaimer</h5>
+            <p>The FTR is a solution to facilitate the respective ecosystems. It is not a 'Collective Investment Scheme' under SEBI regulations, and no returns or profits are promised. It is not a digital asset or cryptocurrency. The platform is not a payment aggregator. The services or goods provider on the FTR terms is solely responsible for transactions conducted through the platform. Use of this platform does not create any client or customer relationship between the user and the platform provider, Intech Research Group. It disclaims any liability for any disputes or damages arising from any transaction on the platform.</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Website Navigation & Contact Details (Below IPR/Disclaimer, Above Copyright) -->
+      <div class="footer-content">
+        <!-- Brand -->
+        <div class="footer-brand">
+          <div class="logo">
+            <div class="logo-icon">
+              <img src="Logo__Transperancy.png" alt="TROT Edu Logo" onerror="this.style.display='none'">
+            </div>
+            <span class="logo-text">TROT Edu</span>
+          </div>
+          <p>Blockchain-registered IRG Edu FTRs and Sponsorship Units (SUs) for debt-free education funding. Enabling global, transparent, and inflation-protected education financing.</p>
+          <div class="social-links">
+            <a href="#" title="LinkedIn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
+            </a>
+            <a href="#" title="Twitter">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"/></svg>
+            </a>
+            <a href="#" title="Email">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </a>
+          </div>
+        </div>
+        
+        <!-- Quick Links -->
+        <div class="footer-section">
+          <h5>QUICK LINKS</h5>
+          <ul>
+            <li><a href="#programmes">Programmes</a></li>
+            <li><a href="#instruments">Instruments</a></li>
+            <li><a href="#benefits">Benefits</a></li>
+            <li><a href="#how-it-works">How It Works</a></li>
+            <li><a href="#safeguards">Safeguards</a></li>
+            <li><a href="TROT-Edu-App.html">FAQs</a></li>
+          </ul>
+        </div>
+        
+        <!-- For Stakeholders -->
+        <div class="footer-section">
+          <h5>FOR STAKEHOLDERS</h5>
+          <ul>
+            <li><a href="TROT-Edu-App.html">Institutes</a></li>
+            <li><a href="TROT-Edu-App.html">Corporates / Sponsors</a></li>
+            <li><a href="TROT-Edu-App.html">Households / Parents</a></li>
+            <li><a href="TROT-Edu-App.html">Students</a></li>
+            <li><a href="TROT-Edu-App.html">NRI / Global Philanthropists</a></li>
+          </ul>
+        </div>
+        
+        <!-- Contact -->
+        <div class="footer-section footer-contact">
+          <h5>CONTACT US</h5>
+          <p>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            Intech Research Group<br>Mumbai, India
+          </p>
+          <p>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            contact@trotedu.com
+          </p>
+          <p>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            +91 (Contact Number)
+          </p>
+        </div>
+      </div>
+      
+      <!-- Copyright (Last Line) -->
+      <div class="copyright">
+        <p>© 2026 Intech Research Group. All rights reserved. | TROT Edu Platform</p>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

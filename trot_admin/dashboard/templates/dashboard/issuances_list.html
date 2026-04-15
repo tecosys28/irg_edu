@@ -1,0 +1,156 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Issuances — TROT Edu Admin{% endblock %}
+{% block page_title %}Issuances{% endblock %}
+
+{% block content %}
+<form method="post" action="{% url 'bulk_action' %}" id="bulk-form">
+  {% csrf_token %}
+  <input type="hidden" name="collection" value="issuances">
+
+  <!-- Toolbar -->
+  <div class="toolbar mb-0">
+    <div class="input-group input-group-sm">
+      <span class="input-group-text bg-white"><i class="bi bi-search text-muted"></i></span>
+      <input type="text" class="form-control" placeholder="Search institute / course…"
+             value="{{ search }}" id="searchInput" oninput="liveSearch()">
+    </div>
+
+    <select class="form-select form-select-sm" style="max-width:130px" onchange="applyFilter(this.value,'unit')">
+      <option value="">All types</option>
+      {% for u in unit_types %}
+        <option value="{{ u }}" {% if unit_filter == u %}selected{% endif %}>{{ u }}</option>
+      {% endfor %}
+    </select>
+
+    <select class="form-select form-select-sm" style="max-width:130px" onchange="applyFilter(this.value,'status')">
+      <option value="">All statuses</option>
+      {% for s in status_choices %}
+        <option value="{{ s }}" {% if status_filter == s %}selected{% endif %}>{{ s|title }}</option>
+      {% endfor %}
+    </select>
+
+    <div class="d-flex gap-2 ms-auto">
+      <select class="form-select form-select-sm" id="bulkAction" style="max-width:160px">
+        <option value="">Bulk action…</option>
+        <option value="delete">Delete selected</option>
+        <option value="export">Export selected CSV</option>
+      </select>
+      <button type="button" class="btn btn-sm btn-outline-secondary" onclick="applyBulk()">Apply</button>
+    </div>
+
+    <a href="{% url 'export_csv' %}?col=issuances" class="btn btn-sm btn-gold px-3">
+      <i class="bi bi-download me-1"></i>Export All
+    </a>
+    <a href="{% url 'import_csv' %}" class="btn btn-sm btn-outline-secondary px-3">
+      <i class="bi bi-upload me-1"></i>Import
+    </a>
+  </div>
+
+  <div class="data-table">
+    <table class="table table-hover mb-0" id="issuancesTable">
+      <thead>
+        <tr>
+          <th style="width:36px">
+            <input type="checkbox" class="form-check-input" onchange="toggleSelectAll(this,'selected_ids')">
+          </th>
+          <th>Institute</th>
+          <th>Course</th>
+          <th>Type</th>
+          <th>Qty</th>
+          <th>Locked Fee (₹)</th>
+          <th>Status</th>
+          <th>Date</th>
+          <th style="width:90px">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for i in issuances %}
+        <tr data-name="{{ i.instituteName|lower }}" data-course="{{ i.course|lower }}">
+          <td><input type="checkbox" class="form-check-input" name="selected_ids" value="{{ i.id }}"></td>
+          <td class="fw-medium">{{ i.instituteName|default:"—" }}</td>
+          <td style="font-size:.85rem">{{ i.course|default:"—" }}</td>
+          <td><span class="badge badge-{{ i.unitType|lower }} rounded-pill px-2">{{ i.unitType|default:"—" }}</span></td>
+          <td>{{ i.quantity|default:"—" }}</td>
+          <td>{{ i.lockedFee|default:"—" }}</td>
+          <td>
+            <span class="badge badge-{{ i.status|default:'active' }} rounded-pill px-2">
+              {{ i.status|title|default:"Active" }}
+            </span>
+          </td>
+          <td style="font-size:.8rem;color:#888">{{ i.createdAt_str }}</td>
+          <td>
+            <a href="{% url 'issuance_detail' i.id %}" class="btn btn-xs btn-outline-primary me-1" title="Edit">
+              <i class="bi bi-pencil"></i>
+            </a>
+            <button type="button" class="btn btn-xs btn-outline-danger"
+                    onclick="confirmDelete('{% url 'issuance_delete' i.id %}','{{ i.instituteName|default:i.id }}')"
+                    title="Delete">
+              <i class="bi bi-trash"></i>
+            </button>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="9" class="text-center text-muted py-5">No issuances found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="px-1 pt-2 text-muted" style="font-size:.8rem">{{ total }} record(s)</div>
+</form>
+
+<!-- Delete modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+  <div class="modal-dialog modal-sm modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body text-center py-4">
+        <i class="bi bi-exclamation-triangle-fill text-danger fs-2 mb-2 d-block"></i>
+        <p class="mb-0">Delete issuance for <strong id="deleteLabel"></strong>?</p>
+      </div>
+      <div class="modal-footer justify-content-center border-0 pt-0">
+        <button class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+        <form id="deleteForm" method="post">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function applyFilter(value, param) {
+    const url = new URL(window.location);
+    if (value) url.searchParams.set(param, value);
+    else url.searchParams.delete(param);
+    window.location = url;
+  }
+
+  function liveSearch() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    document.querySelectorAll('#issuancesTable tbody tr[data-name]').forEach(row => {
+      row.style.display = (row.dataset.name.includes(q) || row.dataset.course.includes(q)) ? '' : 'none';
+    });
+  }
+
+  function applyBulk() {
+    const action = document.getElementById('bulkAction').value;
+    if (!action) return alert('Please select an action.');
+    const checked = document.querySelectorAll('input[name="selected_ids"]:checked');
+    if (!checked.length) return alert('No rows selected.');
+    if (action === 'delete' && !confirm(`Delete ${checked.length} issuance(s)?`)) return;
+    const inp = document.createElement('input');
+    inp.type = 'hidden'; inp.name = 'action'; inp.value = action;
+    document.getElementById('bulk-form').appendChild(inp);
+    document.getElementById('bulk-form').submit();
+  }
+
+  function confirmDelete(url, label) {
+    document.getElementById('deleteLabel').textContent = label;
+    document.getElementById('deleteForm').action = url;
+    new bootstrap.Modal(document.getElementById('deleteModal')).show();
+  }
+</script>
+<style>.btn-xs { padding: .15rem .4rem; font-size: .75rem; }</style>
+{% endblock %}

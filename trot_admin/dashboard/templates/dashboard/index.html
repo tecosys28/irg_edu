@@ -1,0 +1,172 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Dashboard — TROT Edu Admin{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<!-- Stat cards -->
+<div class="row g-3 mb-4">
+  {% with items=stats %}
+  <div class="col-6 col-md-3">
+    <div class="stat-card">
+      <div class="d-flex align-items-center gap-3">
+        <div class="stat-icon" style="background:#e0e7ff"><i class="bi bi-people" style="color:#4338ca"></i></div>
+        <div>
+          <div class="stat-value">{{ stats.total_users|default:0 }}</div>
+          <div class="stat-label">Total Users</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="stat-card">
+      <div class="d-flex align-items-center gap-3">
+        <div class="stat-icon" style="background:#d1fae5"><i class="bi bi-file-earmark-check" style="color:#065f46"></i></div>
+        <div>
+          <div class="stat-value">{{ stats.total_issuances|default:0 }}</div>
+          <div class="stat-label">Total Issuances</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="stat-card">
+      <div class="d-flex align-items-center gap-3">
+        <div class="stat-icon" style="background:#dbeafe"><i class="bi bi-shield-check" style="color:#1d4ed8"></i></div>
+        <div>
+          <div class="stat-value">{{ stats.ftr_count|default:0 }}</div>
+          <div class="stat-label">FTR Units</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="stat-card">
+      <div class="d-flex align-items-center gap-3">
+        <div class="stat-icon" style="background:#fce7f3"><i class="bi bi-heart" style="color:#9d174d"></i></div>
+        <div>
+          <div class="stat-value">{{ stats.su_count|default:0 }}</div>
+          <div class="stat-label">SU Units</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endwith %}
+</div>
+
+<!-- Role breakdown -->
+<div class="row g-3 mb-4">
+  {% for label, key, color, icon in role_rows %}
+  {% endfor %}
+  <div class="col-12">
+    <div class="data-table p-0">
+      <div class="px-4 py-3 border-bottom" style="font-weight:600;font-size:.9rem">Users by Role</div>
+      <div class="row g-0">
+        {% for role, label, bg, fg, icon in role_items %}
+        <div class="col-6 col-md-3 p-3 border-end border-bottom">
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge rounded-pill px-3 py-2" style="background:{{ bg }};color:{{ fg }}">
+              <i class="bi {{ icon }} me-1"></i>{{ label }}
+            </span>
+            <span class="fw-bold ms-auto">{{ stats|default_if_none:0 }}</span>
+          </div>
+        </div>
+        {% endfor %}
+        <div class="col-6 col-md-3 p-3 border-end border-bottom">
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge rounded-pill px-3 py-2" style="background:#e8f4fd;color:#0369a1">
+              <i class="bi bi-building me-1"></i>Institutes
+            </span>
+            <span class="fw-bold ms-auto">{{ stats.role_institute|default:0 }}</span>
+          </div>
+        </div>
+        <div class="col-6 col-md-3 p-3 border-end border-bottom">
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge rounded-pill px-3 py-2" style="background:#fef3c7;color:#92400e">
+              <i class="bi bi-briefcase me-1"></i>Sponsors
+            </span>
+            <span class="fw-bold ms-auto">{{ stats.role_sponsor|default:0 }}</span>
+          </div>
+        </div>
+        <div class="col-6 col-md-3 p-3 border-end border-bottom">
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge rounded-pill px-3 py-2" style="background:#d1fae5;color:#065f46">
+              <i class="bi bi-house me-1"></i>Households
+            </span>
+            <span class="fw-bold ms-auto">{{ stats.role_household|default:0 }}</span>
+          </div>
+        </div>
+        <div class="col-6 col-md-3 p-3 border-bottom">
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge rounded-pill px-3 py-2" style="background:#ede9fe;color:#5b21b6">
+              <i class="bi bi-mortarboard me-1"></i>Students
+            </span>
+            <span class="fw-bold ms-auto">{{ stats.role_student|default:0 }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Recent tables -->
+<div class="row g-3">
+  <!-- Recent users -->
+  <div class="col-12 col-xl-6">
+    <div class="data-table">
+      <div class="px-4 py-3 border-bottom d-flex justify-content-between align-items-center">
+        <span style="font-weight:600;font-size:.9rem">Recent Users</span>
+        <a href="{% url 'users_list' %}" class="btn btn-sm btn-gold px-3">View all</a>
+      </div>
+      <table class="table table-hover mb-0">
+        <thead><tr>
+          <th>Name</th><th>Role</th><th>Joined</th>
+        </tr></thead>
+        <tbody>
+          {% for u in recent_users %}
+          <tr>
+            <td>
+              <a href="{% url 'user_detail' u.id %}" class="text-decoration-none fw-medium">{{ u.name|default:"—" }}</a>
+              <div class="text-muted" style="font-size:.75rem">{{ u.email|default:"" }}</div>
+            </td>
+            <td><span class="badge badge-role-{{ u.role|default:'unknown' }} rounded-pill px-2">{{ u.role|title|default:"—" }}</span></td>
+            <td style="font-size:.8rem;color:#888">{{ u.createdAt_str }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="3" class="text-center text-muted py-4">No users yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Recent issuances -->
+  <div class="col-12 col-xl-6">
+    <div class="data-table">
+      <div class="px-4 py-3 border-bottom d-flex justify-content-between align-items-center">
+        <span style="font-weight:600;font-size:.9rem">Recent Issuances</span>
+        <a href="{% url 'issuances_list' %}" class="btn btn-sm btn-gold px-3">View all</a>
+      </div>
+      <table class="table table-hover mb-0">
+        <thead><tr>
+          <th>Institute</th><th>Type</th><th>Qty</th><th>Date</th>
+        </tr></thead>
+        <tbody>
+          {% for i in recent_issuances %}
+          <tr>
+            <td>
+              <a href="{% url 'issuance_detail' i.id %}" class="text-decoration-none fw-medium">{{ i.instituteName|default:"—" }}</a>
+              <div class="text-muted" style="font-size:.75rem">{{ i.course|default:"" }}</div>
+            </td>
+            <td><span class="badge badge-{{ i.unitType|lower }} rounded-pill px-2">{{ i.unitType|default:"—" }}</span></td>
+            <td>{{ i.quantity|default:"—" }}</td>
+            <td style="font-size:.8rem;color:#888">{{ i.createdAt_str }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="4" class="text-center text-muted py-4">No issuances yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

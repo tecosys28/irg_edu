@@ -1,0 +1,113 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Edit Issuance — TROT Edu Admin{% endblock %}
+{% block page_title %}Edit Issuance{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center gap-2 mb-4">
+  <a href="{% url 'issuances_list' %}" class="btn btn-sm btn-outline-secondary">
+    <i class="bi bi-arrow-left me-1"></i>Issuances
+  </a>
+  <span class="text-muted" style="font-size:.85rem">/ {{ issuance.instituteName|default:issuance.id }}</span>
+</div>
+
+<div class="row g-3">
+  <div class="col-12 col-lg-7">
+    <div class="data-table p-4">
+      <h6 class="fw-bold mb-4" style="color:#000052">Issuance Details</h6>
+      <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label class="form-label fw-medium">Institute Name</label>
+          <input type="text" name="instituteName" class="form-control"
+                 value="{{ issuance.instituteName|default:'' }}" required>
+        </div>
+        <div class="row mb-3">
+          <div class="col">
+            <label class="form-label fw-medium">Unit Type</label>
+            <select name="unitType" class="form-select">
+              {% for u in unit_types %}
+                <option value="{{ u }}" {% if issuance.unitType == u %}selected{% endif %}>{{ u }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col">
+            <label class="form-label fw-medium">Status</label>
+            <select name="status" class="form-select">
+              {% for s in status_choices %}
+                <option value="{{ s }}" {% if issuance.status == s %}selected{% endif %}>{{ s|title }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-medium">Course</label>
+          <select name="course" class="form-select">
+            {% for c in courses %}
+              <option value="{{ c }}" {% if issuance.course == c %}selected{% endif %}>{{ c }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="row mb-4">
+          <div class="col">
+            <label class="form-label fw-medium">Quantity</label>
+            <input type="number" name="quantity" class="form-control"
+                   value="{{ issuance.quantity|default:0 }}" min="1" required>
+          </div>
+          <div class="col">
+            <label class="form-label fw-medium">Locked Fee (₹)</label>
+            <input type="number" name="lockedFee" class="form-control"
+                   value="{{ issuance.lockedFee|default:0 }}" min="0" required>
+          </div>
+        </div>
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-gold px-4">Save Changes</button>
+          <a href="{% url 'issuances_list' %}" class="btn btn-outline-secondary px-4">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="col-12 col-lg-5">
+    <div class="data-table p-4 mb-3">
+      <h6 class="fw-bold mb-3" style="color:#000052">Record Info</h6>
+      <dl class="row mb-0" style="font-size:.875rem">
+        <dt class="col-5 text-muted">Issuance ID</dt>
+        <dd class="col-7 text-break" style="font-size:.78rem;font-family:monospace">{{ issuance.id }}</dd>
+        <dt class="col-5 text-muted">Institute ID</dt>
+        <dd class="col-7 text-break" style="font-size:.78rem;font-family:monospace">{{ issuance.instituteId|default:"—" }}</dd>
+        <dt class="col-5 text-muted">Created</dt>
+        <dd class="col-7">{{ issuance.createdAt_str }}</dd>
+        <dt class="col-5 text-muted">Total Value</dt>
+        <dd class="col-7 fw-semibold">
+          ₹{{ issuance.lockedFee|default:0|floatformat:0 }} × {{ issuance.quantity|default:0 }}
+        </dd>
+      </dl>
+    </div>
+
+    <div class="data-table p-4 border border-danger" style="border-radius:12px">
+      <h6 class="fw-bold text-danger mb-2">Danger Zone</h6>
+      <p class="text-muted mb-3" style="font-size:.82rem">Permanently delete this issuance record.</p>
+      <button type="button" class="btn btn-sm btn-outline-danger"
+              onclick="document.getElementById('deleteModal').style.display='flex'">
+        <i class="bi bi-trash me-1"></i>Delete Issuance
+      </button>
+    </div>
+  </div>
+</div>
+
+<div id="deleteModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center">
+  <div class="bg-white rounded-3 p-4 text-center" style="max-width:340px;width:90%">
+    <i class="bi bi-exclamation-triangle-fill text-danger fs-2 mb-2 d-block"></i>
+    <p class="fw-semibold mb-1">Delete this issuance?</p>
+    <p class="text-muted mb-3" style="font-size:.82rem">{{ issuance.instituteName }} — {{ issuance.course }}</p>
+    <div class="d-flex gap-2 justify-content-center">
+      <button class="btn btn-sm btn-outline-secondary px-4"
+              onclick="document.getElementById('deleteModal').style.display='none'">Cancel</button>
+      <form method="post" action="{% url 'issuance_delete' issuance.id %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-sm btn-danger px-4">Delete</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

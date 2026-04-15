@@ -1,0 +1,1842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IRG FTR | Future Tradable Rights | Intech Research Group</title>
+  
+  <!--
+  ================================================================================
+  IRG_FTR LANDING PAGE - PRODUCTION VERSION
+  ================================================================================
+  
+  INTELLECTUAL PROPERTY RIGHTS (IPR) NOTICE
+  =========================================
+  IPRs of the FTRs and the system built around it are registered in the name of 
+  Mr. Rohit Tidke. He has exclusively assigned them to Intech Research Group.
+  
+  © 2026 Intech Research Group. All Rights Reserved.
+  
+  PARAMETRIC VALUES RETAINED (NOT REMOVED - Per Audit):
+  - PLATFORM_FEE_PERCENT: 1.5%
+  - CONSULTANT_FEE_PERCENT: 2.0%
+  - TRANSFER_FEE_PERCENT: 0%
+  - SURRENDER_RATIO: 55%
+  - OTP_VALIDITY: 300 seconds
+  - SESSION_TIMEOUT: 30 minutes
+  - KYC_EXPIRY: 365 days
+  - PASSWORD_MIN_LENGTH: 8 characters
+  - PASSWORD_REQUIREMENTS: uppercase, lowercase, number, special char
+  
+  DOUBLE-CLICK PREVENTION: All interactive elements use debounce protection
+  ================================================================================
+  -->
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      /* Brand Colors from Logo */
+      --royal-blue: #2852ED;
+      --gold: #F5B800;
+      --gold-light: #FFD54F;
+      --dark: #0A0E1A;
+      --dark-surface: #12182A;
+      --dark-card: #1A2238;
+      --text-primary: #F0F4F8;
+      --text-secondary: #A0B0C0;
+      --text-muted: #607080;
+      --success: #10B981;
+      --error: #EF4444;
+      --warning: #F59E0B;
+      
+      /* Parametric Values (retained per audit) */
+      --platform-fee: 1.5;
+      --consultant-fee: 2.0;
+      --surrender-ratio: 55;
+      --otp-validity-seconds: 300;
+      --session-timeout-minutes: 30;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    html {
+      scroll-behavior: smooth;
+    }
+    
+    body {
+      font-family: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--dark);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    
+    h1, h2, h3, h4, h5 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-weight: 600;
+    }
+    
+    /* Header & Navigation */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: rgba(10, 14, 26, 0.95);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(245, 184, 0, 0.1);
+      padding: 0.75rem 2rem;
+    }
+    
+    .header-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    
+    .logo-image {
+      width: 48px;
+      height: 48px;
+      object-fit: contain;
+    }
+    
+    .logo-text {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--gold);
+      letter-spacing: 0.5px;
+    }
+    
+    .logo-text span {
+      color: var(--text-primary);
+    }
+    
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+    
+    .nav-link {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    
+    .nav-link:hover {
+      color: var(--gold);
+    }
+    
+    .auth-buttons {
+      display: flex;
+      gap: 1rem;
+    }
+    
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: none;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      position: relative;
+    }
+    
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--gold);
+      color: var(--gold);
+    }
+    
+    .btn-outline:hover:not(:disabled) {
+      background: rgba(245, 184, 0, 0.1);
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      color: var(--dark);
+    }
+    
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(245, 184, 0, 0.3);
+    }
+    
+    .btn.loading {
+      color: transparent;
+    }
+    
+    .btn.loading::after {
+      content: '';
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      border: 2px solid currentColor;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    
+    .btn-primary.loading::after {
+      border-color: var(--dark);
+      border-top-color: transparent;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Hero Section */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8rem 2rem 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        radial-gradient(ellipse at 20% 20%, rgba(40, 82, 237, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 80%, rgba(245, 184, 0, 0.1) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    
+    .hero-content {
+      max-width: 900px;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .hero h1 {
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      line-height: 1.2;
+      margin-bottom: 1.5rem;
+    }
+    
+    .hero h1 .highlight {
+      color: var(--gold);
+    }
+    
+    .hero-subtitle {
+      font-size: 1.25rem;
+      color: var(--text-secondary);
+      max-width: 700px;
+      margin: 0 auto 2.5rem;
+    }
+    
+    /* Definition Cards */
+    .definitions {
+      padding: 5rem 2rem;
+      background: var(--dark-surface);
+    }
+    
+    .section-title {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+    
+    .section-subtitle {
+      text-align: center;
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto 3rem;
+    }
+    
+    .definition-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .definition-card {
+      background: var(--dark-card);
+      border-radius: 16px;
+      padding: 2.5rem;
+      border: 1px solid rgba(245, 184, 0, 0.15);
+      position: relative;
+    }
+    
+    .definition-card h3 {
+      font-size: 1.5rem;
+      color: var(--gold);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    
+    .definition-card .badge {
+      background: rgba(245, 184, 0, 0.15);
+      color: var(--gold);
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-family: 'Source Sans 3', sans-serif;
+      font-weight: 600;
+    }
+    
+    .definition-card p {
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+      line-height: 1.7;
+    }
+    
+    .definition-card .note {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background: rgba(40, 82, 237, 0.1);
+      border-radius: 8px;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      border-left: 3px solid var(--royal-blue);
+    }
+    
+    /* USPs Section */
+    .usps {
+      padding: 5rem 2rem;
+    }
+    
+    .usp-tabs {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 3rem;
+      flex-wrap: wrap;
+    }
+    
+    .usp-tab {
+      padding: 0.75rem 1.5rem;
+      border-radius: 30px;
+      background: var(--dark-card);
+      border: 1px solid rgba(245, 184, 0, 0.2);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: 500;
+    }
+    
+    .usp-tab:hover, .usp-tab.active {
+      background: rgba(245, 184, 0, 0.15);
+      color: var(--gold);
+      border-color: var(--gold);
+    }
+    
+    .usp-content {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    
+    .usp-list {
+      display: none;
+    }
+    
+    .usp-list.active {
+      display: block;
+    }
+    
+    .usp-item {
+      background: var(--dark-card);
+      border-radius: 12px;
+      padding: 1.5rem 2rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      border-left: 4px solid var(--gold);
+    }
+    
+    .usp-icon {
+      width: 32px;
+      height: 32px;
+      background: rgba(245, 184, 0, 0.15);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--gold);
+    }
+    
+    .usp-item p {
+      color: var(--text-secondary);
+      font-size: 1.05rem;
+    }
+    
+    /* Product Tabs */
+    .products {
+      padding: 5rem 2rem;
+      background: var(--dark-surface);
+    }
+    
+    .product-tabs {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    .product-tab {
+      padding: 1rem 2rem;
+      border-radius: 8px 8px 0 0;
+      background: var(--dark-card);
+      border: 1px solid rgba(245, 184, 0, 0.1);
+      border-bottom: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: 600;
+    }
+    
+    .product-tab:hover, .product-tab.active {
+      background: rgba(245, 184, 0, 0.15);
+      color: var(--gold);
+    }
+    
+    .product-description {
+      text-align: center;
+      max-width: 800px;
+      margin: 0 auto 2rem;
+      padding: 2rem;
+      background: var(--dark-card);
+      border-radius: 12px;
+    }
+    
+    .product-description p {
+      color: var(--text-secondary);
+    }
+    
+    /* FAQs */
+    .faqs {
+      padding: 5rem 2rem;
+    }
+    
+    .faq-filters {
+      display: flex;
+      justify-content: center;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+    
+    .faq-filter {
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      background: var(--dark-card);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.3s;
+    }
+    
+    .faq-filter:hover, .faq-filter.active {
+      background: var(--gold);
+      color: var(--dark);
+      border-color: var(--gold);
+    }
+    
+    .faq-list {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .faq-item {
+      background: var(--dark-card);
+      border-radius: 12px;
+      margin-bottom: 1rem;
+      overflow: hidden;
+      border: 1px solid rgba(245, 184, 0, 0.1);
+    }
+    
+    .faq-question {
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    
+    .faq-question:hover {
+      background: rgba(245, 184, 0, 0.05);
+    }
+    
+    .faq-icon {
+      transition: transform 0.3s;
+      color: var(--gold);
+    }
+    
+    .faq-item.open .faq-icon {
+      transform: rotate(180deg);
+    }
+    
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+    
+    .faq-item.open .faq-answer {
+      max-height: 300px;
+    }
+    
+    .faq-answer-inner {
+      padding: 0 1.5rem 1.25rem;
+      color: var(--text-secondary);
+    }
+    
+    /* Auth Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(8px);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    
+    .modal-overlay.active {
+      display: flex;
+    }
+    
+    .modal {
+      background: var(--dark-card);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 450px;
+      max-height: 90vh;
+      overflow-y: auto;
+      border: 1px solid rgba(245, 184, 0, 0.2);
+      animation: modalSlideIn 0.3s ease;
+    }
+    
+    @keyframes modalSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .modal-header {
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .modal-header h2 {
+      font-size: 1.5rem;
+      color: var(--gold);
+    }
+    
+    .modal-close {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.1);
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+    }
+    
+    .modal-close:hover {
+      background: rgba(255,255,255,0.2);
+    }
+    
+    .modal-body {
+      padding: 2rem;
+    }
+    
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+    
+    .form-input {
+      width: 100%;
+      padding: 0.875rem 1rem;
+      background: var(--dark);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-size: 1rem;
+      transition: all 0.3s;
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(245, 184, 0, 0.15);
+    }
+    
+    .form-input.error {
+      border-color: var(--error);
+    }
+    
+    .form-error {
+      color: var(--error);
+      font-size: 0.85rem;
+      margin-top: 0.5rem;
+    }
+    
+    .form-hint {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-top: 0.5rem;
+    }
+    
+    .password-requirements {
+      font-size: 0.85rem;
+      margin-top: 0.5rem;
+      padding: 1rem;
+      background: rgba(245, 184, 0, 0.05);
+      border-radius: 8px;
+    }
+    
+    .password-requirements li {
+      color: var(--text-muted);
+      margin-bottom: 0.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .password-requirements li.valid {
+      color: var(--success);
+    }
+    
+    .category-select {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+    }
+    
+    .category-option {
+      padding: 1rem;
+      background: var(--dark);
+      border: 2px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.3s;
+    }
+    
+    .category-option:hover {
+      border-color: rgba(245, 184, 0, 0.5);
+    }
+    
+    .category-option.selected {
+      border-color: var(--gold);
+      background: rgba(245, 184, 0, 0.1);
+    }
+    
+    .category-option .icon {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .category-option .label {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    
+    .category-option .desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+    
+    .auth-tabs {
+      display: flex;
+      margin-bottom: 1.5rem;
+    }
+    
+    .auth-tab {
+      flex: 1;
+      padding: 0.875rem;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--text-secondary);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .auth-tab:hover {
+      color: var(--text-primary);
+    }
+    
+    .auth-tab.active {
+      border-bottom-color: var(--gold);
+      color: var(--gold);
+    }
+    
+    .otp-container {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    
+    .otp-input {
+      width: 50px;
+      height: 60px;
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: var(--dark);
+      border: 2px solid rgba(255,255,255,0.15);
+      border-radius: 10px;
+      color: var(--text-primary);
+    }
+    
+    .otp-input:focus {
+      outline: none;
+      border-color: var(--gold);
+    }
+    
+    .otp-timer {
+      text-align: center;
+      margin-top: 1rem;
+      color: var(--text-muted);
+    }
+    
+    .otp-timer span {
+      color: var(--gold);
+      font-weight: 600;
+    }
+    
+    .resend-link {
+      color: var(--gold);
+      cursor: pointer;
+      text-decoration: underline;
+    }
+    
+    .resend-link.disabled {
+      color: var(--text-muted);
+      cursor: not-allowed;
+      text-decoration: none;
+    }
+    
+    /* Chatbot */
+    .chatbot-button {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(245, 184, 0, 0.4);
+      z-index: 1500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+    }
+    
+    .chatbot-button:hover {
+      transform: scale(1.1);
+    }
+    
+    .chatbot-button svg {
+      width: 28px;
+      height: 28px;
+      fill: var(--dark);
+    }
+    
+    /* Footer */
+    .footer {
+      background: var(--dark-surface);
+      padding: 3rem 2rem;
+      border-top: 1px solid rgba(245, 184, 0, 0.1);
+    }
+    
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .footer-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+    
+    .footer-section h4 {
+      color: var(--gold);
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+    }
+    
+    .footer-section p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      line-height: 1.7;
+    }
+    
+    .footer-links {
+      list-style: none;
+    }
+    
+    .footer-links li {
+      margin-bottom: 0.5rem;
+    }
+    
+    .footer-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    
+    .footer-links a:hover {
+      color: var(--gold);
+    }
+    
+    .legal-section {
+      border-top: 1px solid rgba(255,255,255,0.1);
+      padding-top: 2rem;
+    }
+    
+    .ipr-notice {
+      background: rgba(245, 184, 0, 0.05);
+      border: 1px solid rgba(245, 184, 0, 0.2);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .ipr-notice h5 {
+      color: var(--gold);
+      margin-bottom: 0.75rem;
+      font-size: 1rem;
+    }
+    
+    .ipr-notice p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+    }
+    
+    .disclaimer {
+      background: var(--dark-card);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+    
+    .disclaimer h5 {
+      color: var(--text-secondary);
+      margin-bottom: 0.75rem;
+      font-size: 1rem;
+    }
+    
+    .disclaimer p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.7;
+    }
+    
+    .copyright {
+      text-align: center;
+      margin-top: 2rem;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .header-content {
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+      
+      .nav-links {
+        display: none;
+      }
+      
+      .hero h1 {
+        font-size: 2rem;
+      }
+      
+      .definition-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .modal {
+        margin: 1rem;
+      }
+    }
+    
+    /* Toast Notifications */
+    .toast-container {
+      position: fixed;
+      top: 5rem;
+      right: 1rem;
+      z-index: 3000;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    
+    .toast {
+      padding: 1rem 1.5rem;
+      border-radius: 10px;
+      background: var(--dark-card);
+      border: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      animation: toastSlideIn 0.3s ease;
+      max-width: 350px;
+    }
+    
+    .toast.success {
+      border-color: var(--success);
+    }
+    
+    .toast.error {
+      border-color: var(--error);
+    }
+    
+    @keyframes toastSlideIn {
+      from {
+        opacity: 0;
+        transform: translateX(100%);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <div class="logo-container">
+        <img src="data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCALpAsUDASIAAhEBAxEB/8QAHQABAAIDAQEBAQAAAAAAAAAAAAcIAQIFAwkGBP/EAFwQAAECAwIFDAsNCAACCQUAAAABAgMEBgUSBwgRE1YUFhcxMjc4lbO00tQYISIzNVFScnN1hCVBV2FxdpGTlJaytdMVIydmd5Kx1TQ2QkNUVWJ0gaHRJCaFoqP/xAAcAQEAAwEBAQEBAAAAAAAAAAAAAQUHBgQDAgj/xAA0EQEAAAIHBQgCAgIDAQAAAAAAAQIDBAUTFFFSBxIxMpEGERUWMzRTcSGBNUEi8EJhofH/2gAMAwEAAhEDEQA/AKZAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB/VJyUSYiS6xXslJaPFWHqqOjkhNVqIr1VURVW6jmqqNRXdtMiKqoi/1U3JSs1Nxpm0WzDrNkYOqZxsvFhsivZeaxGMV+0rnvY28jXq1HK+45Gqh+tlp7OzkjZEBsnbFUQHS9n2a2JKwo8hLokRy5qCiPzL1V/ac6JDisiujxH5Wq3OxfzvQ/Me/uhDi/XdH8fj8x4f7/v8A0/HR5GBLWTCjzS2hAnY/7yBCfJokGLA2kiNiK9FXukemRGKnc7rbRMyVmrPWbMRZGFaM1NyyZ6YhQZO/ChS6LkWK6IjsrURzmJ225O63W0i/zzcedtKbm7QnJiNNzMV7o8zHjRFfEiOc7unucq5XOVzsqrtqq5T+qVs6SiQ5NszasGSizTst+Ky/Bgw8rmq56wlfEa7K3cZvKqKjtpUy/uMI9X474f287Ys5shHRsC0JO0oDobHtmZRX3O6Tcqj2te1yKjkVHNTLdyplarXL/Aft7LiumI05YNpxZexrbmIKQYM69IbJachuYy7Bmf8Aq7rrrIsOa95+R73KjmxYP5q2ZGHCZDtCRhTLbNmokRsBYzXKsJ7FS9BdEuta97WuhqqtTJkiMVUarrqOPf8AjujAyj398IuaACEgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD9LTNUusaVkoTZCFG1FNx59iojWq6YWC1ku+IqtckRsGIl9IbkVq3oje0j3KbYJd9WkfXkly7DSnqXda0jITDJ2G1Z6djWeyGxzFcyYSEx0u2Jec1IbIr3KxHuVES5EXt3FQ3wS76tI+vJLl2Hypu7DzbvD/AC6/3/53PrR+vL38fx0/3v8A24Mo5rZecRzkRXQURqKu2ucYva/9EU78eWnpuw7CpORs9Z+03zceehMkIjJp0VszClkhw0SErlSImZdlYuRzVdkVEXKhyqbnYVm2i20oklJTyyjoUdstOQ78GMrYrFuPblRVa5EVFRFTKir2zuRpWx6bqOXizMq62aXtiWzsu98NYcw6UdFcxXsVcmbmIb4T25UvMvw3J+8hqt/7zwhNNRwmyj3dYvjLGMss8Zf94OdV8WXbDsay4M6k5EsyQWWmIkN9+CkRY8aKrYbv+k1qRURXJ3KuR6tVzbrnfp6uZUNoUlLz8JUiylqWVAqG2GpEVf3sCcmLNbMOWI5XOiPe5HPyKuV0Zy5ERO5/BWlJx7OtGZs+aSGkxLRnwYqQ4rYjUc1VRcjmqrXJlTbRVRdtFU/eVTEqGRo2FJw0SWlbJs2Xpy10WGt50SPNzFpNgqj25WPY9iNenaVHQlTtoq5YnmjNSwjDj+end/f/AJ++7+0SQ7qP/r8dYx/+o7ABD9AL52Ri+4OrbqG00lKEp+Rp+Rtd0syajWpaUeZjMg3GRoKMbHbCvK/OqkdsV9zIkN8FIjYjWRVhLxXLWZhCtVtG2Xay006Za6TVkaSi3ITkgK9EWNNQnrdV80iI5qL+5hIrnZxz2TCWMeEH5jPLCPdGKsILSWTgLqSBIyUvO4GbJmYkOFCZMTD5pyxHqiQEiPVG20xqu7cyvaaxFWHC7TEiuSD05HAVJPsOH+0sBFRstZ0s/P6jrGSbAbHVs5kzd+K5yMRz5S7evKiQ0vX1hv1VO5Nkb8uapALh2hgLp1+q9S4B6wZez+Y/+8JBt3Lq3N7cV2TJfk9u9kzfbv5t+qpZsLFqwEfsOQ1ZRszqnU0PPattePqi/dS9nMzGzV/LlvZvuMuW72sg3JsjflzfOMH0o7GnABoazjed/WPyc/itUQ+ejvkYNHwJR0VywIUaRtWLEYzL3LXPS1Go5yJkRXI1qKvbyJtDcmyReS5qBgvt2LFJfyTxXa3+2HYsUl/JPFdrf7Ybk2ReS5qEgvt2LFJfyTxXa3+2HYsUl/JPFdrf7Ybk2ReS5qEgvt2LFJfyTxXa3+2HYsUl/JPFdrf7Ybk2ReS5qEgvt2LFJfyTxXa3+2HYsUl/JPFdrf7Ybk2ReS5qEgvt2LFJfyTxXa3+2HYsUl/JPFdrf7Ybk2ReS5qEgvt2LFJfyTxXa3+2HYsUl/JPFdrf7Ybk2ReS5qEgvt2LFJfyTxXa3+2HYsUl/JPFdrf7Ybk2ReS5qEgvt2LFJfyTxXa3+2HYsUl/JPFdrf7Ybk2ReS5qEgvt2LFJfyTxXa3+2HYsUl/JPFdrf7Ybk2ReS5qEgvt2LFJfyTxXa3+2HYsUl/JPFdrf7Ybk2ReS5qEgvt2LFJfyTxXa3+2HYsUl/JPFdrf7Ybk2ReS5qEgvt2LFJfyTxXa3+2HYsUl/JPFdrf7Ybk2ReS5qEgvt2LFJfyTxXa3+2HYsUl/JPFdrf7Ybk2ReS5qEgvt2LFJfyTxXa3+2HYsUl/JPFdrf7Ybk2ReS5qEgvt2LFJfyTxXa3+2HYsUl/JPFdrf7Ybk2ReS5qEgvt2LFJfyTxXa3+2Gwlgpk/wD6SYwDVHacaB+7iTslbUKDLzLm9pYsOHEtS+xjlS81r+6RFRF7eUbk2ReS5qEguVP4t9ATM9HmINBYXJOHFiueyXg2xYaw4KKqqjGq+O5ytTaS85y5E7aqvbP1s3i64IrKpCRk4eDesLen5uWiZ2chWzLMnZJ7kypnEdMwpdXtv5EuNiM/d91ey5XRuzZJ35c1CAW+h4qVm/sqyrTmrKt2E50Vz7TsuTqaUmZxsJYSZtkJ0SUgwVipFd3d6JdRkNbixHPS7LkbFswDTVjy8OPSEawpy1ISwpZr7ZjapgxnQnPVrMsZ8J8VjWvdkS+3925e6aiiMIw4wTCaEeEXzlB9FrZxScEM1S8Oy7Os2ds+fTMNda2rY0WO5rHsWKtxX5pHxGNe3LcutV95G9pGn98nivYC5WSgS0akos5FhQmsfMR7VmkiRXImRXuRkRrUcu2t1rUyr2kRO0fCkrFHRQ7549z9QhGPB82gfSrsZcAuhKcbzv6w7GXALoSnG07+sfHxCr64J3JsnzVB9KuxlwC6EpxvOfrDsZcAuhLeN5z9YeIVbXA3JsnzVB9KuxlwC6Et43nP1h2MuAXQlvG85+sMfVtcDcmyfNUH0q7GXALoS3jec/WHYy4BdCW8bzn6wx9W1wNybJ81QfSrsZcAuhLeN5z9YdjLgF0JbxvOfrDH1bXA3JsnzVB9KuxlwC6Et43nP1h2MuAXQlvG85+sMfVtcDcmyfNUH0q7GXALoS3jec/WHYy4BdCW8bzn6wx9W1wNybJ81QfSrsZcAuhLeN5z9YdjLgF0JbxvOfrDH1bXA3JsnzVB9KuxlwC6Et43nP1h2MuAXQlvG85+sMfVtcDcmyfNUH0q7GXALoS3jec/WHYy4BdCW8bzn6wx9W1wNybJ81QfSrsZcAuhLeN5z9YdjLgF0JbxvOfrDH1bXA3JsnzVB9KuxlwC6Et43nP1h2MuAXQlvG85+sMfVtcDcmyfNUH0q7GXALoS3jec/WHYy4BdCW8bzn6wx9W1wNybJ81QfSrsZcAuhLeN5z9YdjLgF0JbxvOfrDH1bXA3JsnzVB9KuxlwC6Et43nP1h2MuAXQlvG85+sMfVtcDcmyfNUH0q7GXALoS3jec/WPw+EfFSpCeqmkZih7Ksuy7FlZ6/UcvNWnNuiTkvfhLchKqvyOuJGTtOZ23J2/fScfVtcDcmyUNBcaqMUCNPVpZkWxZyxLMppJmJ+0YTJ+O6aWA6ejvbmr8N7b7ZR0BndLkvsXLl7bnfsm4qlFWbb8s+UsyxbdsN8zBbMy9pzM9LzsGAkBrIj4cxAj5t71itztxYDUXOPaj2Ijck46r64dTcmyUHBdK38V20Ju1LYlrIprBlZtkxdVNsyaW0LZizsJt1+p1e10bNX8ubvLkc1O2t16JcXxqPE1siHg6ZMWLUlpOrCBIpFjy73wY0pNTDYKq6DCVWwnQ2ui5Ea97lut22rtox1X1w6m5NkqPTc7Kys3GlrRdMNs2eg6mnHS8KG+Kxl5r0exH7atexjrqOYrkarL7Ucqn6lkjMsnZW0JZ1jWRbc/AbMy2qc0yVmmxVdDzss9U1PBVLz1ckRWZmJAW45j0zTP0nYyYb9C28byX6x/bZuLxh4kWugJRqRpGJFhxZmSiW1KpAmVZeupEa2OirkRz0RUVHJeW6qKuUYqrfn/ADljCPH8wT3TfjjCMOH+/wC/9IXnpWakJ2PIz0tGlZqXiOhR4EZisiQntXI5rmr20VFRUVF7aKh/faFstmrKSzWWTZ0rBZGbGhOgtffhuzTYcTunPVVSIrGPcjsqNcncXEc5qy/L4vOG6BT0zZkKkLRhvmYiLGSHUkk2WisRWq1Hwb/dORzVXKrsm57SZMq5mcXzDtM05LWRHpS0ozZWKrpeHEqSTdKwWKrlcjIKxO5crnKt5He+7tLlypMa3V4/85esEbs0H4exIz5ay4kW1JWBblq2PLtdZ0vMRM5As2A29EV8fKqwnMzkwiJLuRVdGyNfdRFgx/ylsz0OKyHZ8jFmXWbKxIjoCRnORYr3ql6M6Hec1j3NbDRUauTJDYiq5W3lmC2sXrDlaSwYcPB/KWfJwG/uZOVteVzTHKjUe/u5hzle9WoquVyr2kRMjWta3npixYcV2qJRf/y0l+sfSFaoZo90J4RjH/uH/j87kcu6CHQdmtaXt2jKmm6aqWR1Dasncz8DOsiXL7Gvb3TFVq5WuavaVdsH1F6cZyfsu2MBdK23Y0nqOz7YtCDakGC6E2G5NUQI0ZVe1qql9zoiudkVcrlcuVcuUrQkJmRO0T/hg4J2Cz/yVl8wUgNNo1vsJUavWKnNGllhH8/2orQnmlpPxFpmmeIZpni/9j0B3Xg9R+KHRX30+bzzTPEn0DNM8lPoPQDweo/FDoX0+bzzTPJT6BmmeSn0HoCfCKl8cOhfT5vPNM8lPoGaZ5KfQegHhFS+OHQvp83nmmeSn0DNM8lPoPQDwipfHDoX0+bzzTPJT6BmmeSn0HoB4RUvjh0L6fN55pnkp9AzTPJT6D0A8IqXxw6F9Pm880zyU+gZpnkp9B6AeEVL44dC+nzeeaZ5KfQM0zyU+g9APCKl8cOhfT5vPNM8lPoGaZ5KfQegHhFS+OHQvp83nmmeSn0DNM8lPoPQDwipfHDoX0+bzzTPJT6BmmeSn0HoB4RUvjh0L6fN55pnkp9AzTPJT6D0A8IqXxw6F9Pm880zyU+gZpnkp9B6AeEVL44dC+nzeeaZ5KfQM0zyU+g9APCKl8cOhfT5vPNM8lPoGaZ5KfQegHhFS+OHQvp83nmmeSn0DNM8lPoPQDwipfHDoX0+bzzTPJT6BmmeSn0HoB4RUvjh0L6fN55pnkp9AzTPEn0HoB4RUvjh0L6fNpmmeJPoMZpnkp9B6Aiax6l3elDomFNPm8nQmZNpPoLOYP621hYttO26kladoPhxrRzclJOgsSYzcOemHNivi9tkNrYL3q6H3eVjURHZVa6sztotDg0p+o6qxX5GwKdn5KU1fBtWVnUmsqNiwosGdhQ25UY5UyR4ku9VTIt1jtvcuzft5U6CrSSXUsId+SzqE80035TlTlty1v2VFn5OHGhw4U7NyTkioiKsSWmIku9UyKvcq+E5U9/IqZURe0keWmxHWtOKqJ25h/4lP0mB/wD5On/nJbv5tNn560PCk56d/wCJT+ce21JNLLJ3RdhZEsJp497+dITcm1/7Gc03xGxshm+IpM3SwopO/g8sy3yUGaZ5KHqYyITiKTU/V1Jk880zxIM0zxIel1BdQYik1F1Jk880zxIM0zxIel1BdQYik1F1Jk880zxIM0zxIel1BdQYik1F1Jk880zxIM0zxIel1BdQYik1F1Jk880zxIM0zxIel1BdQYik1F1Jk880zxIM0zxIel1BdQYik1F1Jk880zxIM0zxIel1BdQYik1F1Jk880zxIM0zxIel1BdQYik1F1Jk880zxIM0zxIel1BdQYik1F1Jk880zxIM0zxIel1BdQYik1F1Jk880zxIM0zxIel1BdQYik1F1Jk880zxIM0zxIel1BdQYik1F1Jk880zxIM0zxIel1BdQYik1F1Jk880zxIM0zxIel1BdQYik1F1Jk880zxIM0zxIel1BdQYik1F1Jk880zxIM0zxIel1BdQYik1F1Jk880zxIYzUPyUPW6guoMRSZl1Jk8s1D8lDOab4kPS6hnaGIpMy6kyeWab4kO3QjUbbkS6mT9w7L/c05J2KG7VvP8AQO/E0tbFpp5q5JCMf7eG0KOWFBGMIKHY63Caq32LmUAGcddMmM3Vqf8Ak+ZQAblLwg49Z7GbsPWvgFoqmdVar/ZMWUkdUZu5nc1Kvh37uVbuW7lyZVyZdtStSbRa7HV3vbH9bt5KKVRQ2bZ57Gb7c/aXqMgA0NWgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIimDV20pa3AvWtlULi92Halry87HgxH2jkbKsa537iHOTb905qduHLRETt7pWouRFVUqm7cqTbN8FKnPPt/8otky7aJyUf7WtncVmaEsWasCnpmRnIkGJFi2taU61YSqrbkzPR5hiLlRO6RkVqL72VFyKqdtfxdoeFJz07/AMSkpvX93kIsn/Cc56eJ+JT+Ze3HLI7Wx+eLy942TaNU2kMptGauo/tkABIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGF975TJhfe+UDJ2KH8PO9A78TTjnYobw8voHfiaW1ie9k+3gtH0JlD8djhOVd7FzKABjscJyrvYuZQAbvLwg4xbfHV3vbH9bt5KKVRQtbjq73lket28lFKpIbNs89lN9uftL1GQAaGrQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAERTBh25Um2b4KVOefb/AOUWyQi7aJum+ClTnn2/+UWyZdtF5KP9rWzuK27twpFs/wCE5z08T8SkpO3CkWz/AITnPTxPxKfzJ245ZHa2PzxeSbSGU2jCbSGU2jNnUMgAJAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwvvfKZML73ygZOxQ3h5fQO/E0452KG8PL6B34mltYnvZPt4bR9CZRDHZ4TlXexcygAY7PCcq72LmUAG7y8IOLW1x1d7yyPW7eSilUkLW46u95ZHrdvJRSqSGzbPPZTfbn7S9RkAGhq0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABEUwYduVJtm+ClTnn2/8AlFskJO3JNs3wUqc8+3/yi2TLtovJR/ta2dxW3duFItn/AAnOenifiUlJ24Ui2f8ACc56eJ+JT+ZO3HLI7Wx+eLyTaQym0YTaQym0Zs6hkABIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGF975TJhfe+UDJ2KG8PL6B34mnHOxQ3h5fQO/E0trE97J9vDaPoTKIY7PCcq72LmUADHZ4TlXexcygA3eXhBxa2uOrveWR63byUUqkha3HV3vLI9bt5KKVSQ2bZ57Kb7c/aXqMgA0NWgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIimDDtyTbN8FKnPPt/8otkhJ25Jtm+ClTnn2/+UWyZftG5KNa2dxW3duFItn/Cc56eJ+JSUnbhSLZ/wnOenifiU/mPtxyyO1sfni8k2kMptGE2kMptGbOoZAASAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABhfe+UyYX3vlAydihvDy+gd+Jpxzs0N4eX0DvxNLaxPeyfbw2j6Eyh+OzwnKu9i5lAAx2eE5V3sXMoAN3l4QcWtrjq73lket28lFKpIWtx1d7yyPW7eSilUkNm2eeym+3P2l6jIANDVoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACIpgw7ck2zfBSpzz7f/KLZISduSbZvgpU559v/AJRbJl+0bko1rZ3Fbd24Ui2f8Jznp4n4lJSduFItn/Cc56eJ+JT+Y+3HLI7Wx+eLyTaQym0YTaQym0Zs6hkABIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGF975TJhfe+UDJ2aG8PL6B34mnGOzQ3h5fQO/E0trD97J9vDaPoTKH47HCcq72LmUAGMdjhOVd7FzKADd5eEHFrbY6u95ZHrdvJRSqSFrcdXe8sj1u3kopVJDZtnnspvtz9peoyADQ1aAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAiKYMO3JNs3wUqc8+3/yi2SEnbkm2b4KVOefb/5RbJl+0bko1rZ3Fbd24Ui2f8Jznp4n4lJSduFItn/Cc56eJ+JT+Y+3HLI7Wx+eLyTaQym0YTaQym0Zs6hkABIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGF975TJhfe+UDJ2aG8PL6B34mnGOzQ/h5fQO/wAtLaw/e0f28No+hModjscJyrvYuZQAMdjhOVd7FzKADd5eEHFrbY6u95ZHrdvJRSqSFrcdXe8sj1u3kopVJDZtnnspvtz9peoyADQ1aAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAiKYMO3JNs3wUqc8+3/wAotkhJ25Jtm+ClTnn2/wDlFsmX7RuSjWtncVt3bhSLZ/wnOenifiUlJ24Ui2f8Jznp4n4lP5j7ccsjtbH54vJNpDKbRhNpDKbRmzqGQAEgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAYX3vlMmF975QMnZofw8voHf5acY7ND+Hl9A7/LS2sP3tH9vDaPoTKHY7HCcq72LmUADHY4TlXexcygA3eXhBxa22OrveWR63byUUqkha3HV3vLI9bt5KKVSQ2bZ57Kb7c/aXqMgA0NWgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIimDDtyTbN8FKnPPt/8otkhJ25Jtm+ClTnn2/+UWyZftG5KNa2dxW3duFItn/Cc56eJ+JSUnbhSLZ/wnOenifiU/mPtxyyO1sfni8k2kMptGE2kMptGbOoZAASAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABhfe+UyYX3vlAydmh/Dy+gd/lpxjs0P4eX0Dv8ALS2sP3tH9vDaPoTKHY7HCcq72LmUADHY4TlXexcygA3eXhBxa22OrveWR63byUUqkha3HV3vLI9bt5KKVSQ2bZ57Kb7c/aXqMgA0NWgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIimDDtyTbN8FKnPPt/8AKLZISduSbZvgpU559v8A5RbJl+0bko1rZ3Fbd24Ui2f8Jznp4n4lJSduFItn/Cc56eJ+JT+Y+3HLI7Wx+eLyTaQym0YTaQym0Zs6hkABIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGF975TJhfe+UDJ2aH8PL6B3+WnGOzQ/h5fQO/y0trD97R/bw2j6Eyh2OxwnKu9i5lAAx2OE5V3sXMoAN3l4QcWttjq73lket28lFKpIWtx1d7yyPW7eSilUkNm2eeym+3P2l6jIANDVoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACIpgw7ck2zfBSpzz7f/KLZISduSbZvgpU559v/lFsmX7RuSjWtncVt3bhSLZ/wnOenifiUlJ24Ui2f8Jznp4n4lP5j7ccsjtbH54vJNpDKbRhNpDKbRmzqGQAEgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAYX3vlMmF975QMnZofw8voHf5acY7ND+Hl9A7/AC0trD97R/bw2j6Eyh2OxwnKu9i5lAAx2OE5V3sXMoAN3l4QcWttjq73lket28lFKpIWtx1d7yyPW7eSilUkNm2eeym+3P2l6jIANDVoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACIpgw7ck2zfBSpzz7f/ACi2SEnbkm2b4KVOefb/AOUWyZftG5KNa2dxW3duFItn/Cc56eJ+JSUnbhSLZ/wnOenifiU/mPtxyyO1sfni8k2kMptGE2kMptGbOoZAASAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABhfe+UyYX3vlAydmh/Dy+gd/lpxjs0P4eX0Dv8tLaw/e0f28No+hModjscJyrvYuZQAMdjhOVd7FzKADd5eEHFrbY6u95ZHrdvJRSqSFrcdXe8sj1u3kopVJDZtnnspvtz9peoyADQ1aAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAiKYMO3JNs3wUqc8+3/yi2SEnbkm2b4KVOefb/5RbJl+0bko1rZ3Fbd24Ui2f8Jznp4n4lJSduFItn/Cc56eJ+JT+Y+3HLI7Wx+eLyTaQym0YTaQym0Zs6hkABIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGF975TJhfe+UDJ2aH8PL6B3+WnGOzQ/h5fQO/wAtLaw/e0f28No+hModjscJyrvYuZQAMdjhOVd7FzKADd5eEHFrbY6u95ZHrdvJRSqSFrcdXe8sj1u3kopVJDZtnnspvtz9peoyADQ1aAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAiKYMO3JNs3wUqc8+3/wAotkhJ25Jtm+ClTnn2/wDlFsmX7RuSjWtncVt3bhSLZ/wnOenifiUlJ24Ui2f8Jznp4n4lP5j7ccsjtbH54vJNpDKbRhNpDKbRmzqGQAEgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAYX3vlMmF975QMnZofw8voHf5acY7ND+Hl9A7/LS2sP3tH9vDaPoTKHY7HCcq72LmUADHY4TlXexcygA3eXhBxa22OrveWR63byUUqkha3HV3vLI9bt5KKVSQ2bZ57Kb7c/aXqMgA0NWgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIimDDtyTbN8FKnPPt/8otkhJ25Jtm+ClTnn2/+UWyZftG5KNa2dxW3duFItn/Cc56eJ+JSUnbhSLZ/wnOenifiU/mPtxyyO1sfni8k2kMptGE2kMptGbOoZAASAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABhfe+UyYX3vlAydmh/Dy+gd/lpxjs0P4eX0Dv8ALS2sP3tH9vDaPoTKHY7HCcq72LmUADHY4TlXexcygA3eXhBxa22OrveWR63byUUqkha3HV3vLI9bt5KKVSQ2bZ57Kb7c/aXqMgA0NWgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIimDDtyTbN8FKnPPt/8AKLZISduSbZvgpU559v8A5RbJl+0bko1rZ3Fbd24Ui2f8Jznp4n4lJSduFItn/Cc56eJ+JT+Y+3HLI7Wx+eLyTaQym0YTaQym0Zs6hkABIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGF975TJhfe+UDJ2aH8PL6B3+WnGOzQ/h5fQO/y0trD97R/bw2j6Eyh2OxwnKu9i5lAAx2OE5V3sXMoAN3l4QcWttjq73lket28lFKpIWtx1d7yyPW7eSilUkNm2eeym+3P2l6jIANDVoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACIpgw7ck2zfBSpzz7f/KLZISduSbZvgpU559v/lFsmX7RuSjWtncVt3bhSLZ/wnOenifiUlJ24Ui2f8Jznp4n4lP5j7ccsjtbH54vJNpDKbRhNpDKbRmzqGQAEgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAYX3vlMmF975QMnZofw8voHf5acY7ND+Hl9A7/AC0trD97R/bw2j6Eyh2OxwnKu9i5lAAx2OE5V3sXMoAN3l4QcWttjq73lket28lFKpIWtx1d7yyPW7eSilUkNm2eeym+3P2l6jIANDVoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACIpgw7ck2zfBSpzz7f/ACi2SEnbkm2b4KVOefb/AOUWyZftG5KNa2dxW3duFItn/Cc56eJ+JSUnbhSLZ/wnOenifiU/mPtxyyO1sfni8k2kMptGE2kMptGbOoZAASAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABhfe+UyYX3vlAydmh/Dy+gd/lpxjs0P4eX0Dv8tLaw/e0f28No+hModjscJyrvYuZQAMdjhOVd7FzKADd5eEHFrbY6u95ZHrdvJRSqSFrsdVP4eWR63byMUqihs2zz2U325+0vUZABoatAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARFMGHbkm2b4KVOefb/AOUWyQk7ck2zfBSpzz7f/KLZMv2jclGtbO4rbu3CkWz/AITnPTxPxKSk7cKRbP8AhOc9PE/Ep/MfbjlkdrY/PF5JtIZTaMJtIZTaM2dQyAAkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADC+98pkwvvfKBk7ND+Hl9A7/LTjHZofw8voHf5aW1h+9o/t4bR9CZQ7HY4TlXexcygAY7HCcq72LmUAG7y8IOLWfxm7c10YBaKqXUupP2vFlJ7U+cv5rOyr33L2RL2S9ky5Ey5NpCtKbRPuF/gnYLP/ACVmcwUgJDZ9nnspvtz9peoyADQlaAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAiKYMO3Kk2zfBSpzz7f/KLZIRdtE3TfBSpzz7f/KLZMu2ix/wo/wBrWzuK27twpFs/4TnPTxPxKSk7cKRbP+E5z08T8Sn8yduOWR2tj88Xkm0hlNowm0hlNozZ1DIACQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAML73ymTC+98oGTs0Mnu874oDvxNOMdqhvDrvQO/E0trD97R/bw2j7eZQ3HY4TlXexcygAzjscJyrvYuZQAbvLwg4tZ7GasLWvgFoqmtVar/ZEWUkdUZu5nc1KxGX7uVbuW7lyZVyZdtStKbRa7HTXLg6sr1xDT/8AjGKno9uQ1/sDWZKKpTb8e78qC0JYzUn4bg0zjfGgzjPGh32PoNcOrwXc2TcGmcZ40GcZ5SDH1fXDqXUzcGmcZ5SDOM8pCcfV9cOqbqbJuDTOM8pBnGeUgx9X1w6l1Nk3BpnGeUgzjPKQY+r64dS6mybg0zjPKQZxnlIMfV9cOpdTZNwaZxnlIM4zykGPq+uHUupsm4NM4zykGcZ5SDH1fXDqXU2TcGmcZ5SDOM8pBj6vrh1LqbJuDTOM8pBnGeUgx9X1w6l1Nk3BpnGeUgzjPKQY+r64dS6mybg0zjPKQZxnlIMfV9cOpdTZNwaZxnlIM4zykGPq+uHUupsm4NM4zykGcZ5SDH1fXDqXU2TcGmcZ5SDOM8pBj6vrh1LqbJuDTOM8pBnGeUgx9X1w6l1Nk3BpnGeUgzjPKQY+r64dS6mybg0zjPKQZxnlIMfV9cOpdTZNwaZxnlIM4zykGPq+uHUupsm4NM4zykGcZ4yI16r64dS7myZevaLG0lRtv1tiyU9ZlOrZiTcOYtNH6vmHwYdyPLWhKK5HMhvVXNWaa+7kRFRqplTLlK3ve1ULm4r01Cl8DNOwojYyrMx5mHDWHBe9qKkaO7K9WoqMbkYvdOyJlVrct5yIuZdvqejppZNyPf3LKz5YyzflJNLW1K1JSdlVHIw40OUtWRgz0BkZESI2HFho9qORFVEdkcmXIqpl99SP7Q8Jznp3/iU/TYPKrm6sfVMaJZ0eTkrMt6YsqQfGgLDdMsl2Q2RYmW8qPbqhJhqObkTIxEVEcjj8xaSo21JzKqJ+/f8AiU/m3ttLNNCSEIOzsiMITxi8kX3simcqp7ymivTJ2jKPTxmcXU+Tp9+Da8vkqL3xKa308Yvp4xdT5G/Bte+JTN74lNL6eMX08Yup8jfg3vfEovfEppfTxi+njF1Pkb8G974lF74lNL6eMX08Yup8jfg3vfEovfEppfTxi+njF1Pkb8G974lF74lNL6eMX08Yup8jfg3vfEovfEppfTxi+njF1Pkb8G974lF74lNL6eMX08Yup8jfg3vfEovfEppfTxi+njF1Pkb8G974lF74lNL6eMX08Yup8jfg3vfEovfEppfTxi+njF1Pkb8G974lF74lNL6eMX08Yup8jfg3vfEovfEppfTxi+njF1Pkb8G974lF74lNL6eMX08Yup8jfg3vfEovfEppfTxi+njF1Pkb8G974lF74lNL6eMX08Yup8jfg3vfEovfEppfTxi+njF1Pkb8G974lMXviU1vp4xnE8Yup8iNJBte+JTKrtGmcb4xfTxkXU+SLyD0ynaobw670DvxNOAr25ds7lCKi28/Iv8A1Dl//Zpb2HRT42j/AB/cHitCkljQTKIY7HCcq32LmUADHX4TdW+xcygA3OXhBxz6IWpZ9kW/KyFk1XZ1izM9Ehar/Z8VzZlqOYjWxHQ841qvaxYrW37jd23Kjb2Q/h2NcH+hVP8AF0LontKRLUj2HT+tSzpOw7NZMsbMStpSLob4dnMa9GtgwWObmnuuwbrX5M2xy32I5ubOZXFYOkZ2PYExZ1b2RCjQr8tb9j2Qy0Yaq1YauY1kNkw5jlvq399Baio191cqIp9JKSklh3SxjB85pJI/mMH5qSkcH01MJCTAvacFr5lILIsamoTWuYsSUY2N42sVJxH5HI17Wy8zea10JWnhSTcGVvyMabjYHrZsNIMNHvh2nRj4cTLkjuVjWshuvuRkve7nKmWLBYirEfcTgVRhYqyxIsCfsrBnVVYRJeIyBDdCfbErGjsYyM1sxGl3WdClkc5Ijle1uVLyw8iKkJis/M0TUOFa0cJD6gr20rehUnaMKNnLBlbCt1kzZrHw42ahsfLyUJrosPPXHRL6o7Ij8qvhwXM/eIptUer83VHkmWYpjBdAzt+g4C5q/euUrGfluZ7LduwVvf8ADxMmTLevQsmXPQr/AEpHB5g7nZGBOQaJsVsKPDbFY2NZLYMREcmVEcx7Ecx3b7bXIiovaVEUrFWkPDzP1TbkxT+Ee3pKxZqemnyEu+nrebEgS8R8wrGKqWeuRzWTDk7Tluq2FkX9zCVn5mfmcZ589MS+vGqosKJFcxZiDYFqshqkRVRz2pqJrmtTVsdUyNRWpLdymWFKorEU2qJdUa5Oxng/0Lp/i+F0RsZ4P9C6f4vhdEphq/Gjm+/VNWMvqnvnuFaTc1nd3uJTubmrY+42tS9xlzUrlavxo5vv1TVjL6p757hWk3NZ3d7iU7m5q2PuNrUvcZc1K5ZxFNqj1LqjXP2M8H+hdP8AF8LojYzwf6F0/wAXwuiUw1fjRzffqmrGX1T3z3CtJuazu73Ep3NzVsfcbWpe4y5qVytX40c336pqxl9U989wrSbms7u9xKdzc1bH3G1qXuMualcrEU2qPUuqNc/Yzwf6F0/xfC6I2M8H+hdP8XwuiUw1fjRzffqmrGX1T3z3CtJuazu73Ep3NzVsfcbWpe4y5qVytX40c336pqxl9U989wrSbms7u9xKdzc1bH3G1qXuMualcrEU2qPUuqNc/Yzwf6F0/wAXwuiNjPB/oXT/ABfC6JTDV+NHN9+qasZfVPfPcK0m5rO7vcSnc3NWx9xtal7jLmpXK1fjRzffqmrGX1T3z3CtJuazu73Ep3NzVsfcbWpe4y5qVysRTao9S6o1z9jPB/oXT/F8LojYzwf6F0/xfC6JTDV+NHN9+qasZfVPfPcK0m5rO7vcSnc3NWx9xtal7jLmpXK1fjRzffqmrGX1T3z3CtJuazu73Ep3NzVsfcbWpe4y5qVysRTao9S6o1z9jPB/oXT/ABfC6I2M8H+hdP8AF8LolMNX40c336pqxl9U989wrSbms7u9xKdzc1bH3G1qXuMualcrV+NHN9+qasZfVPfPcK0m5rO7vcSnc3NWx9xtal7jLmpXKxFNqj1LqjXP2M8H+hdP8XwuiNjPB/oXT/F8LolMNX40c336pqxl9U989wrSbms7u9xKdzc1bH3G1qXuMualcrV+NHN9+qasZfVPfPcK0m5rO7vcSnc3NWx9xtal7jLmpXKxFNqj1LqjXP2M8H+hdP8AF8LojYzwf6F0/wAXwuiUw1fjRzffqmrGX1T3z3CtJuazu73Ep3NzVsfcbWpe4y5qVytX40c336pqxl9U989wrSbms7u9xKdzc1bH3G1qXuMualcrEU2qPUuqNc/Yzwf6F0/xfC6I2M8H+hdP8XwuiUw1fjRzffqmrGX1T3z3CtJuazu73Ep3NzVsfcbWpe4y5qVytX40c336pqxl9U989wrSbms7u9xKdzc1bH3G1qXuMualcrEU2qPUuqNc/Yzwf6F0/wAXwuiNjPB/oXT/ABfC6JTDV+NHN9+qasZfVPfPcK0m5rO7vcSnc3NWx9xtal7jLmpXK1fjRzffqmrGX1T3z3CtJuazu73Ep3NzVsfcbWpe4y5qVysRTao9S6o1z9jPB/oXT/F8LojYzwf6F0/xfC6JTDV+NHN9+qasZfVPfPcK0m5rO7vcSnc3NWx9xtal7jLmpXK1fjRzffqmrGX1T3z3CtJuazu73Ep3NzVsfcbWpe4y5qVysRTao9S6o1z9jPB/oXT/ABfC6I2M8H+hdP8AF8LolMNX40c336pqxl9U989wrSbms7u9xKdzc1bH3G1qXuMualcrV+NHN9+qasZfVPfPcK0m5rO7vcSnc3NWx9xtal7jLmpXKxFNqj1LqjXP2M8H+hdP8XwuiNjPB/oXT/F8LolMNX40c336pqxl9U989wrSbms7u9xKdzc1bH3G1qXuMualcrV+NHN9+qasZfVPfPcK0m5rO7vcSnc3NWx9xtal7jLmpXKxFNqj1LqjXP2M8H+hdP8AF8LojYzwf6F0/wAXwuiUw1fjRzffqmrGX1T3z3CtJuazu73Ep3NzVsfcbWpe4y5qVytX40c336pqxl9U989wrSbms7u9xKdzc1bH3G1qXuMualcrEU2qPUuqNc/Yzwf6F0/xfC6I2M8H+hdP8XwuiUw1fjRzffqmrGX1T3z3CtJuazu73Ep3NzVsfcbWpe4y5qVytX40c336pqxl9U989wrSbms7u9xKdzc1bH3G1qXuMualcrEU2qPUuqNc/Yzwf6F0/wAXwuiNjPB/oXT/ABfC6JTDV+NHN9+qasZfVPfPcK0m5rO7vcSnc3NWx9xtal7jLmpXK1fjRzffqmrGX1T3z3CtJuazu73Ep3NzVsfcbWpe4y5qVysRTao9S6o1z9jPB/oXT/F8LojYzwf6F0/xfC6JTDV+NHN9+qasZfVPfPcK0m5rO7vcSnc3NWx9xtal7jLmpXL2ZiVxko+dv4UrXTO371ynbdZkv57Ldu2al3/iImTJku3YWTJmYVxiKbVHqXVGttsZ4P8AQun+L4XRM7GWD/Qun+L4XRKkTErjIx87fwpWumdv3rlO26zJfz2W7ds1Lv8AxETJkyXbsLJkzMK5Z7AhWVs2zRVmytaS9osqeFFfKTsVbBnJOBHVro2bjIsWCxqNfCgo9VyNRHPa1UY57WERrFNnHqXdHD+nRbg9wdLPRZNKIsXOQobIrnLZDUhqj1ciIj1Zdc7uFytRVVqK1VREc3L+glLAsuUsyDZdnybLPkYERkSFAknOlmtVsRImT92re5Vyd03aciuRyKjlRePXVUytkxYcnDmbel55ITo8J8lTU5acs9VZEY1sZYEJ2VqPyPVjYkN63G90jXLe7Nhqk7I2XaszHjxZtZFEc5sKNKQ3rESG57llXuVWOytTIkTK+Hlc3Kl52X5z0tJGH+UX6lllhwcbBrBlUgVDGba1mWraMe35x1oxpGYSKkN7XpDgwYiJkRkWHKw5WG5mRFysVVvKqud2XSNkx7SjyzrPYsdkNkZ73yioxyPV6JkiK2652VjsrUVVblaqoiOblhWZoy1LDw821TFhyWqqLr2zY9pW7JWharmS6vWJmZ9ZdrGOisjKkzKvRVcxiosRuXtQ1gzvJzLo8Fz4stFlXJEiMSHGcxXKjXq1H9w5yXXIiOTt5cjkvI12VqeOmqlFWId1JL3vrCeMv5hF+Q/btI/tz9j/ALDtzVOqdTX9as/qe/eu5c/mM1cy/wDWXrmTt5cnbPGeqajpKejycawqjdEgRXQnug0daUaGqtXIqteyWVr29rtOaqoqdtFVDao7Iwm2lYrJOzMIlPWLNuhIkadl6YdFiI9IiuvQ2xZtzGtVl1itc165bzkVMqI3ysOqa0s6y4Nm21g/qS2Z+Tyy8W05OZstkKfuOVqTLWOmmLDzrUSIsNWpcV6t7d3Kvn8HqvxwTCsRj/yaa8KK0fqn7j2r1Ua8KK/7gqn7kWr1U6GvW3/gprH7XZPXhr1t/wCCmsftdk9eI8HqvxwTfzanP14UV/3BVP3ItXqo130Vo/VP3HtXqp0Netv/AAU1j9rsnrw162/8FNY/a7J68PB6r8cC/m1OfrvorR+qfuPavVRrvorR+qfuPavVToa9bf8AgprH7XZPXhr1t/4Kax+12T14eD1X44F/Nqc/XfRWj9U/ce1eqjXfRWj9U/ce1eqnQ162/wDBTWP2uyevDXrb/wAFNY/a7J68PB6r8cC/m1OfrvorR+qfuPavVRrvorR+qfuPavVToa9bf+Cmsftdk9eGvW3/AIKax+12T14eD1X44F/Nqc/XfRWj9U/ce1eqjXfRWj9U/ce1eqnQ162/8FNY/a7J68Netv8AwU1j9rsnrw8HqvxwL+bU5+u+itH6p+49q9VGu+itH6p+49q9VOhr1t/4Kax+12T14a9bf+Cmsftdk9eHg9V+OBfzanP130Vo/VP3HtXqo130Vo/VP3HtXqp0Netv/BTWP2uyevDXrb/wU1j9rsnrw8HqvxwL+bU5+u+itH6p+49q9VGu+itH6p+49q9VOhr1t/4Kax+12T14a9bf+Cmsftdk9eHg9V+OBfzanP130Vo/VP3HtXqo130Vo/VP3HtXqp0Netv/AAU1j9rsnrw162/8FNY/a7J68PB6r8cC/m1OfrvorR+qfuPavVRrvorR+qfuPavVToa9bf8AgprH7XZPXhr1t/4Kax+12T14eD1X44F/Nqc/XfRWj9U/ce1eqjXfRWj9U/ce1eqnQ162/wDBTWP2uyevDXrb/wAFNY/a7J68PB6r8cC/m1OfrvorR+qfuPavVRrvorR+qfuPavVToa9bf+Cmsftdk9eGvW3/AIKax+12T14eD1X44F/Nqc/XfRWj9U/ce1eqjXfRWj9U/ce1eqnQ162/8FNY/a7J68Netv8AwU1j9rsnrw8HqvxwL+bU5+u+itH6p+49q9VGu+itH6p+49q9VOhr1t/4Kax+12T14a9bf+Cmsftdk9eHg9V+OBfzanP130Vo/VP3HtXqo130Vo/VP3HtXqp0Netv/BTWP2uyevDXrb/wU1j9rsnrw8HqvxwL+bU5+u+itH6p+49q9VGu+itH6p+49q9VOhr1t/4Kax+12T14a9bf+Cmsftdk9eHg9V+OBfzanP130Vo/VP3HtXqp+skLNsidkZecg2exsOPCbFY2NKLBiIjkyojmPajmO7fba5EVF7SoinD162/8FNY/a7J68fk5+ar6ZnpiYgy+F2ThRYrnsl4LqVWHBRVyoxqvc5ytTaS85y5E7aqvbHg9V+OBfzakn/sOzP8AsMr9U3/4Nf2HZn/YZb6tv/wRXfwheXhk+mkj1o6LjDS1PWay2JKhZ6bzcN81EnrUismVVVguex2p5XMtcmSZalxHIl+F24mac6M8HquiBiJof8kofsSy/wDsEr9Wn/wbytmSkrHzstLQYTlTIqsaiLk/9D8BLzWHpMzn7GwZRMlzO3LVnm3smZv3csut3LdmcmXLdzsLLezTs7im34RbNl7Sg21rMkrcn7biTcm5mV0G04Dob1ZJLFTNRNUw4cBGrHWC9Egw4a3Iqtejf1JZdXo470skO9Eaaab8d6i+OTNys/jHVNPSMzBmpSZhyEaBHgxEfDisdIy6tc1ydpzVRUVFTtKigY5k3KzuMtV8aTmYMzDbFloLnwoiPaj4crBY9iqn/Sa9rmqm2itVF7aAsYPyuXhStevJPFpjWpVDpSxqte2C6abY0Z7WS6ummZGNdeVUckNUa7I5UV17IqtyFXm1pW13tVlUXGcbpFt8azeVtnz5fnEMpY00nsNZ1Xrck99LCPBTV+kmlm/EXd151pphUPGcbpDXnWmmFQ8ZxukcQGieXrO+KCtv583b151pphUPGcbpDXnWmmFQ8ZxukcQE+XrO+KBf0mbt68600wqLjON0hrzrTTCouM43SOIB5ds74oIv6TN29edaaYVFxnG6Q151pphUXGcbpHEA8u2d8UC/pM3b151pphUXGcbpDXnWmmFRcZxukcQDy7Z3xQL+kzdvXnWmmFRcZxukNedaaYVFxnG6RxAPLtnfFAv6TN29edaaYVFxnG6Q151pphUXGcbpHEA8u2d8UC/pM3b151pphUXGcbpDXnWmmFRcZxukcQDy7Z3xQL+kzdvXnWmmFRcZxukNedaaYVFxnG6RxAPLtnfFAv6TN29edaaYVFxnG6Q151pphUXGcbpHEA8u2d8UC/pM3b151pphUXGcbpDXnWmmFRcZxukcQDy7Z3xQL+kzdvXnWmmFRcZxukNedaaYVFxnG6RxAPLtnfFAv6TN29edaaYVFxnG6Q151pphUXGcbpHEA8u2d8UC/pM3b151pphUXGcbpDXnWmmFRcZxukcQDy7Z3xQL+kzdvXnWmmFRcZxukNedaaYVFxnG6RxAPLtnfFAv6TN29edaaYVFxnG6Q151pphUXGcbpHEA8u2d8UC/pM3b151pphUXGcbpDXnWmmFRcZxukcQDy7Z3xQL+kzdvXnWmmFRcZxukNedaaYVFxnG6RxAPLtnfFAv6TN29edaaYVFxnG6Q151pphUPGcbpHEA8vWd8UE39Jm7evOtNMKh4zjdIa8610xqHjON0jiAiPZ6zvigQp583adWlbInarKouM43SLe4tc9PWtgisactOdmJ6acswj48zEWJEdkjxETK52VVyIiJ/6InvFJnp2i3+K5Btl2D2mZmDNwW2LDlbRZNy6p+8iTDptiwHtW7uWsbMIvdJ23t7S7bc67c2dVqpJJChl7u9Y1Ckmmm/KTX1TYSVk6i9X+7yWZ+1dSZp/wDwuczWcv5Lm77V3Le9/Jk7ZSvCDWNYQsIFRwZerLegQYVqzTIcNloxWsY1IrkRqIjsiIidrIhc6WsSal8INtVE+JBWUnrIkJKExHLnEfAjTj3qqZMl1UmWZMiquVHZUTtZaL4RN8ap/XE3yzyo7FVOhrdcjJSy98O56a/SRlh+GNeda6YVDxnG6Q151pphUPGcbpHEBrkOz1nfFBS38+bt68600wqHjON0hrzrTTCoeM43SOICfL1nfFBF/SZu3rzrTTCoeM43SGvOtNMKh4zjdI4gHl6zvigX9Jm7evOtNMKh4zjdIa8600wqHjON0jiAeXrO+KBf0mbt68600wqHjON0hrzrTTCoeM43SOIB5es74oF/SZu3rzrTTCoeM43SGvOtNMKh4zjdI4gHl6zvigX9Jm7evOtNMKh4zjdIa8600wqHjON0jiAeXrO+KBf0mbt68600wqHjON0hrzrTTCoeM43SOIB5es74oF/SZu3rzrTTCoeM43SGvOtNMKh4zjdI4gHl6zvigX9Jm7evOtNMKh4zjdIa8600wqHjON0jiAeXrO+KBf0mbt68600wqHjON0hrzrTTCoeM43SOIB5es74oF/SZu3rzrTTCoeM43SGvOtNMKh4zjdI4gHl6zvigX9Jm7evOtNMKh4zjdIa8600wqHjON0jiAeXrO+KBf0mbt68600wqHjON0hrzrTTCoeM43SOIB5es74oF/SZu3rzrTTCoeM43SGvOtNMKh4zjdI4gHl6zvigX9Jm7evOtNMKh4zjdIa8600wqHjON0jiAeXrO+KBf0mbt68600wqHjON0hrzrTTCoeM43SOIB5es74oF/SZu3rzrTTCoeM43SGvOtNMKh4zjdI4gHl6zvigX9Jm7evOtNMKh4zjdIa8600wqHjON0jiAeXrO+KCb+kzdvXnWmmFQ8ZxukNelbaZVFxnG6RxAR5ds74oGIpM3b16VtpjUPGcbpEoYtVc2rArK2p+q6ntaZsizrBmZyYWamo0wyEyG+G50RGZXKqo1HbSKvbVE2yFD9jgv8F4RvmJa3Joc12ssapVazp56KjhCL01SmnmpIQjFEmMvY1oU/h3q2yrSn40/EhT1+DGjTcWZiJLvY18ux0SKqvc5kF0Ni5VXttyZVREVR+gx2OE5V3sfMoAMXdFBdvGsT+CdsefL8vDKWNLqY1u8nbHny/LwyliGr7O/TpP0orQh/kyADUVUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAiL9Qav3JazAlWtlUXgTon9qS87G/b1vJYsrqZjXXI8eYjXHPvOTIxLq5VTKu1kRSqbtom2BvKYFP6lyHOJoy7aHD/GRa2bD/JaCibd10ULYVS6l1J+17Nl5/U+cv5rOw2vuXsiXsl7JlyJlybSFD8Im+LU/reb5Z5dbAbvH0J82rP5tDKU4RN8Wp/XE3yzik7Ae/m+n3tHlcQAG2KIABKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAkTAHYk3Utq1fTsjEgQ5u1aStCSgPjOVIbYkVGMarlRFVG5XJlyIq5PeUjsmTE632Zr1RG5WCcl20/i53rqXqwQjjscJyrvY+ZQAMdjhN1b7FzKADBHTQ4LuY1u8nbHny/LwyliF08a3eTtjz5fl4ZSxDV9nfp0n6Ulo8zIANRVIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACIpgw7cqTZA3lMCn9S5DnE0Qm7ck5yDZR2A7A4sxGjQ4rcI9nrLthwke2I/VcwitequS424r1vIjlytamTI5XNzDaJy0a2s3mT/gP3j6D+Km7P5swpThD3xan9bzfLOLq4D94+hPm3Z/NoZSvCJvjVP64m+WcUPYD3830+1o8rhgA22CjiAAlAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATJidb7M36ojcrBIbJkxOt9mb9URuVgnJdtf4ud66l6kEI47HCbq32LmUADHY4TdW+xcygAwR00OC7mNbvJ2x58vy8MpYhdPGt3k7Y8+X5eGUsQ1fZ36dJ+lJaPMyADUVSAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAiKYMO3JNkDeUwKf1LkOcTRCbtyTnINlHYDsDizEaNDitwj2esu2HCR7Yj9VzCK16q5LjbivW8iOXK1qZMjlc3MNovLRrazeZP2A9P4IUH827P5tDKVYQ98Wp/W83yzi6uA/ePoT5t2fzaGUqwib4tT+uJvlnFD2A9/N9PtaPBxAAbbBRxAASgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJkxOt9mb9URuVgkNkyYnW+zN+qI3KwTku2v8XO9dS9SCEcdjhN1b7FzKABjscJurfYuZQAYI6aHBdzGt3k7Y8+X5eGUsQunjW7ydsefL8vDKWIavs79Ok/SktHmZABqKpAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARFMGHbkmyBvKYFP6lyHOJohN25JzkGyjsB2BxZiNGhxW4R7PWXbDhI9sR+q5hFa9VclxtxXreRHLla1MmRyubmG0Xlo1tZvMn7Aen8EKD+bdn82hlKsIe+LU/reb5ZxdXAfvH0J827P5tDKVYRN8Wp/XE3yzih7Ae/m+n2tHg4gANtgo4gAJQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEyYnW+zN+qI3KwSGyZMTrfZm/VEblYJyXbX+LneupepBCOOxwm6t9i5lAAx2OE3VvsXMoAMEdNDgu5jW7ydsefL8vDKWIXTxrd5O2PPl+XhlLENX2d+nSfpSWjzMgA1FUgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIimDDtyTZA3lMCn9S5DnE0Qm7ck5yDZR2A7A4sxGjQ4rcI9nrLthwke2I/VcwitequS424r1vIjlytamTI5XNzDaLy0a2s3mT9gPT+CFB/Nuz+bQylWEPfFqf1vN8s4urgP3j6E+bdn82hlKsIm+LU/rib5ZxQ9gPfzfT7WjwcQAG2wUcQAEoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACZMTrfZm/VEblYJDZMmJ1vszfqiNysE5Ltr/FzvXUvUghHHY4TdW+xcygAY7HCbq32LmUAGCOmhwXcxrd5O2PPl+XhlLELp41u8nbHny/LwyliGr7O/TpP0pLR5mQAaiqQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAERTBh25JsgbymBT+pchziaITduSc5Bso7AdgcWYjRocVuEez1l2w4SPbEfquYRWvVXJcbcV63kRy5WtTJkcrm5htF5aNbWbzJ+wHp/BCg/m3Z/NoZSrCHvi1P63m+WcXVwH7x9CfNuz+bQylWETfFqf1xN8s4oewHv5vp9rR4OIADbYKOIACUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABMmJ1vszfqiNysEhsmTE632Zv1RG5WCcl21/i53rqXqQQjjscJurfYuZQAMdjhN1b7FzKADBHTQ4LuY1u8nbHny/LwyliF08a3eTtjz5fl4ZSxDV9nfp0n6Ulo8zIANRVIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACIpgw7ck2QN5TAp/UuQ5xNEJu3JOcg2UdgOwOLMRo0OK3CPZ6y7YcJHtiP1XMIrXqrkuNuK9byI5crWpkyOVzcw2i8tGtrN5k/YD0/ghQfzbs/m0MpVhD3xan9bzfLOLq4D94+hPm3Z/NoZSrCJvi1P64m+WcUPYD3830+1o8HEABtsFHEABKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmTE632Zv1RG5WCQ2TJidb7M36ojcrBOS7a/wAXO9dS9SCEcdjhN1b7FzKABjscJurfYuZQAYI6aHBdzGt3k7Y8+X5eGUsQunjW7ydsefL8vDKWIavs79Ok/SktHmZABqKpAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARFMGHbkmyBvKYFP6lyHOJohN25JzkGyjsB2BxZiNGhxW4R7PWXbDhI9sR+q5hFa9VclxtxXreRHLla1MmRyubmG0Xlo1tZvMn7Aen8EKD+bdn82hlKsIe+LU/reb5ZxdXAfvH0J827P5tDKVYRN8Wp/XE3yzih7Ae/m+n2tHg4gANtgo4gAJQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEyYnW+zN+qI3KwSGyZMTrfZm/VEblYJyXbX+LneupepBCOOxwm6t9i5lAAx2OE3VvsXMoAMEdNDgu5jW7ydsefL8vDKWIXTxrd5O2PPl+XhlLENX2d+nSfpSWjzMgA1FUgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIimDDtyTZA3lMCn9S5DnE0Qm7ck5yDZR2A7A4sxGjQ4rcI9nrLthwke2I/VcwitequS424r1vIjlytamTI5XNzDaLy0a2s3mT9gPT+CFB/Nuz+bQylWEPfFqf1vN8s4urgP3j6E+bdn82hlKsIm+LU/rib5ZxQ9gPfzfT7WjwcQAG2wUcQAEoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACZMTrfZm/VEblYJDZMmJ1vszfqiNysE5Ltr/FzvXUvUghHHY4TdW+xcygAY7HCbq32LmUAGCOmhwXcxrd5O2PPl+XhlLELp41u8nbHny/LwyliGr7O/TpP0pLR5mQAaiqQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAERTBh25JsgbymBT+pchziaITduSc5Bso7AdgcWYjRocVuEez1l2w4SPbEfquYRWvVXJcbcV63kRy5WtTJkcrm5htF5aNbWbzJ+wHp/BCg/m3Z/NoZSrCHvi1P63m+WcXVwH7x9CfNuz+bQylWETfFqf1xN8s4oewHv5vp9rR4OIADbYKOIACUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABMmJ1vszfqiNysEhsmTE632Zv1RG5WCcl21/i53rqXqQQjjscJurfYuZQAMdjhN1b7FzKADBHTQ4LuY1u8nbHny/LwyliF08a3eTtjz5fl4ZSxDV9nfp0n6Ulo8zIANRVIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACIpgw7ck2QN5TAp/UuQ5xNEJu3JOcg2UdgOwOLMRo0OK3CPZ6y7YcJHtiP1XMIrXqrkuNuK9byI5crWpkyOVzcw2i8tGtrN5k/YD0/ghQfzbs/m0MpVhD3xan9bzfLOLq4D94+hPm3Z/NoZSrCJvi1P64m+WcUPYD3830+1o8HEABtsFHEABKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmTE632Zv1RG5WCQ2TJidb7M36ojcrBOS7a/xc711L1IIRx2OE3VvsXMoAGOxwm6t9i5lABgjpocF3Ma3eTtjz5fl4ZSxC6eNbvJ2x58vy8MpYhq+zv06T9KS0eZkAGoqkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABEUwYduSbIG8pgU/qXIc4miE3bknOQbKOwHYHFmI0aHFbhHs9ZdsOEj2xH6rmEVr1VyXG3Fet5EcuVrUyZHK5uYbReWjW1m8yfsB6fwQoP5t2fzaGUqwh74tT+t5vlnF1cB+8fQnzbs/m0MpVhE3xan9cTfLOKHsB7+b6fa0eDiAA22CjiAAlAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATJidb7M36ojcrBIbJkxOt9mb9URuVgnJdtf4ud66l6kEI47HCbq32LmUADHY4TdW+xcygAwR00OC7mNbvJ2x58vy8MpYhdPGt3k7Y8+X5eGUsQ1fZ36dJ+lJaPMyADUVSAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAiKYMO3JNkDeUwKf1LkOcTRCbtyTnINlHYDsDizEaNDitwj2esu2HCR7Yj9VzCK16q5LjbivW8iOXK1qZMjlc3MNovLRrazeZP2A9P4IUH827P5tDKVYQ98Wp/W83yzi6uA/ePoT5t2fzaGUqwib4tT+uJvlnFD2A9/N9PtaPBxAAbbBRxAASgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJkxOt9mb9URuVgkNkyYnW+zN+qI3KwTku2v8XO9dS9SCEcdjhN1b7FzKABjscJurfYuZQAYI6aHBdzGt3k7Y8+X5eGUsQunjW7ydsefL8vDKWIavs79Ok/SktHmZABqKpAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARFMGHbkmyBvKYFP6lyHOJohN25JzkGyjsB2BxZiNGhxW4R7PWXbDhI9sR+q5hFa9VclxtxXreRHLla1MmRyubmG0Xlo1tZvMn7Aen8EKD+bdn82hlKsIe+LU/reb5ZxdXAfvH0J827P5tDKVYRN8Wp/XE3yzih7Ae/m+n2tHg4gANtgo4gAJQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEyYnW+zN+qI3KwSGyZMTrfZm/VEblYJyXbX+LneupepBCOOxwm6t9i5lAAx2OE3VvsXMoAMEdNDgu5jW7ydsefL8vDKWIXTxrd5O2PPl+XhlLENX2d+nSfpSWjzMgA1FUgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIimDDtyTZA3lMCn9S5DnE0Qm7ck5yDZR2A7A4sxGjQ4rcI9nrLthwke2I/VcwitequS424r1vIjlytamTI5XNzDaLy0a2s3mT9gPT+CFB/Nuz+bQylWEPfFqf1vN8s4urgP3j6E+bdn82hlKsIm+LU/rib5ZxQ9gPfzfT7WjwcQAG2wUcQAEoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACZMTrfZm/VEblYJDZMmJ1vszfqiNysE5Ltr/ABc711L1IIRx2OE3VvsXMoAGOxwm6t9i5lABgjpocF3Ma3eTtjz5fl4ZSxC6eNbvJ2x58vy8MpYhq+zv06T9KS0eZkAGoqkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABEUwYduSbIG8pgU/qXIc4miE3bknOQbKOwHYHFmI0aHFbhHs9ZdsOEj2xH6rmEVr1VyXG3Fet5EcuVrUyZHK5uYbReWjW1m8yfsB6fwQoP5t2fzaGUqwh74tT+t5vlnF1cB+8fQnzbs/m0MpVhE3xan9cTfLOKHsB7+b6fa0eDiAA22CjiAAlAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATJidb7M36ojcrBIbJkxOt9mb9URuVgnJdtf4ud66l6kEI47HCbq32LmUADHY4TdW+xcygAwR00OC7mNbvJ2x58vy8MpYhdPGt3k7Y8+X5eGUsQ1fZ36dJ+lJaPMyADUVSAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAiKYMO3JNkDeUwKf1LkOcTRCbtyTnINlHYDsDizEaNDitwj2esu2HCR7Yj9VzCK16q5LjbivW8iOXK1qZMjlc3MNovLRrazeZP2A9P4IUH827P5tDKVYQ98Wp/W83yzi6uA/ePoT5t2fzaGUqwib4tT+uJvlnFD2A9/N9PtaPBxAAbbBRxAASgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJkxOt9mb9URuVgkNkyYnW+zN+qI3KwTku2v8XO9dS9SCEcdjhN1b7FzKABjscJurfYuZQAYI6aHBdzGt3k7Y8+X5eGUsQunjW7ydsefL8vDKWIavs79Ok/SktHmZABqKpAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARFMGHblSbIG8pgU/qXIc4miEnbRYejLC1w4H8EMlDmtTzMCuYU/AR0O8yJqd05HiMc7LlZlhQ4qtVEdlejGqiI5Xty/aJH/ABo1tZvMmvAen8EKD+bdn82hlKsIe+LU/reb5ZxdXAfvH0J827P5tDKVYRN8Wp/XE3yzii7Ae/m+n2tHg4gANtgo4gAJQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEyYnW+zN+qI3KwSGyZMTrfZm/VEblYJyXbX+LneupepBCOOxwm6t9i5lAAx2OE3VvsXMoAMEdNDguTjD21K1BgCt2fk4caHChWi+SckVERyvlrQ1O9UyKvcq+E5U9/IqZURe0lP0LaYbrEmrAxdahkZyJBiRIttTU61YSqrbkzar5hiLlRO6RkVqL72VFyKqdtaloavs69Ok/SktHmZABqKpAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIpgw7aUs/gW/5BwQ/Oae5japWB25Us/gW/wCQcEPzmnuY2qZdtE5aNbWbzJSwHp/BCg/m3Z/NoZSrCHvi1P63m+WcXVwHbx9CfNuz+bQylWEPfFqf1vN8s4ouwHv5vp9rR5XEABtsFHEABKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmTE532Zv1RG5WCQ2TLic77U36njcrBOR7a/xc711P1YIQx2OE5VvsXMoAM47PCcq72LmUAGCungu3jWL/AATtlP8Axy/OIZSxC6GNS9FwK23kX/py/OIRS1qp4zVNn1JLJR0m9Hu4KO0Yd834bg1vILyGm4mi1KzcmybA1vILyDE0WqBuTZNga3kF5BiaLVA3JsmwNbyC8gxNFqgbk2TYGt5BeQYmi1QNybJsDW8gvIMTRaoG5Nk2BreQXkGJotUDcmybA1vILyDE0WqBuTZNga3kF5BiaLVA3JsmwNbyC8gxNFqgbk2TYGt5BeQYmi1QNybJsDW8gvIMTRaoG5Nk2BreQXkGJotUDcmybA1vILyDE0WqBuTZNga3kF5BiaLVA3JsmwNbyC8gxNFqgbk2TYGt5BeQYmi1QNybJsDW8gvIMTRaoG5Nk2BreQXkGJotUDdmybA1vILyeMjE0WqBuzZMu2iz+Bv93g1wUTkTuJaXqaaz8Z3aZCzktaUGHedtNvRYsKG3LtviManbciLV5zkyL2y5mK9OSkrgZp6FMzMGDEnI8zClmRHo1Yz0ixnq1iLulRrHuyJ7zXLtIpmW0Gllnko4yx7/AMrSzu+E35fqMB28hQnzas/m0MpThD3xan9bzfLOL9QLUkZq0J+zYMfLOSObWYgOY5j2tiNVWPRHIl5jsjkR7crVcyI3LeY5EoJhEXJhFqZF/wC95vlnFH2DnhLXZozfj8PRaMPx+HFBjKhi8njNqxFFD/lBR7s2TYGt5PGLyDE0WqBuxybA1vILyDE0WqBuTZNga3kF5BiaLVA3JsmwNbyC8gxNFqgbk2TYGt5BeQYmi1QNybJsDW8gvIMTRaoG5Nk2BreQXkGJotUDcmybA1vILyDE0WqBuTZNga3kF5BiaLVA3JsmwNbyC8gxNFqgbk2TYGt5BeQYmi1QNybJsDW8gvIMTRaoG5Nk2BreQXkGJotUDcmybA1vILyDE0WqBuTZNga3kF5BiaLVA3JsmwNbyC8gxNFqgbk2TYGt5BeQYmi1QNybJsDW8gvIMTRaoG5Nk2BreQXkGJotUDcmybEv4o8aJL4TLTmIMpGnIkKw472S8FWJEjKkSEqMar3Najl2kvOamVe2qJ2yH7zfGTLib9vCxO5Fy+48XloJyfbOmkmsueEIvVVJYwpIRihLHY4TlXexcygAxjr8JurfYuZQAYU6SHBMGFTGyouq8HNrWNJ0jakW0piK1JeBaLU1G5jJhrmuiPgx2REcsNt7I3aet3K5qK51f9lRNAaT+stDrRHQPtR1ilo/xJNGD8zUcs3GCRdlNugFJ/WWh1sbKTdAKT+stHrZHQPpjaxrj1fm5kySLspN0ApP6y0etjZSboBSf1lo9bI6BGNrGuPUuZMki7KTdAKT+stHrY2Um6AUn9ZaPWyOgMbWNcepcyZJF2Um6AUn9ZaPWxspN0ApP6y0etkdAY2sa49S5kySLspN0ApP6y0etjZSboBSf1lo9bI6AxtY1x6lzJkkXZSboBSf1lo9bGyk3QCk/rLR62R0Bjaxrj1LmTJIuyk3QCk/rLR62NlJugFJ/WWj1sjoDG1jXHqXMmSRdlJugFJ/WWj1sbKTdAKT+stHrZHQGNrGuPUuZMki7KTdAKT+stHrY2Um6AUn9ZaPWyOgMbWNcepcyZJF2Um6AUn9ZaPWxspN0ApP6y0etkdAY2sa49S5kySLspN0ApP6y0etjZSboBSf1lo9bI6AxtY1x6lzJkkXZSboBSf1lo9bGyk3QCk/rLR62R0Bjaxrj1LmTJIuyk3QCk/rLR62NlJugFJ/WWj1sjoDG1jXHqXMmSRdlJugFJ/WWj1sbKTdAKT+stHrZHQGNrGuPUuZMki7KTdAKT+stHrY2Um6AUn9ZaPWyOgMbWNcepcyZJF2Um6AUn9ZaPWxspN0ApP6y0etkdAY2sa49S5kySLspN0ApP6y0etjZSboBSf1lo9bI6AxtY1x6lzJkkXZSboBSf1lo9bGyk3QCk/rLR62R0Bjaxrj1LmTJIuyk3QCk/rLR62NlJugFJ/WWj1sjoDG1jXHqXMmSRdlJugFJ/WWj1sbKaaAUn9ZaHWyOgTjaxrj1LmjySLspt0ApP6y0etn7ylMa+u6WsKXsSw6Xo6VkJe9moawJt6pecrl7bphVXtuVe2vvlfgfKkp6Wlh3TzRi/UtHLLwgsi3HIwkNnYs82l6GSbjQmQYsdJCYSI9jFcrGudn8qtasR6oi9pFe7JtqR7a2GKPalqTdpztBUlEmpuO+PHej7Qbee9yucuRJvImVVXtJ2iMARR0s9HHvkj3Jmklm4wSLspt0ApP6y0etjZTboBSf1lodbI6B9sbWNcer8XNHkkXZSboBSf1lo9bGyk3QCk/rLR62R0CMbWNcepcyZJF2Um6AUn9ZaPWxspN0ApP6y0etkdAY2sa49S5kySLspN0ApP6y0etjZSboBSf1lo9bI6AxtY1x6lzJkkXZSboBSf1lo9bGyk3QCk/rLR62R0Bjaxrj1LmTJIuyk3QCk/rLR62NlJugFJ/WWj1sjoDG1jXHqXMmSdsGmFLBZ7obJNAxk73qDW++Y/8Wczuem/Mu3f/ABZfeP2Wylit6BVv/enWyq4JxtY1xRcUeS1Gylit6BVv/enWxspYregVb/3p1squBjqxriYejyWo2UsVvQKt/wC9OtjZSxW9Aq3/AL062VXAx1Y1xMPR5LUbKWK3oFW/96dbGylit6BVv/enWyq4GOrGuJh6PJajZSxW9Aq3/vTrY2UsVvQKt/7062VXAx1Y1xMPR5LUbKWK3oFW/wDenWxspYregVb/AN6dbKrgY6sa4mHo8lqNlLFb0Crf+9OtjZSxW9Aq3/vTrZVcDHVjXEw9HktRspYregVb/wB6dbGylit6BVv/AHp1squBjqxriYejyWo2UsVvQKt/7062NlLFb0Crf+9OtlVwMdWNcTD0eS1Gylit6BVv/enWxspYregVb/3p1squBjqxriYejyWo2UsVvQKt/wC9OtjZSxW9Aq3/AL062VXAx1Y1xMPR5LUbKWK3oFW/96dbGylit6BVv/enWyq4GOrGuJh6PJajZSxW9Aq3/vTrY2UsVvQKt/7062VXAx1Y1xMPR5LUbKWK3oFW/wDenWxspYrmgVb/AN6dbKrgY6sa4ow9HktRspYrmgVb/wB6dbO9TuGnF4pmTdbVN2ZVFnzcy+JZ09JJCirOxJR8JVV8KKk0kOD+8SH3aPWIl1URqZUelOQfmetU08N2aaMYP1LQySx74QfssNNUyNaYRZ2orNWddLR5aTgo6ca5sV7oMrCgvc5HRYru26G5UvRHuyKl5yrlUH40HnfV/9k=" alt="IRG Logo" class="logo-image" id="logo-img">
+        <div class="logo-text">IRG <span>FTR</span></div>
+      </div>
+      
+      <nav class="nav-links">
+        <a href="#about" class="nav-link">About</a>
+        <a href="#products" class="nav-link">Products</a>
+        <a href="#benefits" class="nav-link">Benefits</a>
+        <a href="#faqs" class="nav-link">FAQs</a>
+      </nav>
+      
+      <div class="auth-buttons">
+        <button class="btn btn-outline" onclick="openAuthModal('signin')">Sign In</button>
+        <button class="btn btn-primary" onclick="openAuthModal('signup')">Sign Up</button>
+      </div>
+    </div>
+  </header>
+  
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Secure Your Future <span class="highlight">At Today's Prices</span></h1>
+      <p class="hero-subtitle">
+        Lock in prices for services and goods you'll need tomorrow. 
+        A Blockchain-registered Right that protects against inflation and ensures price certainty.
+      </p>
+      <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+        <button class="btn btn-primary" onclick="openAuthModal('signup')">Get Started</button>
+        <a href="#about" class="btn btn-outline">Learn More</a>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Definitions Section -->
+  <section class="definitions" id="about">
+    <h2 class="section-title">What We Offer</h2>
+    <p class="section-subtitle">Simple, secure ways to protect your future purchasing power</p>
+    
+    <div class="definition-grid">
+      <div class="definition-card">
+        <h3><span class="badge">FTR</span> Future Tradable Right</h3>
+        <p>A Blockchain registered Right to buy certain services or goods at a pre-fixed price any time in the future.</p>
+        <div class="note">
+          <strong>For Households & Businesses:</strong> Lock in today's prices for future services like healthcare, education, hospitality, or real estate. Beat inflation before it happens.
+        </div>
+      </div>
+      
+      <div class="definition-card">
+        <h3><span class="badge">TGDP</span> Tradable Gold Deposit Program</h3>
+        <p>A Blockchain registered Right to swap for any FTRs to buy services or goods at long term hedge rates.</p>
+        <div class="note">
+          <strong>For Households:</strong> Earn returns on idle household gold while retaining its possession. Your gold works for you without leaving your hands.
+        </div>
+        <div class="note" style="margin-top: 1rem; border-left-color: var(--gold); background: rgba(245, 184, 0, 0.05);">
+          <strong>Please Note:</strong> TGDP is NOT transforming gold into any form of assets. TGDP is NOT related to jewelry in any way. FTR Providers have no role in TGDP ecosystem.
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Product Tabs Section -->
+  <section class="products" id="products">
+    <h2 class="section-title">FTR Categories</h2>
+    <p class="section-subtitle">Choose the right category for your needs</p>
+    
+    <div class="product-tabs">
+      <button class="product-tab active" data-product="hospitality">Hospitality</button>
+      <button class="product-tab" data-product="healthcare">Healthcare</button>
+      <button class="product-tab" data-product="education">Education</button>
+      <button class="product-tab" data-product="realty">Realty</button>
+      <button class="product-tab" data-product="logistics">Logistics</button>
+    </div>
+    
+    <div class="product-description" id="product-content">
+      <p><strong>Hospitality FTRs</strong> — Lock in room rates at your favorite hotels and resorts. Book future vacations at today's prices. Never worry about peak season price surges again.</p>
+    </div>
+  </section>
+  
+  <!-- USPs Section -->
+  <section class="usps" id="benefits">
+    <h2 class="section-title">Why Choose FTR?</h2>
+    <p class="section-subtitle">Benefits tailored to your role</p>
+    
+    <div class="usp-tabs">
+      <button class="usp-tab active" data-usp="households">For Households</button>
+      <button class="usp-tab" data-usp="businesses">For Businesses</button>
+      <button class="usp-tab" data-usp="providers">For Service Providers</button>
+    </div>
+    
+    <div class="usp-content">
+      <div class="usp-list active" id="usp-households">
+        <div class="usp-item">
+          <div class="usp-icon">🛡️</div>
+          <p><strong>Beat Inflation:</strong> Lock in today's prices for future needs — education fees, medical procedures, home purchases.</p>
+        </div>
+        <div class="usp-item">
+          <div class="usp-icon">📅</div>
+          <p><strong>Plan with Certainty:</strong> Know exactly what you'll pay years in advance. Budget confidently for major life events.</p>
+        </div>
+        <div class="usp-item">
+          <div class="usp-icon">🔄</div>
+          <p><strong>Tradable Rights:</strong> Change of plans? Transfer or resell your rights on the marketplace.</p>
+        </div>
+        <div class="usp-item">
+          <div class="usp-icon">🔒</div>
+          <p><strong>Blockchain Secured:</strong> Every right is registered and verified on the blockchain. Tamper-proof and transparent.</p>
+        </div>
+      </div>
+      
+      <div class="usp-list" id="usp-businesses">
+        <div class="usp-item">
+          <div class="usp-icon">📊</div>
+          <p><strong>Predictable Costs:</strong> Lock in service costs for multi-year projects. Eliminate budget surprises.</p>
+        </div>
+        <div class="usp-item">
+          <div class="usp-icon">💼</div>
+          <p><strong>Corporate Benefits:</strong> Offer employees pre-locked rates for healthcare, travel, and training.</p>
+        </div>
+        <div class="usp-item">
+          <div class="usp-icon">📈</div>
+          <p><strong>Hedge Operations:</strong> Secure logistics and supply chain costs at fixed rates.</p>
+        </div>
+        <div class="usp-item">
+          <div class="usp-icon">🤝</div>
+          <p><strong>Partner Advantages:</strong> Build long-term relationships with service providers at guaranteed rates.</p>
+        </div>
+      </div>
+      
+      <div class="usp-list" id="usp-providers">
+        <div class="usp-item">
+          <div class="usp-icon">💰</div>
+          <p><strong>Advance Cash Flow:</strong> Receive funds today for services to be delivered in the future.</p>
+        </div>
+        <div class="usp-item">
+          <div class="usp-icon">👥</div>
+          <p><strong>Guaranteed Customers:</strong> Build a committed customer base with pre-sold capacity.</p>
+        </div>
+        <div class="usp-item">
+          <div class="usp-icon">📉</div>
+          <p><strong>Reduce Volatility:</strong> Smooth out seasonal demand fluctuations with advance bookings.</p>
+        </div>
+        <div class="usp-item">
+          <div class="usp-icon">🌐</div>
+          <p><strong>Expand Reach:</strong> Access a wider market through the FTR marketplace.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- FAQs Section -->
+  <section class="faqs" id="faqs">
+    <h2 class="section-title">Frequently Asked Questions</h2>
+    <p class="section-subtitle">Find answers to common questions</p>
+    
+    <div class="faq-filters">
+      <button class="faq-filter active" data-filter="all">All</button>
+      <button class="faq-filter" data-filter="general">General</button>
+      <button class="faq-filter" data-filter="buyers">For Buyers</button>
+      <button class="faq-filter" data-filter="providers">For Providers</button>
+      <button class="faq-filter" data-filter="security">Security</button>
+    </div>
+    
+    <div class="faq-list">
+      <div class="faq-item" data-category="general">
+        <div class="faq-question">
+          <span>What is an FTR?</span>
+          <span class="faq-icon">▼</span>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            An FTR (Future Tradable Right) is a Blockchain registered Right to buy certain services or goods at a pre-fixed price any time in the future. It's a way to lock in today's prices for future purchases.
+          </div>
+        </div>
+      </div>
+      
+      <div class="faq-item" data-category="general">
+        <div class="faq-question">
+          <span>How is FTR different from a gift card or prepaid service?</span>
+          <span class="faq-icon">▼</span>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            Unlike gift cards, FTRs are transferable on a marketplace, can be held for multiple years, and represent a binding right backed by blockchain verification. You're not prepaying for a service — you're securing a right at a guaranteed price.
+          </div>
+        </div>
+      </div>
+      
+      <div class="faq-item" data-category="buyers">
+        <div class="faq-question">
+          <span>Can I sell my FTR if my plans change?</span>
+          <span class="faq-icon">▼</span>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            Yes. FTRs are tradable rights. You can list them on the marketplace and transfer ownership to another buyer. The transfer is recorded on the blockchain.
+          </div>
+        </div>
+      </div>
+      
+      <div class="faq-item" data-category="buyers">
+        <div class="faq-question">
+          <span>What if the service provider cannot fulfill my FTR?</span>
+          <span class="faq-icon">▼</span>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            Providers maintain a corpus fund to ensure fulfillment. In rare cases of non-fulfillment, you're entitled to surrender your FTR for the surrender value (a percentage of the base price) or seek resolution through our grievance mechanism.
+          </div>
+        </div>
+      </div>
+      
+      <div class="faq-item" data-category="providers">
+        <div class="faq-question">
+          <span>How do I become an FTR provider?</span>
+          <span class="faq-icon">▼</span>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            Service providers can apply to mint FTRs by registering on the platform, completing KYC verification, and submitting their capacity details for review. Approved providers can issue FTRs backed by their future service capacity.
+          </div>
+        </div>
+      </div>
+      
+      <div class="faq-item" data-category="security">
+        <div class="faq-question">
+          <span>How is my FTR secured?</span>
+          <span class="faq-icon">▼</span>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            Every FTR uses a 3-layer identification system: a public ID for human reference, an encrypted verification code, and a blockchain hash. This ensures your right is verifiable, tamper-proof, and uniquely yours.
+          </div>
+        </div>
+      </div>
+      
+      <div class="faq-item" data-category="security">
+        <div class="faq-question">
+          <span>What blockchain does FTR use?</span>
+          <span class="faq-icon">▼</span>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            FTRs are registered on a secure, established blockchain network. The platform handles all blockchain interactions — you don't need any technical knowledge to buy, hold, or trade FTRs.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-grid">
+        <div class="footer-section">
+          <h4>About Intech Research Group</h4>
+          <p>Pioneering innovative solutions for secure, inflation-proof commerce. Our platform enables households and businesses to lock in future prices today.</p>
+        </div>
+        
+        <div class="footer-section">
+          <h4>Quick Links</h4>
+          <ul class="footer-links">
+            <li><a href="#about">About FTR</a></li>
+            <li><a href="#products">Products</a></li>
+            <li><a href="#benefits">Benefits</a></li>
+            <li><a href="#faqs">FAQs</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-section">
+          <h4>Support</h4>
+          <ul class="footer-links">
+            <li><a href="#">Help Center</a></li>
+            <li><a href="#">Contact Us</a></li>
+            <li><a href="#">Grievance Redressal</a></li>
+            <li><a href="#">Terms of Service</a></li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="legal-section">
+        <div class="ipr-notice">
+          <h5>Intellectual Property Rights</h5>
+          <p>IPRs of the FTRs and the system built around it are registered in the name of Mr. Rohit Tidke. He has exclusively assigned them to Intech Research Group.</p>
+        </div>
+        
+        <div class="disclaimer">
+          <h5>Disclaimer</h5>
+          <p>The FTR is a solution to facilitate the respective ecosystems. It is not a 'Collective Investment Scheme' under SEBI regulations, and no returns or profits are promised. It is not a digital asset or cryptocurrency. The platform is not a payment aggregator. The services or goods provider on the FTR terms is solely responsible for transactions conducted through the platform. Use of this platform does not create any client or customer relationship between the user and the platform provider, Intech Research Group. It disclaims any liability for any disputes or damages arising from any transaction on the platform.</p>
+        </div>
+      </div>
+      
+      <p class="copyright">© 2026 Intech Research Group. All Rights Reserved.</p>
+    </div>
+  </footer>
+  
+  <!-- Auth Modal -->
+  <div class="modal-overlay" id="authModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="modalTitle">Sign In</h2>
+        <button class="modal-close" onclick="closeAuthModal()">×</button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="auth-tabs">
+          <button class="auth-tab active" data-auth="signin" onclick="switchAuthTab('signin')">Sign In</button>
+          <button class="auth-tab" data-auth="signup" onclick="switchAuthTab('signup')">Sign Up</button>
+        </div>
+        
+        <!-- Sign In Form -->
+        <form id="signinForm" class="auth-form">
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" class="form-input" id="signinEmail" placeholder="Enter your email" required>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" class="form-input" id="signinPassword" placeholder="Enter your password" required>
+          </div>
+          
+          <div style="text-align: right; margin-bottom: 1rem;">
+            <a href="#" style="color: var(--gold); text-decoration: none; font-size: 0.9rem;" onclick="showForgotPassword(event)">Forgot Password?</a>
+          </div>
+          
+          <button type="submit" class="btn btn-primary" style="width: 100%;" id="signinBtn">Sign In</button>
+        </form>
+        
+        <!-- Sign Up Form -->
+        <form id="signupForm" class="auth-form" style="display: none;">
+          <div class="form-group">
+            <label class="form-label">I am a</label>
+            <div class="category-select">
+              <div class="category-option selected" data-category="individual">
+                <div class="icon">👤</div>
+                <div class="label">Individual</div>
+                <div class="desc">Household buyer</div>
+              </div>
+              <div class="category-option" data-category="business">
+                <div class="icon">🏢</div>
+                <div class="label">Business</div>
+                <div class="desc">Corporate buyer</div>
+              </div>
+              <div class="category-option" data-category="provider">
+                <div class="icon">🏨</div>
+                <div class="label">Provider</div>
+                <div class="desc">Service provider</div>
+              </div>
+              <div class="category-option" data-category="partner">
+                <div class="icon">🤝</div>
+                <div class="label">Partner</div>
+                <div class="desc">Market Maker/Associate</div>
+              </div>
+            </div>
+            <input type="hidden" id="userCategory" value="individual">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input type="text" class="form-input" id="signupName" placeholder="Enter your full name" required>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" class="form-input" id="signupEmail" placeholder="Enter your email" required>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Phone Number</label>
+            <input type="tel" class="form-input" id="signupPhone" placeholder="Enter your phone number" required>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" class="form-input" id="signupPassword" placeholder="Create a password" required oninput="validatePassword(this.value)">
+            <ul class="password-requirements">
+              <li id="req-length">At least 8 characters</li>
+              <li id="req-upper">One uppercase letter</li>
+              <li id="req-lower">One lowercase letter</li>
+              <li id="req-number">One number</li>
+              <li id="req-special">One special character (!@#$%^&*)</li>
+            </ul>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Confirm Password</label>
+            <input type="password" class="form-input" id="signupConfirmPassword" placeholder="Re-enter your password" required>
+            <div class="form-error" id="passwordMatchError" style="display: none;">Passwords do not match</div>
+          </div>
+          
+          <button type="submit" class="btn btn-primary" style="width: 100%;" id="signupBtn">Create Account</button>
+        </form>
+        
+        <!-- OTP Verification Form -->
+        <form id="otpForm" class="auth-form" style="display: none;">
+          <div style="text-align: center; margin-bottom: 1.5rem;">
+            <p style="color: var(--text-secondary);">We've sent a verification code to</p>
+            <p style="color: var(--gold); font-weight: 600;" id="otpEmail">email@example.com</p>
+          </div>
+          
+          <div class="form-group">
+            <div class="otp-container">
+              <input type="text" class="otp-input" maxlength="1" data-index="0">
+              <input type="text" class="otp-input" maxlength="1" data-index="1">
+              <input type="text" class="otp-input" maxlength="1" data-index="2">
+              <input type="text" class="otp-input" maxlength="1" data-index="3">
+              <input type="text" class="otp-input" maxlength="1" data-index="4">
+              <input type="text" class="otp-input" maxlength="1" data-index="5">
+            </div>
+          </div>
+          
+          <div class="otp-timer">
+            <span id="otpTimer">5:00</span> remaining
+          </div>
+          
+          <div style="text-align: center; margin: 1rem 0;">
+            <span style="color: var(--text-muted);">Didn't receive code? </span>
+            <span class="resend-link disabled" id="resendOtp">Resend</span>
+          </div>
+          
+          <button type="submit" class="btn btn-primary" style="width: 100%;" id="verifyOtpBtn">Verify</button>
+        </form>
+        
+        <!-- Forgot Password Form -->
+        <form id="forgotForm" class="auth-form" style="display: none;">
+          <div style="text-align: center; margin-bottom: 1.5rem;">
+            <p style="color: var(--text-secondary);">Enter your email to receive a password reset link</p>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" class="form-input" id="forgotEmail" placeholder="Enter your email" required>
+          </div>
+          
+          <button type="submit" class="btn btn-primary" style="width: 100%;" id="forgotBtn">Send Reset Link</button>
+          
+          <div style="text-align: center; margin-top: 1rem;">
+            <a href="#" style="color: var(--gold); text-decoration: none;" onclick="switchAuthTab('signin'); return false;">Back to Sign In</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Chatbot Button -->
+  <button class="chatbot-button" title="Chat with us" onclick="openChat()">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 2C6.48 2 2 6.48 2 12c0 1.54.36 2.98.97 4.29L2 22l5.71-.97A9.96 9.96 0 0012 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm0 18c-1.4 0-2.74-.37-3.9-1.06l-.28-.17-2.89.49.49-2.89-.17-.28A7.96 7.96 0 014 12c0-4.42 3.58-8 8-8s8 3.58 8 8-3.58 8-8 8z"/>
+      <path d="M13 7h-2v4H7v2h4v4h2v-4h4v-2h-4z" opacity="0"/>
+    </svg>
+  </button>
+  
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+  
+  <script>
+    // ========================================================================
+    // DOUBLE-CLICK PREVENTION SYSTEM
+    // All buttons use this to prevent duplicate actions
+    // ========================================================================
+    const buttonStates = new Map();
+    const DEBOUNCE_MS = 500;
+    const COOLDOWN_MS = 2000;
+    
+    function debounceButton(buttonId, action) {
+      const now = Date.now();
+      const lastClick = buttonStates.get(buttonId) || 0;
+      
+      if (now - lastClick < DEBOUNCE_MS) {
+        console.warn(`[DoubleClick Prevention] Blocked rapid click on ${buttonId}`);
+        return false;
+      }
+      
+      buttonStates.set(buttonId, now);
+      return true;
+    }
+    
+    function setButtonLoading(button, loading) {
+      if (loading) {
+        button.classList.add('loading');
+        button.disabled = true;
+      } else {
+        button.classList.remove('loading');
+        button.disabled = false;
+      }
+    }
+    
+    // ========================================================================
+    // TOAST NOTIFICATIONS
+    // ========================================================================
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.innerHTML = `
+        <span style="color: var(--${type === 'success' ? 'success' : type === 'error' ? 'error' : 'gold'})">
+          ${type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ'}
+        </span>
+        <span>${message}</span>
+      `;
+      container.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.remove();
+      }, 4000);
+    }
+    
+    // ========================================================================
+    // AUTH MODAL
+    // ========================================================================
+    function openAuthModal(tab = 'signin') {
+      const modal = document.getElementById('authModal');
+      modal.classList.add('active');
+      switchAuthTab(tab);
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeAuthModal() {
+      const modal = document.getElementById('authModal');
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+      resetForms();
+    }
+    
+    function switchAuthTab(tab) {
+      // Update tabs
+      document.querySelectorAll('.auth-tab').forEach(t => {
+        t.classList.toggle('active', t.dataset.auth === tab);
+      });
+      
+      // Update forms
+      document.getElementById('signinForm').style.display = tab === 'signin' ? 'block' : 'none';
+      document.getElementById('signupForm').style.display = tab === 'signup' ? 'block' : 'none';
+      document.getElementById('otpForm').style.display = 'none';
+      document.getElementById('forgotForm').style.display = 'none';
+      
+      // Update title
+      document.getElementById('modalTitle').textContent = tab === 'signin' ? 'Sign In' : 'Create Account';
+    }
+    
+    function showForgotPassword(e) {
+      e.preventDefault();
+      document.getElementById('signinForm').style.display = 'none';
+      document.getElementById('forgotForm').style.display = 'block';
+      document.getElementById('modalTitle').textContent = 'Reset Password';
+    }
+    
+    function resetForms() {
+      document.querySelectorAll('.auth-form').forEach(form => form.reset());
+      document.querySelectorAll('.form-error').forEach(err => err.style.display = 'none');
+      document.querySelectorAll('.password-requirements li').forEach(li => li.classList.remove('valid'));
+    }
+    
+    // ========================================================================
+    // PASSWORD VALIDATION
+    // ========================================================================
+    function validatePassword(password) {
+      const requirements = {
+        'req-length': password.length >= 8,
+        'req-upper': /[A-Z]/.test(password),
+        'req-lower': /[a-z]/.test(password),
+        'req-number': /[0-9]/.test(password),
+        'req-special': /[!@#$%^&*]/.test(password)
+      };
+      
+      Object.keys(requirements).forEach(id => {
+        const el = document.getElementById(id);
+        if (requirements[id]) {
+          el.classList.add('valid');
+          el.innerHTML = '✓ ' + el.textContent.replace('✓ ', '');
+        } else {
+          el.classList.remove('valid');
+          el.innerHTML = el.textContent.replace('✓ ', '');
+        }
+      });
+      
+      return Object.values(requirements).every(v => v);
+    }
+    
+    // ========================================================================
+    // FORM SUBMISSIONS
+    // ========================================================================
+    document.getElementById('signinForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      if (!debounceButton('signinBtn', 'signin')) return;
+      
+      const btn = document.getElementById('signinBtn');
+      setButtonLoading(btn, true);
+      
+      try {
+        // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        showToast('Sign in successful! Redirecting...', 'success');
+        setTimeout(closeAuthModal, 1000);
+      } catch (error) {
+        showToast('Sign in failed. Please try again.', 'error');
+      } finally {
+        setTimeout(() => setButtonLoading(btn, false), COOLDOWN_MS);
+      }
+    });
+    
+    document.getElementById('signupForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      if (!debounceButton('signupBtn', 'signup')) return;
+      
+      const password = document.getElementById('signupPassword').value;
+      const confirmPassword = document.getElementById('signupConfirmPassword').value;
+      
+      if (!validatePassword(password)) {
+        showToast('Please meet all password requirements', 'error');
+        return;
+      }
+      
+      if (password !== confirmPassword) {
+        document.getElementById('passwordMatchError').style.display = 'block';
+        return;
+      }
+      
+      const btn = document.getElementById('signupBtn');
+      setButtonLoading(btn, true);
+      
+      try {
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        // Show OTP form
+        document.getElementById('signupForm').style.display = 'none';
+        document.getElementById('otpForm').style.display = 'block';
+        document.getElementById('otpEmail').textContent = document.getElementById('signupEmail').value;
+        document.getElementById('modalTitle').textContent = 'Verify Your Email';
+        
+        startOtpTimer();
+        showToast('Verification code sent to your email', 'success');
+      } catch (error) {
+        showToast('Registration failed. Please try again.', 'error');
+      } finally {
+        setTimeout(() => setButtonLoading(btn, false), COOLDOWN_MS);
+      }
+    });
+    
+    document.getElementById('otpForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      if (!debounceButton('verifyOtpBtn', 'otp')) return;
+      
+      const inputs = document.querySelectorAll('.otp-input');
+      const otp = Array.from(inputs).map(i => i.value).join('');
+      
+      if (otp.length !== 6) {
+        showToast('Please enter the complete 6-digit code', 'error');
+        return;
+      }
+      
+      const btn = document.getElementById('verifyOtpBtn');
+      setButtonLoading(btn, true);
+      
+      try {
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        showToast('Account created successfully!', 'success');
+        setTimeout(closeAuthModal, 1000);
+      } catch (error) {
+        showToast('Invalid code. Please try again.', 'error');
+      } finally {
+        setTimeout(() => setButtonLoading(btn, false), COOLDOWN_MS);
+      }
+    });
+    
+    document.getElementById('forgotForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      if (!debounceButton('forgotBtn', 'forgot')) return;
+      
+      const btn = document.getElementById('forgotBtn');
+      setButtonLoading(btn, true);
+      
+      try {
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        showToast('Reset link sent to your email', 'success');
+        setTimeout(() => switchAuthTab('signin'), 1500);
+      } catch (error) {
+        showToast('Failed to send reset link', 'error');
+      } finally {
+        setTimeout(() => setButtonLoading(btn, false), COOLDOWN_MS);
+      }
+    });
+    
+    // ========================================================================
+    // OTP INPUT HANDLING
+    // ========================================================================
+    document.querySelectorAll('.otp-input').forEach((input, index) => {
+      input.addEventListener('input', function(e) {
+        if (this.value && index < 5) {
+          document.querySelectorAll('.otp-input')[index + 1].focus();
+        }
+      });
+      
+      input.addEventListener('keydown', function(e) {
+        if (e.key === 'Backspace' && !this.value && index > 0) {
+          document.querySelectorAll('.otp-input')[index - 1].focus();
+        }
+      });
+    });
+    
+    // ========================================================================
+    // OTP TIMER (300 seconds = 5 minutes per parametric value)
+    // ========================================================================
+    let otpTimerInterval;
+    
+    function startOtpTimer() {
+      const OTP_VALIDITY_SECONDS = 300; // From constants
+      let seconds = OTP_VALIDITY_SECONDS;
+      
+      const timerEl = document.getElementById('otpTimer');
+      const resendEl = document.getElementById('resendOtp');
+      
+      clearInterval(otpTimerInterval);
+      resendEl.classList.add('disabled');
+      
+      otpTimerInterval = setInterval(() => {
+        seconds--;
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        timerEl.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+        
+        if (seconds <= 0) {
+          clearInterval(otpTimerInterval);
+          timerEl.textContent = '0:00';
+          resendEl.classList.remove('disabled');
+        }
+      }, 1000);
+    }
+    
+    document.getElementById('resendOtp').addEventListener('click', function() {
+      if (this.classList.contains('disabled')) return;
+      if (!debounceButton('resendOtp', 'resend')) return;
+      
+      showToast('New code sent to your email', 'success');
+      startOtpTimer();
+    });
+    
+    // ========================================================================
+    // CATEGORY SELECTION
+    // ========================================================================
+    document.querySelectorAll('.category-option').forEach(option => {
+      option.addEventListener('click', function() {
+        document.querySelectorAll('.category-option').forEach(o => o.classList.remove('selected'));
+        this.classList.add('selected');
+        document.getElementById('userCategory').value = this.dataset.category;
+      });
+    });
+    
+    // ========================================================================
+    // USP TABS
+    // ========================================================================
+    document.querySelectorAll('.usp-tab').forEach(tab => {
+      tab.addEventListener('click', function() {
+        document.querySelectorAll('.usp-tab').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+        
+        document.querySelectorAll('.usp-list').forEach(list => list.classList.remove('active'));
+        document.getElementById(`usp-${this.dataset.usp}`).classList.add('active');
+      });
+    });
+    
+    // ========================================================================
+    // PRODUCT TABS
+    // ========================================================================
+    const productContent = {
+      hospitality: '<strong>Hospitality FTRs</strong> — Lock in room rates at your favorite hotels and resorts. Book future vacations at today\'s prices. Never worry about peak season price surges again.',
+      healthcare: '<strong>Healthcare FTRs</strong> — Secure medical procedure costs at current rates. Plan surgeries, treatments, and health checkups without worrying about rising healthcare costs.',
+      education: '<strong>Education FTRs</strong> — Lock in tuition fees for future years. Whether K-12 or higher education, protect against educational inflation.',
+      realty: '<strong>Realty FTRs</strong> — Secure property rights at today\'s prices. Whether buying a home or commercial space, hedge against real estate appreciation.',
+      logistics: '<strong>Logistics FTRs</strong> — Fix transportation and supply chain costs. Businesses can lock in freight and logistics rates for multi-year contracts.'
+    };
+    
+    document.querySelectorAll('.product-tab').forEach(tab => {
+      tab.addEventListener('click', function() {
+        document.querySelectorAll('.product-tab').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+        document.getElementById('product-content').innerHTML = `<p>${productContent[this.dataset.product]}</p>`;
+      });
+    });
+    
+    // ========================================================================
+    // FAQ ACCORDION
+    // ========================================================================
+    document.querySelectorAll('.faq-question').forEach(question => {
+      question.addEventListener('click', function() {
+        const item = this.parentElement;
+        const wasOpen = item.classList.contains('open');
+        
+        // Close all
+        document.querySelectorAll('.faq-item').forEach(faq => faq.classList.remove('open'));
+        
+        // Toggle current
+        if (!wasOpen) {
+          item.classList.add('open');
+        }
+      });
+    });
+    
+    // FAQ Filters
+    document.querySelectorAll('.faq-filter').forEach(filter => {
+      filter.addEventListener('click', function() {
+        document.querySelectorAll('.faq-filter').forEach(f => f.classList.remove('active'));
+        this.classList.add('active');
+        
+        const category = this.dataset.filter;
+        document.querySelectorAll('.faq-item').forEach(item => {
+          if (category === 'all' || item.dataset.category === category) {
+            item.style.display = 'block';
+          } else {
+            item.style.display = 'none';
+          }
+        });
+      });
+    });
+    
+    // ========================================================================
+    // CHATBOT
+    // ========================================================================
+    function openChat() {
+      showToast('Chat support coming soon!', 'info');
+    }
+    
+    // ========================================================================
+    // MODAL CLOSE ON OVERLAY CLICK
+    // ========================================================================
+    document.getElementById('authModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeAuthModal();
+      }
+    });
+    
+    // ========================================================================
+    // KEYBOARD ACCESSIBILITY
+    // ========================================================================
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeAuthModal();
+      }
+    });
+    
+    // ========================================================================
+    // SMOOTH SCROLL FOR NAV LINKS
+    // ========================================================================
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+  </script>
+</body>
+</html>

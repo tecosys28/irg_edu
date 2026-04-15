@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TROT Edu Admin — Sign In</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background: #000052; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+    .login-card {
+      background: rgba(255,255,255,0.04); backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.1); border-radius: 20px;
+      padding: 2.5rem; width: 100%; max-width: 420px;
+    }
+    .brand-icon { width: 52px; height: 52px; background: linear-gradient(135deg,#D4AF37,#F4CF67);
+      border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; }
+    label { color: rgba(255,255,255,.7); font-size: .875rem; }
+    .form-control {
+      background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.15);
+      color: #fff; border-radius: 10px;
+    }
+    .form-control:focus { background: rgba(255,255,255,.09); border-color: #D4AF37;
+      box-shadow: 0 0 0 3px rgba(212,175,55,.2); color: #fff; }
+    .form-control::placeholder { color: rgba(255,255,255,.3); }
+    .btn-gold { background: linear-gradient(135deg,#D4AF37,#F4CF67); color: #000;
+      font-weight: 700; border: none; border-radius: 10px; width: 100%; padding: .75rem; }
+    .btn-gold:hover { opacity: .9; color: #000; }
+    .errorlist { color: #f87171; font-size: .82rem; list-style: none; padding: 0; }
+  </style>
+</head>
+<body>
+  <div class="login-card">
+    <div class="brand-icon">
+      <svg width="26" height="26" fill="none" stroke="#000" stroke-width="2.5" viewBox="0 0 24 24">
+        <path d="M12 14l9-5-9-5-9 5 9 5z"/>
+        <path d="M12 14l6.16-3.42A12.08 12.08 0 0118.82 17 11.95 11.95 0 0112 20.06 11.95 11.95 0 015.18 17a12.08 12.08 0 01.66-6.42L12 14z"/>
+      </svg>
+    </div>
+    <h1 class="text-white text-center fw-bold fs-5 mb-1">TROT Edu Admin</h1>
+    <p class="text-center mb-4" style="color:rgba(255,255,255,.4);font-size:.82rem">Sign in to manage platform data</p>
+
+    {% if form.errors %}
+      <div class="alert alert-danger py-2 mb-3" style="font-size:.82rem">
+        Invalid username or password.
+      </div>
+    {% endif %}
+
+    <form method="post">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ next }}">
+      <div class="mb-3">
+        <label class="form-label">Username</label>
+        <input type="text" name="username" class="form-control" placeholder="admin" autofocus required>
+      </div>
+      <div class="mb-4">
+        <label class="form-label">Password</label>
+        <input type="password" name="password" class="form-control" placeholder="••••••••" required>
+      </div>
+      <button type="submit" class="btn btn-gold">Sign In</button>
+    </form>
+  </div>
+</body>
+</html>

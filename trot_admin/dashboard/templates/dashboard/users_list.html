@@ -1,0 +1,157 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Users — TROT Edu Admin{% endblock %}
+{% block page_title %}Users{% endblock %}
+
+{% block content %}
+<form method="post" action="{% url 'bulk_action' %}" id="bulk-form">
+  {% csrf_token %}
+  <input type="hidden" name="collection" value="users">
+
+  <!-- Toolbar -->
+  <div class="toolbar mb-0">
+    <!-- Search -->
+    <div class="input-group input-group-sm">
+      <span class="input-group-text bg-white"><i class="bi bi-search text-muted"></i></span>
+      <input type="text" class="form-control" placeholder="Search name / email / mobile…"
+             value="{{ search }}" id="searchInput" oninput="liveSearch()">
+    </div>
+
+    <!-- Role filter -->
+    <select class="form-select form-select-sm" style="max-width:160px" onchange="applyFilter(this.value,'role')">
+      <option value="">All roles</option>
+      {% for r in role_choices %}
+        <option value="{{ r }}" {% if role_filter == r %}selected{% endif %}>{{ r|title }}</option>
+      {% endfor %}
+    </select>
+
+    <!-- Bulk actions -->
+    <div class="d-flex gap-2 ms-auto">
+      <select class="form-select form-select-sm" id="bulkAction" style="max-width:160px">
+        <option value="">Bulk action…</option>
+        <option value="delete">Delete selected</option>
+        <option value="export">Export selected CSV</option>
+      </select>
+      <button type="button" class="btn btn-sm btn-outline-secondary" onclick="applyBulk()">Apply</button>
+    </div>
+
+    <!-- Export all -->
+    <a href="{% url 'export_csv' %}?col=users" class="btn btn-sm btn-gold px-3">
+      <i class="bi bi-download me-1"></i>Export All
+    </a>
+    <a href="{% url 'import_csv' %}" class="btn btn-sm btn-outline-secondary px-3">
+      <i class="bi bi-upload me-1"></i>Import
+    </a>
+  </div>
+
+  <!-- Table -->
+  <div class="data-table">
+    <table class="table table-hover mb-0" id="usersTable">
+      <thead>
+        <tr>
+          <th style="width:36px">
+            <input type="checkbox" class="form-check-input" onchange="toggleSelectAll(this,'selected_ids')">
+          </th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Mobile</th>
+          <th>Role</th>
+          <th>Joined</th>
+          <th style="width:90px">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in users %}
+        <tr data-name="{{ u.name|lower }}" data-email="{{ u.email|lower }}" data-mobile="{{ u.mobile|lower }}">
+          <td><input type="checkbox" class="form-check-input" name="selected_ids" value="{{ u.id }}"></td>
+          <td class="fw-medium">{{ u.name|default:"—" }}</td>
+          <td class="text-muted" style="font-size:.85rem">{{ u.email|default:"—" }}</td>
+          <td style="font-size:.85rem">{{ u.mobile|default:"—" }}</td>
+          <td>
+            <span class="badge badge-role-{{ u.role|default:'unknown' }} rounded-pill px-2 py-1">
+              {{ u.role|title|default:"—" }}
+            </span>
+          </td>
+          <td style="font-size:.8rem;color:#888">{{ u.createdAt_str }}</td>
+          <td>
+            <a href="{% url 'user_detail' u.id %}" class="btn btn-xs btn-outline-primary me-1" title="Edit">
+              <i class="bi bi-pencil"></i>
+            </a>
+            <button type="button" class="btn btn-xs btn-outline-danger"
+                    onclick="confirmDelete('{% url 'user_delete' u.id %}','{{ u.name|default:u.id }}')"
+                    title="Delete">
+              <i class="bi bi-trash"></i>
+            </button>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" class="text-center text-muted py-5">No users found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="px-1 pt-2 text-muted" style="font-size:.8rem">{{ total }} record(s)</div>
+</form>
+
+<!-- Delete confirm modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+  <div class="modal-dialog modal-sm modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body text-center py-4">
+        <i class="bi bi-exclamation-triangle-fill text-danger fs-2 mb-2 d-block"></i>
+        <p class="mb-0">Delete <strong id="deleteLabel"></strong>?<br>
+          <small class="text-muted">This cannot be undone.</small></p>
+      </div>
+      <div class="modal-footer justify-content-center border-0 pt-0">
+        <button class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+        <form id="deleteForm" method="post">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function applyFilter(value, param) {
+    const url = new URL(window.location);
+    if (value) url.searchParams.set(param, value);
+    else url.searchParams.delete(param);
+    window.location = url;
+  }
+
+  function liveSearch() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    document.querySelectorAll('#usersTable tbody tr[data-name]').forEach(row => {
+      const match = row.dataset.name.includes(q) ||
+                    row.dataset.email.includes(q) ||
+                    row.dataset.mobile.includes(q);
+      row.style.display = match ? '' : 'none';
+    });
+  }
+
+  function applyBulk() {
+    const action = document.getElementById('bulkAction').value;
+    if (!action) return alert('Please select an action.');
+    const checked = document.querySelectorAll('input[name="selected_ids"]:checked');
+    if (!checked.length) return alert('No rows selected.');
+    if (action === 'delete' && !confirm(`Delete ${checked.length} user(s)?`)) return;
+    document.getElementById('bulk-form').querySelector('input[name="action"]')?.remove();
+    const inp = document.createElement('input');
+    inp.type = 'hidden'; inp.name = 'action'; inp.value = action;
+    document.getElementById('bulk-form').appendChild(inp);
+    document.getElementById('bulk-form').submit();
+  }
+
+  function confirmDelete(url, label) {
+    document.getElementById('deleteLabel').textContent = label;
+    document.getElementById('deleteForm').action = url;
+    new bootstrap.Modal(document.getElementById('deleteModal')).show();
+  }
+</script>
+<style>
+  .btn-xs { padding: .15rem .4rem; font-size: .75rem; }
+</style>
+{% endblock %}
