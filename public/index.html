@@ -524,7 +524,7 @@
         <!-- Countdown timer -->
         <div class="flex items-center justify-center gap-2 text-sm">
           <svg class="w-4 h-4 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-          <span id="otpTimerText" class="text-white/50">OTP expires in <span id="otpCountdown" class="text-[#D4AF37] font-semibold">60</span>s</span>
+          <span id="otpTimerText" class="text-white/50">OTP expires in <span id="otpCountdown" class="text-[#D4AF37] font-semibold">5:00</span></span>
         </div>
         <button onclick="verifyOTP()" id="otpVerifyBtn" class="w-full btn-gold py-4 rounded-xl font-semibold">Verify OTP</button>
         <p class="text-center text-sm text-white/60">
@@ -1111,14 +1111,19 @@
 
     function startOTPCountdown() {
       clearInterval(_otpCountdownInterval);
-      let secs = 60;
+      let secs = 300; // 5 minutes
       const countdownEl = document.getElementById('otpCountdown');
       const timerText   = document.getElementById('otpTimerText');
-      if (countdownEl) countdownEl.textContent = secs;
+      function fmt(s) {
+        const m = Math.floor(s / 60);
+        const sec = s % 60;
+        return m + ':' + String(sec).padStart(2, '0');
+      }
+      if (countdownEl) countdownEl.textContent = fmt(secs);
       _otpCountdownInterval = setInterval(() => {
         secs--;
-        if (countdownEl) countdownEl.textContent = secs;
-        if (secs <= 10 && timerText) timerText.classList.add('text-red-400');
+        if (countdownEl) countdownEl.textContent = fmt(secs);
+        if (secs <= 30 && timerText) timerText.classList.add('text-red-400');
         if (secs <= 0) {
           clearInterval(_otpCountdownInterval);
           if (timerText) timerText.innerHTML = '<span class="text-red-400">OTP expired — please resend</span>';
