@@ -953,21 +953,17 @@
       btn.innerHTML = '<span class="animate-pulse">Creating Account...</span>';
 
       try {
-        // 1. Create Firebase Auth user
-        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-        const user = userCredential.user;
-
-        // 2. Store pending data for after OTP verification
+        // 1. Store pending data (email/password user created AFTER OTP to avoid UID mismatch)
         AppState.pendingAuth = {
-          uid: user.uid,
           role,
           name,
           email,
+          password,
           mobile,
           roleData: getRoleSpecificData(role)
         };
 
-        // 3. Initialise invisible reCAPTCHA (required for phone auth)
+        // 2. Initialise invisible reCAPTCHA (required for phone auth)
         if (!recaptchaVerifier) {
           recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
             size: 'invisible',
@@ -1072,11 +1068,22 @@
       btn.innerHTML = '<span class="animate-pulse">Verifying...</span>';
 
       try {
-        // Confirm phone OTP
+        // 1. Confirm phone OTP — signs in as phone user
         await confirmationResult.confirm(otp);
+        const phoneUser = auth.currentUser;
+        const uid = phoneUser.uid;
 
-        // Save user profile to Firestore
-        const { uid, name, email, mobile, role, roleData } = AppState.pendingAuth;
+        // 2. Link email/password credential to the phone user so they can sign in both ways
+        const { name, email, password, mobile, role, roleData } = AppState.pendingAuth;
+        try {
+          const emailCred = firebase.auth.EmailAuthProvider.credential(email, password);
+          await phoneUser.linkWithCredential(emailCred);
+        } catch (linkErr) {
+          // auth/provider-already-linked or auth/email-already-in-use — non-fatal, continue
+          console.warn('Credential link skipped:', linkErr.code);
+        }
+
+        // 3. Save user profile to Firestore — now auth.currentUser.uid matches the doc path
         await db.collection('users').doc(uid).set({
           name,
           email,
