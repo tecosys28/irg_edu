@@ -458,12 +458,37 @@
         </div>
         <div>
           <label class="block text-white/70 text-sm mb-2">Mobile (for OTP verification)</label>
-          <input type="tel" id="signupMobile" class="w-full input-field rounded-xl p-4" placeholder="+91 XXXXXXXXXX">
+          <div class="flex input-field rounded-xl overflow-hidden">
+            <span class="flex items-center px-4 text-white/80 font-medium bg-white/5 border-r border-white/15 select-none text-sm whitespace-nowrap">+91</span>
+            <input type="tel" id="signupMobile" class="flex-1 bg-transparent p-4 outline-none text-white placeholder-white/30" placeholder="XXXXXXXXXX" maxlength="10" oninput="this.value=this.value.replace(/\D/g,'').slice(0,10)">
+          </div>
         </div>
         <div>
           <label class="block text-white/70 text-sm mb-2">Password</label>
-          <input type="password" id="signupPassword" class="w-full input-field rounded-xl p-4" placeholder="Min 12 chars, mixed case, number, special">
-          <p class="text-xs text-white/50 mt-1">Must contain: 12+ characters, uppercase, lowercase, number, special character</p>
+          <input type="password" id="signupPassword" class="w-full input-field rounded-xl p-4" placeholder="Min 12 chars, mixed case, number, special" oninput="checkPasswordStrength(this.value)">
+          <!-- Live password checklist -->
+          <div class="mt-3 space-y-1.5 px-1" id="pwChecklist">
+            <div class="flex items-center gap-2 text-xs" id="chk-len">
+              <span class="w-4 h-4 rounded-full border border-white/20 flex items-center justify-center text-[10px] transition-all" id="chk-len-icon">○</span>
+              <span class="text-white/50" id="chk-len-text">At least 12 characters</span>
+            </div>
+            <div class="flex items-center gap-2 text-xs" id="chk-upper">
+              <span class="w-4 h-4 rounded-full border border-white/20 flex items-center justify-center text-[10px] transition-all" id="chk-upper-icon">○</span>
+              <span class="text-white/50" id="chk-upper-text">One uppercase letter (A–Z)</span>
+            </div>
+            <div class="flex items-center gap-2 text-xs" id="chk-lower">
+              <span class="w-4 h-4 rounded-full border border-white/20 flex items-center justify-center text-[10px] transition-all" id="chk-lower-icon">○</span>
+              <span class="text-white/50" id="chk-lower-text">One lowercase letter (a–z)</span>
+            </div>
+            <div class="flex items-center gap-2 text-xs" id="chk-num">
+              <span class="w-4 h-4 rounded-full border border-white/20 flex items-center justify-center text-[10px] transition-all" id="chk-num-icon">○</span>
+              <span class="text-white/50" id="chk-num-text">One number (0–9)</span>
+            </div>
+            <div class="flex items-center gap-2 text-xs" id="chk-special">
+              <span class="w-4 h-4 rounded-full border border-white/20 flex items-center justify-center text-[10px] transition-all" id="chk-special-icon">○</span>
+              <span class="text-white/50" id="chk-special-text">One special character (!@#$…)</span>
+            </div>
+          </div>
         </div>
         <!-- Invisible reCAPTCHA anchor for Firebase Phone Auth -->
         <div id="recaptcha-container"></div>
@@ -863,6 +888,30 @@
       }
     }
 
+    function checkPasswordStrength(val) {
+      const checks = {
+        len:     val.length >= PLATFORM_CONFIG.PASSWORD_MIN_LENGTH,
+        upper:   /[A-Z]/.test(val),
+        lower:   /[a-z]/.test(val),
+        num:     /[0-9]/.test(val),
+        special: /[^A-Za-z0-9]/.test(val),
+      };
+      Object.entries(checks).forEach(([key, passed]) => {
+        const icon = document.getElementById(`chk-${key}-icon`);
+        const text = document.getElementById(`chk-${key}-text`);
+        if (!icon || !text) return;
+        if (passed) {
+          icon.textContent = '✓';
+          icon.className = 'w-4 h-4 rounded-full flex items-center justify-center text-[10px] transition-all bg-emerald-500 border-emerald-500 text-white';
+          text.className = 'text-emerald-400';
+        } else {
+          icon.textContent = '○';
+          icon.className = 'w-4 h-4 rounded-full border border-white/20 flex items-center justify-center text-[10px] transition-all';
+          text.className = 'text-white/50';
+        }
+      });
+    }
+
     function validatePassword(password) {
       if (password.length < PLATFORM_CONFIG.PASSWORD_MIN_LENGTH) return false;
       if (!/[A-Z]/.test(password)) return false;
@@ -880,13 +929,14 @@
       const role     = document.getElementById('roleSelect').value;
       const name     = document.getElementById('signupName').value.trim();
       const email    = document.getElementById('signupEmail').value.trim();
-      const mobile   = document.getElementById('signupMobile').value.trim();
-      const password = document.getElementById('signupPassword').value;
+      const mobileRaw = document.getElementById('signupMobile').value.trim();
+      const mobile    = '+91' + mobileRaw;
+      const password  = document.getElementById('signupPassword').value;
 
       if (!role)    return showToast('Please select your role', 'error');
       if (!name)    return showToast('Please enter your name', 'error');
       if (!email || !email.includes('@')) return showToast('Please enter a valid email', 'error');
-      if (!mobile || mobile.length < 10)  return showToast('Please enter a valid mobile number (include country code, e.g. +91)', 'error');
+      if (!mobileRaw || mobileRaw.length !== 10) return showToast('Please enter a valid 10-digit mobile number', 'error');
       if (!validatePassword(password))    return showToast(`Password must be ${PLATFORM_CONFIG.PASSWORD_MIN_LENGTH}+ chars with uppercase, lowercase, number, and special character`, 'error');
 
       AppState.isProcessing = true;
