@@ -12,6 +12,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
   <style>
     * { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
@@ -662,6 +663,92 @@
       TOAST_DURATION_MS: 4000,
     };
 
+    // ==================== EMAILJS CONFIG ====================
+    // Setup: https://emailjs.com → Add Email Service → Add Template → copy keys here
+    const EMAILJS_CONFIG = {
+      PUBLIC_KEY:  'YOUR_EMAILJS_PUBLIC_KEY',
+      SERVICE_ID:  'YOUR_SERVICE_ID',
+      TEMPLATE_ID: 'YOUR_TEMPLATE_ID',
+    };
+    if (EMAILJS_CONFIG.PUBLIC_KEY !== 'YOUR_EMAILJS_PUBLIC_KEY') {
+      emailjs.init({ publicKey: EMAILJS_CONFIG.PUBLIC_KEY });
+    }
+
+    const ROLE_EMAIL_CONTENT = {
+      institute: {
+        title: 'Your Institute Account is Ready',
+        intro: 'Welcome to TROT Edu! Your institute is now registered on the platform.',
+        steps: [
+          'Sign in at the link below using your registered email and password.',
+          'Go to your Dashboard and complete your institute profile.',
+          'Set your Annual Sanctioned Intake so your issuance cap is calculated.',
+          'Click "Issue FTR / SU" to start issuing Future Tuition Rights to families.',
+          'Monitor your issued FTRs and redemptions from your Dashboard.',
+        ],
+        note: 'You can issue up to 600% of your annual intake as FTRs and SUs combined.',
+      },
+      household: {
+        title: 'Your Household Account is Ready',
+        intro: 'Welcome to TROT Edu! You can now secure your child\'s education at today\'s fee.',
+        steps: [
+          'Sign in at the link below using your registered email and password.',
+          'Browse available Future Tuition Rights (FTRs) from top institutes.',
+          'Purchase FTRs to lock today\'s fee for any future eligible student.',
+          'Your FTRs are stored securely in your Dashboard under Holdings.',
+          'When your child is ready for admission, redeem the FTR directly.',
+        ],
+        note: 'FTRs are tradable — you can transfer them to another family if plans change.',
+      },
+      sponsor: {
+        title: 'Your Sponsor Account is Ready',
+        intro: 'Welcome to TROT Edu! Your generosity will fund a deserving student\'s future.',
+        steps: [
+          'Sign in at the link below using your registered email and password.',
+          'Go to your Dashboard to browse Sponsorship Unit (SU) offerings.',
+          'Purchase SUs to fully fund a deserving student\'s education at zero cost to them.',
+          'Your sponsorship is 80G and CSR eligible in India.',
+          'Track all your sponsorships and their redemption status from your Dashboard.',
+        ],
+        note: 'Sponsorship Units are non-tradable, purely philanthropic instruments.',
+      },
+      student: {
+        title: 'Your Student Account is Ready',
+        intro: 'Welcome to TROT Edu! Your educational future is now on the platform.',
+        steps: [
+          'Sign in at the link below using your registered email and password.',
+          'Check your Dashboard for any FTRs or SUs assigned to you.',
+          'If you have a sponsorship, it will appear in your Holdings section.',
+          'When you are ready for admission, initiate a Redemption from your Dashboard.',
+          'Present your redemption confirmation to your institute at admission.',
+        ],
+        note: 'Reach out to your institute or sponsor if you have questions about your units.',
+      },
+    };
+
+    async function sendWelcomeEmail(name, email, role) {
+      if (EMAILJS_CONFIG.PUBLIC_KEY === 'YOUR_EMAILJS_PUBLIC_KEY') return; // not configured yet
+      try {
+        const content = ROLE_EMAIL_CONTENT[role] || ROLE_EMAIL_CONTENT.student;
+        const stepsHtml = content.steps
+          .map((s, i) => `${i + 1}. ${s}`)
+          .join('\n');
+        await emailjs.send(EMAILJS_CONFIG.SERVICE_ID, EMAILJS_CONFIG.TEMPLATE_ID, {
+          to_name:    name,
+          to_email:   email,
+          role:       role.charAt(0).toUpperCase() + role.slice(1),
+          title:      content.title,
+          intro:      content.intro,
+          steps:      stepsHtml,
+          note:       content.note,
+          signin_url: 'https://irgedu-dde86.web.app',
+          year:       new Date().getFullYear(),
+        });
+        console.log('[EmailJS] Welcome email sent to', email);
+      } catch (err) {
+        console.warn('[EmailJS] Email failed (non-fatal):', err);
+      }
+    }
+
     // ==================== FIREBASE CONFIG ====================
     const firebaseConfig = {
       apiKey: "AIzaSyAGxsnwZmwSvUWxEXTzijfIuAS8m5bXwXM",
@@ -1124,6 +1211,9 @@
         closeAuthModal();
         navigateTo('dashboard');
         showToast('Account created successfully! Welcome, ' + name + '!', 'success');
+
+        // Send role-customised welcome email (non-blocking)
+        sendWelcomeEmail(name, email, role);
       } catch (err) {
         console.error(err);
         showToast(err.code === 'auth/invalid-verification-code' ? 'Invalid OTP. Please try again.' : (err.message || 'Verification failed.'), 'error');
