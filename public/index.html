@@ -53,6 +53,68 @@
     .footer-link:hover { color: #fff; }
     .social-link { width: 36px; height: 36px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; transition: all 0.3s; }
     .social-link:hover { background: rgba(212,175,55,0.2); border-color: var(--gold); }
+
+    /* ── Dashboard Sidebar ── */
+    .dash-layout { display: flex; min-height: calc(100vh - 64px); }
+    .dash-sidebar {
+      width: 210px;
+      flex-shrink: 0;
+      background: #00002a;
+      border-right: 1px solid rgba(212,175,55,0.12);
+      display: flex;
+      flex-direction: column;
+      position: sticky;
+      top: 64px;
+      height: calc(100vh - 64px);
+      overflow-y: auto;
+    }
+    .dash-sidebar::-webkit-scrollbar { width: 4px; }
+    .dash-sidebar::-webkit-scrollbar-thumb { background: rgba(212,175,55,0.2); border-radius: 4px; }
+    .dash-sidebar-title {
+      color: var(--gold);
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 28px 24px 20px;
+      border-bottom: 1px solid rgba(212,175,55,0.12);
+    }
+    .dash-section-label {
+      display: block;
+      color: var(--gold);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 20px 24px 8px;
+      opacity: 0.9;
+    }
+    .dash-nav-item {
+      display: block;
+      color: rgba(255,255,255,0.72);
+      font-size: 13.5px;
+      font-weight: 400;
+      padding: 9px 24px 9px 36px;
+      cursor: pointer;
+      transition: all 0.18s;
+      border-left: 3px solid transparent;
+      text-decoration: none;
+      user-select: none;
+    }
+    .dash-nav-item:hover { color: #fff; background: rgba(212,175,55,0.07); }
+    .dash-nav-item.active { color: var(--gold); background: rgba(212,175,55,0.1); border-left-color: var(--gold); font-weight: 500; }
+    .dash-content { flex: 1; padding: 32px; overflow-y: auto; min-height: calc(100vh - 64px); }
+    .dash-panel-title { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+    .dash-panel-sub  { color: rgba(255,255,255,0.5); font-size: 14px; margin-bottom: 28px; }
+    .stat-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 20px 24px; }
+    @media (max-width: 768px) {
+      .dash-sidebar { width: 180px; }
+      .dash-content { padding: 20px; }
+    }
+    @media (max-width: 640px) {
+      .dash-layout { flex-direction: column; }
+      .dash-sidebar { width: 100%; height: auto; position: relative; top: 0; }
+    }
   </style>
 </head>
 <body class="text-white overflow-x-hidden">
@@ -425,9 +487,67 @@
       </div>
     </section>
 
-    <!-- Dashboard Container -->
-    <section id="dashboardPage" class="hidden min-h-screen pt-24">
-      <div id="dashboardContainer" class="max-w-7xl mx-auto px-6 py-8"></div>
+    <!-- Dashboard -->
+    <section id="dashboardPage" class="hidden pt-16">
+      <div class="dash-layout">
+
+        <!-- ── Sidebar ── -->
+        <aside class="dash-sidebar">
+          <div class="dash-sidebar-title">Dashboard</div>
+
+          <!-- HOLDER section (household, sponsor, student) -->
+          <div id="dashSideHolder" class="hidden">
+            <span class="dash-section-label">Holder</span>
+            <a class="dash-nav-item" data-panel="myHoldings"    onclick="showDashPanel('myHoldings')">My Holdings</a>
+            <a class="dash-nav-item" data-panel="browse"        onclick="showDashPanel('browse')">Browse Offerings</a>
+            <a class="dash-nav-item" data-panel="swap"          onclick="showDashPanel('swap')">Swap</a>
+            <a class="dash-nav-item" data-panel="transactions"  onclick="showDashPanel('transactions')">Transactions</a>
+          </div>
+
+          <!-- MINTER section (institute) -->
+          <div id="dashSideMinter" class="hidden">
+            <span class="dash-section-label">Minter</span>
+            <a class="dash-nav-item" data-panel="myProjects"      onclick="showDashPanel('myProjects')">My Projects</a>
+            <a class="dash-nav-item" data-panel="createOffering"  onclick="showDashPanel('createOffering')">Create Offering</a>
+            <a class="dash-nav-item" data-panel="approvals"       onclick="showDashPanel('approvals')">Approvals</a>
+          </div>
+
+          <!-- CONSULTANT section -->
+          <div id="dashSideConsultant" class="hidden">
+            <span class="dash-section-label">Consultant</span>
+            <a class="dash-nav-item" data-panel="reviewQueue"  onclick="showDashPanel('reviewQueue')">Review Queue</a>
+            <a class="dash-nav-item" data-panel="myTasks"      onclick="showDashPanel('myTasks')">My Tasks</a>
+          </div>
+
+          <!-- OMBUDSMAN section -->
+          <div id="dashSideOmbudsman" class="hidden">
+            <span class="dash-section-label">Ombudsman</span>
+            <a class="dash-nav-item" data-panel="complaints"   onclick="showDashPanel('complaints')">Complaints</a>
+            <a class="dash-nav-item" data-panel="resolutions"  onclick="showDashPanel('resolutions')">Resolutions</a>
+          </div>
+
+          <!-- ADMIN section -->
+          <div id="dashSideAdmin" class="hidden">
+            <span class="dash-section-label">Admin</span>
+            <a class="dash-nav-item" data-panel="adminUsers"   onclick="showDashPanel('adminUsers')">Users</a>
+            <a class="dash-nav-item" data-panel="adminConfig"  onclick="showDashPanel('adminConfig')">Configuration</a>
+          </div>
+
+          <!-- Sign out -->
+          <div class="mt-auto px-6 pb-8 pt-10">
+            <button onclick="logout()" class="text-white/30 hover:text-white/70 text-xs transition-colors flex items-center gap-2">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+              Sign Out
+            </button>
+          </div>
+        </aside>
+
+        <!-- ── Main Content ── -->
+        <div class="dash-content" id="dashContent">
+          <p class="text-white/30 text-sm">Loading…</p>
+        </div>
+
+      </div>
     </section>
   </main>
 
@@ -467,7 +587,7 @@
         <div>
           <label class="block text-white/70 text-sm mb-2">Password</label>
           <div class="relative">
-            <input type="password" id="signupPassword" class="w-full input-field rounded-xl p-4 pr-12" placeholder="Min 12 chars, mixed case, number, special" oninput="checkPasswordStrength(this.value)">
+            <input type="password" id="signupPassword" class="w-full input-field rounded-xl p-4 pr-12" placeholder="Min 8 chars, mixed case, number, special" oninput="checkPasswordStrength(this.value)">
             <button type="button" onclick="togglePw('signupPassword',this)" tabindex="-1" class="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/80 transition-colors">
               <svg id="signupPassword-eye" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
             </button>
@@ -476,7 +596,7 @@
           <div class="mt-3 space-y-1.5 px-1" id="pwChecklist">
             <div class="flex items-center gap-2 text-xs" id="chk-len">
               <span class="w-4 h-4 rounded-full border border-white/20 flex items-center justify-center text-[10px] transition-all" id="chk-len-icon">○</span>
-              <span class="text-white/50" id="chk-len-text">At least 12 characters</span>
+              <span class="text-white/50" id="chk-len-text">At least 8 characters</span>
             </div>
             <div class="flex items-center gap-2 text-xs" id="chk-upper">
               <span class="w-4 h-4 rounded-full border border-white/20 flex items-center justify-center text-[10px] transition-all" id="chk-upper-icon">○</span>
@@ -598,6 +718,112 @@
     </div>
   </div>
 
+  <!-- Purchase Modal -->
+  <div id="purchaseModal" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 overflow-y-auto">
+    <div class="modal glass rounded-2xl w-full max-w-md p-6 my-auto">
+      <div class="flex justify-between items-center mb-5">
+        <h3 class="text-xl font-bold">Purchase Units</h3>
+        <button onclick="closePurchaseModal()" class="text-white/40 hover:text-white">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div id="purchaseModalBody" class="space-y-4">
+        <div class="glass rounded-xl p-4">
+          <p class="text-sm text-white/60 mb-1">Institute</p>
+          <p class="font-semibold" id="pm-institute">—</p>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div class="glass rounded-xl p-4">
+            <p class="text-sm text-white/60 mb-1">Course</p>
+            <p class="font-semibold text-sm" id="pm-course">—</p>
+          </div>
+          <div class="glass rounded-xl p-4">
+            <p class="text-sm text-white/60 mb-1">Unit Type</p>
+            <p class="font-semibold text-[#D4AF37]" id="pm-type">—</p>
+          </div>
+        </div>
+        <div class="glass rounded-xl p-4">
+          <p class="text-sm text-white/60 mb-1">Locked Fee per Unit</p>
+          <p class="text-2xl font-bold text-[#D4AF37]">₹<span id="pm-fee">0</span></p>
+        </div>
+        <div>
+          <label class="block text-white/70 text-sm mb-2">Quantity to Purchase</label>
+          <input type="number" id="pm-qty" min="1" value="1" class="w-full input-field rounded-xl p-4 text-white" oninput="updatePurchaseTotal()">
+        </div>
+        <div class="glass rounded-xl p-4 flex justify-between items-center">
+          <span class="text-white/70">Total Cost</span>
+          <span class="text-xl font-bold text-[#D4AF37]">₹<span id="pm-total">0</span></span>
+        </div>
+        <div class="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-3 text-xs text-yellow-200">
+          This purchase will be recorded on the blockchain ledger. Units are transferred to your holding instantly.
+        </div>
+        <button onclick="confirmPurchase()" id="purchaseConfirmBtn" class="w-full btn-gold py-4 rounded-xl font-semibold text-base">Confirm Purchase</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Swap Modal -->
+  <div id="swapModal" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 overflow-y-auto">
+    <div class="modal glass rounded-2xl w-full max-w-md p-6 my-auto">
+      <div class="flex justify-between items-center mb-5">
+        <h3 class="text-xl font-bold">Swap FTR</h3>
+        <button onclick="closeSwapModal()" class="text-white/40 hover:text-white">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="space-y-4">
+        <div class="glass rounded-xl p-4">
+          <p class="text-sm text-white/60 mb-1">Surrendering (Your Holding)</p>
+          <p class="font-semibold" id="sw-from">—</p>
+        </div>
+        <div>
+          <label class="block text-white/70 text-sm mb-2">Target Institute FTR</label>
+          <select id="sw-target" class="w-full select-field rounded-xl p-4 text-white">
+            <option value="">Loading available FTRs…</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-white/70 text-sm mb-2">Quantity to Swap</label>
+          <input type="number" id="sw-qty" min="1" value="1" class="w-full input-field rounded-xl p-4 text-white">
+        </div>
+        <div class="bg-blue-500/10 border border-blue-500/30 rounded-xl p-3 text-xs text-blue-200">
+          Swap surrenders your current FTR units and issues equivalent units from the target institute. Fee difference, if any, is settled at redemption.
+        </div>
+        <button onclick="confirmSwap()" id="swapConfirmBtn" class="w-full btn-gold py-4 rounded-xl font-semibold">Confirm Swap</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Redemption Modal -->
+  <div id="redeemModal" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 overflow-y-auto">
+    <div class="modal glass rounded-2xl w-full max-w-md p-6 my-auto">
+      <div class="flex justify-between items-center mb-5">
+        <h3 class="text-xl font-bold">Redeem Units</h3>
+        <button onclick="closeRedeemModal()" class="text-white/40 hover:text-white">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="space-y-4">
+        <div class="glass rounded-xl p-4">
+          <p class="text-sm text-white/60 mb-1">Holding</p>
+          <p class="font-semibold" id="rd-holding">—</p>
+        </div>
+        <div>
+          <label class="block text-white/70 text-sm mb-2">Admission/Enrollment ID</label>
+          <input type="text" id="rd-admid" class="w-full input-field rounded-xl p-4 text-white" placeholder="Your admission reference number">
+        </div>
+        <div>
+          <label class="block text-white/70 text-sm mb-2">Quantity to Redeem</label>
+          <input type="number" id="rd-qty" min="1" value="1" class="w-full input-field rounded-xl p-4 text-white">
+        </div>
+        <div class="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-3 text-xs text-emerald-200">
+          Redeemed units are locked to your admission. The institute receives confirmation instantly. Redemption is irreversible.
+        </div>
+        <button onclick="confirmRedeem()" id="redeemConfirmBtn" class="w-full btn-gold py-4 rounded-xl font-semibold">Confirm Redemption</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Confirmation Modal -->
   <div id="confirmModal" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
     <div class="modal glass rounded-2xl w-full max-w-sm p-6 text-center">
@@ -656,7 +882,7 @@
       EARMARKED_SEAT_PERCENT: 0.55,  // 55%   — seats earmarked for FTR/SU holders
 
       // ── Auth rules ───────────────────────────────────────────
-      PASSWORD_MIN_LENGTH: 12,
+      PASSWORD_MIN_LENGTH: 8,
       OTP_LENGTH: 6,
 
       // ── UI ───────────────────────────────────────────────────
@@ -736,7 +962,7 @@
           title:      content.title,
           intro:      content.intro,
           note:       content.note,
-          signin_url: 'https://irgedu-dde86.web.app',
+          signin_url: 'https://irgedu.com',
           year:       new Date().getFullYear(),
         });
         console.log('[EmailJS] Welcome email sent to', email);
@@ -769,11 +995,18 @@
       currentPage: 'landing',
       currentRole: null,
       currentUser: null,
-      annualIntake: 0,       // institutes only — loaded from Firestore roleData
+      annualIntake: 0,          // institutes only — loaded from Firestore roleData
       isProcessing: false,
-      pendingAuth: null,     // holds signup data before OTP verification
+      pendingAuth: null,        // holds signup data before OTP verification
       unitType: 'FTR',
-      confirmCallback: null
+      confirmCallback: null,
+      marketplaceIssuances: [], // loaded by loadMarketplace()
+      myHoldings: [],           // loaded by loadMyHoldings()
+      activePurchase: null,     // issuance selected in purchase modal
+      activeSwap: null,         // holding selected in swap modal
+      activeRedeem: null,       // holding selected in redeem modal
+      mintStep: 1,              // current step in minting form
+      mintTableC: []            // dynamic rows for Table C
     };
 
     const COURSES = [
@@ -781,6 +1014,16 @@
       "IT Diplomas", "Healthcare Technician",
       "Hospitality", "Aviation", "Arts & Economics", "Vocational Certificates"
     ];
+
+    const INDUSTRY_MASTER = {
+      'Realty':                ['Built and Lease', 'Built and Sale'],
+      'Hospitality':           ['Hotels & Resorts', 'Services Only', 'Voyages'],
+      'Education':             ['Education'],
+      'Healthcare':            ['Healthcare', 'Diagnostics Services Only', 'Services Only'],
+      'Professional Services': ['Implants Manufacturing', 'Pharmacists'],
+      'Agriculture':           ['Farms', 'Local Processing Units', 'Agro Based Industry', 'Last Mile Associates', 'Agro Air-freight', 'Agro Services'],
+      'Logistics':             ['Transport', 'Hubs', 'Maintenance']
+    };
 
     // ==================== NAV AUTH STATE ====================
     function updateNavAuthState(isSignedIn, name) {
@@ -1307,138 +1550,1546 @@
 
     // ==================== DASHBOARD ====================
     function renderDashboard() {
-      const container = document.getElementById('dashboardContainer');
-      const dashboards = {
-        institute: renderInstituteDashboard,
-        sponsor:   renderSponsorDashboard,
-        household: renderHouseholdDashboard,
-        student:   renderStudentDashboard
-      };
-      const renderer = dashboards[AppState.currentRole] || renderHouseholdDashboard;
-      container.innerHTML = renderer();
+      const role  = AppState.currentRole;
+      const email = AppState.currentUser?.email || '';
+      const isAdminUser = email === 'tidkejp@gmail.com';
+
+      // Show/hide sidebar sections based on role
+      const show = (id) => document.getElementById(id)?.classList.remove('hidden');
+      const hide = (id) => document.getElementById(id)?.classList.add('hidden');
+
+      hide('dashSideHolder');
+      hide('dashSideMinter');
+      hide('dashSideConsultant');
+      hide('dashSideOmbudsman');
+      hide('dashSideAdmin');
+
+      if (role === 'institute') {
+        show('dashSideMinter');
+        show('dashSideHolder'); // institutes can also hold
+      } else if (role === 'consultant') {
+        show('dashSideConsultant');
+      } else if (role === 'ombudsman') {
+        show('dashSideOmbudsman');
+      } else {
+        // household, sponsor, student
+        show('dashSideHolder');
+      }
+
+      if (isAdminUser) show('dashSideAdmin');
+
+      // Show default panel
+      const defaultPanel = role === 'institute' ? 'myProjects' : 'myHoldings';
+      showDashPanel(defaultPanel);
     }
 
-    function renderInstituteDashboard() {
+    // ── Panel router ──
+    function showDashPanel(panel) {
+      AppState.activePanel = panel;
+      // Update active link styling
+      document.querySelectorAll('.dash-nav-item').forEach(el => {
+        el.classList.toggle('active', el.dataset.panel === panel);
+      });
+      const c = document.getElementById('dashContent');
+      if (!c) return;
+
+      const name = escapeHtml(AppState.currentUser?.name || '');
+
+      switch (panel) {
+        case 'myHoldings':
+          c.innerHTML = panelMyHoldings(name);
+          loadMyHoldings();
+          break;
+        case 'browse':
+          c.innerHTML = panelBrowse(name);
+          loadMarketplace();
+          break;
+        case 'swap':
+          c.innerHTML = panelSwap(name);
+          loadMyHoldings().then(() => loadMarketplace());
+          break;
+        case 'transactions':
+          c.innerHTML = panelTransactions(name);
+          loadTransactions();
+          break;
+        case 'myProjects':
+          c.innerHTML = panelMyProjects(name);
+          loadInstituteData();
+          break;
+        case 'createOffering':
+          c.innerHTML = panelCreateOffering(name);
+          break;
+        case 'approvals':
+          c.innerHTML = panelApprovals(name);
+          loadApprovals();
+          break;
+        case 'reviewQueue':
+          c.innerHTML = panelComingSoon(panel);
+          loadConsultantQueue('submitted');
+          break;
+        case 'myTasks':
+          c.innerHTML = panelComingSoon(panel);
+          loadConsultantQueue('all');
+          break;
+        case 'complaints':
+        case 'resolutions':
+          c.innerHTML = panelComingSoon(panel);
+          break;
+        case 'adminUsers':
+          c.innerHTML = panelAdminUsers();
+          loadAdminUsers();
+          break;
+        case 'adminConfig':
+          c.innerHTML = panelAdminConfig();
+          break;
+        default:
+          c.innerHTML = '<p class="text-white/30">Select a section from the sidebar.</p>';
+      }
+    }
+
+    // ── Panel templates ──
+    function panelHeader(title, sub, action) {
+      return `<div class="flex items-start justify-between gap-4 mb-6 flex-wrap">
+        <div><p class="dash-panel-title">${title}</p><p class="dash-panel-sub">${sub}</p></div>
+        ${action || ''}
+      </div>`;
+    }
+
+    function statRow(stats) {
+      return `<div class="grid grid-cols-2 md:grid-cols-${stats.length} gap-4 mb-8">
+        ${stats.map(s => `<div class="stat-card text-center">
+          <p class="text-white/45 text-xs mb-1">${s.label}</p>
+          <p class="text-2xl font-bold ${s.color||'text-[#D4AF37]'}" id="${s.id||''}">${s.val||'—'}</p>
+        </div>`).join('')}
+      </div>`;
+    }
+
+    function panelMyHoldings(name) {
+      return panelHeader('My Holdings', `Signed in as ${name}`) +
+        statRow([
+          {label:'FTRs Held',    color:'text-[#D4AF37]',  id:'stat-held'},
+          {label:'SUs Held',     color:'text-emerald-400',id:'stat-sus'},
+          {label:'Total Invested',color:'text-blue-400',  id:'stat-invested', val:'₹0'}
+        ]) +
+        `<div class="glass rounded-2xl p-6">
+          <h3 class="font-semibold mb-4">Holdings</h3>
+          <div id="holdingsContainer"><p class="text-white/40 text-center py-10 text-sm">Loading…</p></div>
+        </div>`;
+    }
+
+    function panelBrowse(name) {
+      return panelHeader('Browse Offerings', 'Live marketplace of all available FTRs and SUs',
+          `<button onclick="loadMarketplace()" class="text-xs text-[#D4AF37] border border-[#D4AF37]/40 px-3 py-1.5 rounded-lg hover:bg-[#D4AF37]/10 transition-all">Refresh</button>`) +
+        `<div class="glass rounded-2xl p-6">
+          <div id="marketplaceContainer"><p class="text-white/40 text-center py-10 text-sm">Loading…</p></div>
+        </div>`;
+    }
+
+    function panelSwap(name) {
+      return panelHeader('Swap', 'Exchange your FTR units for equivalent units at another institute') +
+        `<div class="glass rounded-2xl p-6 mb-6">
+          <h3 class="font-semibold mb-4">Your Active Holdings (select to swap)</h3>
+          <div id="holdingsContainer"><p class="text-white/40 text-center py-10 text-sm">Loading…</p></div>
+        </div>
+        <div class="glass rounded-2xl p-5 bg-blue-500/5 border-blue-500/20">
+          <p class="text-sm text-blue-200"><strong>How Swap works:</strong> Select a holding → click Swap → choose the target institute FTR → confirm. Your existing units are surrendered and new equivalent units are credited immediately.</p>
+        </div>`;
+    }
+
+    function panelTransactions(name) {
+      return panelHeader('Transactions', 'Full audit trail of your platform activity') +
+        `<div class="glass rounded-2xl p-6">
+          <div id="transactionsContainer"><p class="text-white/40 text-center py-10 text-sm">Loading…</p></div>
+        </div>`;
+    }
+
+    function panelMyProjects(name) {
+      return panelHeader('My Projects', `Issuances created by your institute — ${name}`,
+          `<button onclick="openIssuanceModal()" class="btn-gold px-5 py-2.5 rounded-xl text-sm font-semibold">+ Create Offering</button>`) +
+        statRow([
+          {label:'Total Issued',  color:'text-[#D4AF37]',  id:'stat-total-issued'},
+          {label:'Active Units',  color:'text-emerald-400',id:'stat-active-units'},
+          {label:'Sold',          color:'text-blue-400',   id:'stat-sold'},
+          {label:'Redeemed',      color:'text-purple-400', id:'stat-redeemed'}
+        ]) +
+        `<div class="glass rounded-2xl p-6 mb-6">
+          <h3 class="font-semibold mb-4">All Issuances</h3>
+          <div id="instituteIssuancesContainer"><p class="text-white/40 text-center py-10 text-sm">Loading…</p></div>
+        </div>
+        <div class="glass rounded-2xl p-5 border-[#D4AF37]/20">
+          <p class="text-xs text-white/40">Max issuance: 600% of annual intake &nbsp;•&nbsp; SU merit min: 70% &nbsp;•&nbsp; Earmarked seats: 55%</p>
+        </div>`;
+    }
+
+    function panelCreateOffering(name) {
+      AppState.mintStep = 1;
+      AppState.mintTableC = [];
+      const indOpts = Object.keys(INDUSTRY_MASTER).map(k =>
+        `<option value="${k}">${k}</option>`).join('');
       return `
-        <div class="flex justify-between items-start mb-8">
-          <div>
-            <h1 class="text-3xl font-bold mb-2">Institute Dashboard</h1>
-            <p class="text-white/60">Welcome, ${escapeHtml(AppState.currentUser?.name || 'Institute')}</p>
-          </div>
-          <button onclick="logout()" class="px-6 py-2 rounded-full glass border border-white/20 hover:border-white/40">Sign Out</button>
+        <div class="mb-6">
+          <p class="dash-panel-title">FTR Minting Program</p>
+          <p class="dash-panel-sub">Complete all steps — your application goes to consultant review before FTRs are minted</p>
         </div>
-        <div class="glass rounded-2xl p-8 mb-8">
-          <h3 class="text-xl font-semibold mb-4">Get Started</h3>
-          <p class="text-white/70 mb-6">Issue Future Tuition Rights (FTRs) or Sponsorship Units (SUs) for your courses. All issuances are subject to the 600% cap and parametric validation.</p>
-          <button onclick="openIssuanceModal()" class="btn-gold px-8 py-4 rounded-xl font-semibold">Issue New FTR / SU Units</button>
+
+        <!-- Step bar -->
+        <div class="flex items-center gap-1 mb-8 flex-wrap gap-y-3" id="mintStepBar">
+          ${['Project Details','Revenue & Params','Tables A & B','Table C','Limits & Submit'].map((lbl,i) => `
+            <div class="flex items-center gap-1">
+              <div id="mintDot${i+1}" class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${i===0?'bg-[#D4AF37] text-black':'bg-white/10 text-white/40'}">${i+1}</div>
+              <span id="mintLbl${i+1}" class="text-xs hidden sm:inline ${i===0?'text-[#D4AF37]':'text-white/30'} mr-2">${lbl}</span>
+              ${i<4?'<div class="w-6 h-0.5 bg-white/10"></div>':''}
+            </div>`).join('')}
         </div>
-        <div class="grid md:grid-cols-2 gap-8">
-          <div class="glass rounded-2xl p-6" id="activityPanel">
-            <h3 class="text-lg font-semibold mb-4">Your Recent Issuances</h3>
-            <p class="text-white/50 text-center py-8" id="activityEmpty">Loading...</p>
+
+        <!-- Step 1: Project Details -->
+        <div id="mintStep1" class="glass rounded-2xl p-6 mb-6 space-y-5">
+          <h3 class="font-semibold text-[#D4AF37] mb-2">Project Details</h3>
+          <div class="grid md:grid-cols-2 gap-5">
+            <div>
+              <label class="block text-white/60 text-sm mb-2">Industry *</label>
+              <select id="mint-industry" onchange="mintUpdateSubIndustry()" class="w-full select-field rounded-xl p-4 text-white">
+                <option value="">Select industry…</option>${indOpts}
+              </select>
+            </div>
+            <div>
+              <label class="block text-white/60 text-sm mb-2">Sub-Industry *</label>
+              <select id="mint-subindustry" class="w-full select-field rounded-xl p-4 text-white">
+                <option value="">Select industry first…</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-white/60 text-sm mb-2">Project Name *</label>
+              <input type="text" id="mint-projname" class="w-full input-field rounded-xl p-4" placeholder="e.g. IRG International Hotels">
+            </div>
+            <div>
+              <label class="block text-white/60 text-sm mb-2">Project Location *</label>
+              <input type="text" id="mint-projloc" class="w-full input-field rounded-xl p-4" placeholder="e.g. Mumbai, India">
+            </div>
+            <div>
+              <label class="block text-white/60 text-sm mb-2">Base Currency</label>
+              <select id="mint-currency" class="w-full select-field rounded-xl p-4 text-white">
+                <option value="INR">INR ₹</option>
+                <option value="USD">USD $</option>
+                <option value="EUR">EUR €</option>
+                <option value="GBP">GBP £</option>
+              </select>
+            </div>
+            <div class="md:col-span-2">
+              <label class="block text-white/60 text-sm mb-2">Business & Revenue Streams <span class="text-white/30">(max 500 words)</span></label>
+              <textarea id="mint-writeup" rows="5" oninput="mintWordCount()" class="w-full input-field rounded-xl p-4" placeholder="Describe the business model, key revenue streams, service offerings…"></textarea>
+              <p class="text-xs text-white/40 mt-1"><span id="mint-wordcount">0</span> / 500 words</p>
+            </div>
           </div>
-          <div class="glass rounded-2xl p-6">
-            <h3 class="text-lg font-semibold mb-4">Platform Rules</h3>
-            <ul class="space-y-3 text-sm text-white/70">
-              <li class="flex items-start gap-2"><span class="text-[#D4AF37]">•</span> Max issuance: 600% of annual sanctioned intake</li>
-              <li class="flex items-start gap-2"><span class="text-[#D4AF37]">•</span> SU merit allocation: Minimum 70% to needy students</li>
-              <li class="flex items-start gap-2"><span class="text-[#D4AF37]">•</span> Earmarked seats: Default 55% for FTR/SU holders</li>
-              <li class="flex items-start gap-2"><span class="text-[#D4AF37]">•</span> All actions logged to blockchain audit trail</li>
-            </ul>
+        </div>
+
+        <!-- Step 2: Revenue & Parameters -->
+        <div id="mintStep2" class="hidden glass rounded-2xl p-6 mb-6 space-y-5">
+          <h3 class="font-semibold text-[#D4AF37] mb-2">3-Year Revenue Projections &amp; Industry Parameters</h3>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead><tr class="border-b border-white/10 text-white/40 text-xs">
+                <th class="pb-3 text-left">Item</th>
+                <th class="pb-3 text-center">Projected (31-Mar-28)</th>
+                <th class="pb-3 text-center">Current (31-Mar-27)</th>
+                <th class="pb-3 text-center">Previous (31-Mar-26)</th>
+              </tr></thead>
+              <tbody class="space-y-2">
+                <tr class="border-b border-white/5">
+                  <td class="py-3 text-white/70">Occupancy %</td>
+                  <td class="py-2 px-2"><input type="number" id="mint-occ3" class="w-full input-field rounded-lg p-2 text-center text-sm" placeholder="0" min="0" max="100"></td>
+                  <td class="py-2 px-2"><input type="number" id="mint-occ2" class="w-full input-field rounded-lg p-2 text-center text-sm" placeholder="0" min="0" max="100"></td>
+                  <td class="py-2 px-2"><input type="number" id="mint-occ1" class="w-full input-field rounded-lg p-2 text-center text-sm" placeholder="0" min="0" max="100"></td>
+                </tr>
+                <tr class="border-b border-white/5">
+                  <td class="py-3 text-white/70">Services &amp; Lease Rents (₹ million)</td>
+                  <td class="py-2 px-2"><input type="number" id="mint-svc3" oninput="mintCalcLimits()" class="w-full input-field rounded-lg p-2 text-center text-sm" placeholder="0"></td>
+                  <td class="py-2 px-2"><input type="number" id="mint-svc2" class="w-full input-field rounded-lg p-2 text-center text-sm" placeholder="0"></td>
+                  <td class="py-2 px-2"><input type="number" id="mint-svc1" class="w-full input-field rounded-lg p-2 text-center text-sm" placeholder="0"></td>
+                </tr>
+                <tr>
+                  <td class="py-3 text-white/70">Goods Sales (₹ million)</td>
+                  <td class="py-2 px-2"><input type="number" id="mint-goods3" oninput="mintCalcLimits()" class="w-full input-field rounded-lg p-2 text-center text-sm" placeholder="0"></td>
+                  <td class="py-2 px-2"><input type="number" id="mint-goods2" class="w-full input-field rounded-lg p-2 text-center text-sm" placeholder="0"></td>
+                  <td class="py-2 px-2"><input type="number" id="mint-goods1" class="w-full input-field rounded-lg p-2 text-center text-sm" placeholder="0"></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
+          <div class="grid md:grid-cols-2 gap-5 mt-4">
+            <div>
+              <label class="block text-white/60 text-sm mb-2">ROI % Assumed</label>
+              <input type="number" id="mint-roi" value="9.2" step="0.1" oninput="mintCalcTables()" class="w-full input-field rounded-xl p-4">
+            </div>
+            <div>
+              <label class="block text-white/60 text-sm mb-2">Inflation % p.a.</label>
+              <input type="number" id="mint-infl" value="6.8" step="0.1" oninput="mintCalcTables()" class="w-full input-field rounded-xl p-4">
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3: Tables A & B -->
+        <div id="mintStep3" class="hidden glass rounded-2xl p-6 mb-6 space-y-6">
+          <h3 class="font-semibold text-[#D4AF37] mb-2">Table A — Services &amp; Lease Rent: Pre-fixed Price</h3>
+          <div class="grid md:grid-cols-2 gap-5 mb-4">
+            <div>
+              <label class="block text-white/60 text-sm mb-2">Base Service Name *</label>
+              <input type="text" id="mint-svcname" class="w-full input-field rounded-xl p-4" placeholder="e.g. Standard Room Occupancy">
+            </div>
+            <div>
+              <label class="block text-white/60 text-sm mb-2">Base Unit for Charging *</label>
+              <input type="text" id="mint-svcunit" class="w-full input-field rounded-xl p-4" placeholder="e.g. Night, Hour, Seat">
+            </div>
+            <div class="md:col-span-2">
+              <label class="block text-white/60 text-sm mb-2">Base Price per Unit (excl. GST) *</label>
+              <input type="number" id="mint-svcprice" oninput="mintCalcTables()" class="w-full input-field rounded-xl p-4" placeholder="0">
+            </div>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm border-collapse" id="tableA">
+              <thead><tr class="border-b border-white/10 text-white/40 text-xs">
+                <th class="pb-3 text-left w-40">Item</th>
+                <th class="pb-3 text-right">Base</th>
+                <th class="pb-3 text-right">Year 2</th>
+                <th class="pb-3 text-right">Year 3</th>
+                <th class="pb-3 text-right">Year 4</th>
+              </tr></thead>
+              <tbody>
+                <tr class="border-b border-white/5"><td class="py-2.5 text-white/70">Base Price (market)</td><td class="py-2.5 text-right" id="tA-bp-0">—</td><td class="py-2.5 text-right" id="tA-bp-1">—</td><td class="py-2.5 text-right" id="tA-bp-2">—</td><td class="py-2.5 text-right" id="tA-bp-3">—</td></tr>
+                <tr class="border-b border-white/5"><td class="py-2.5 text-white/70">FTR Surrender Value</td><td class="py-2.5 text-right text-[#D4AF37]" id="tA-sv-0">—</td><td class="py-2.5 text-right text-[#D4AF37]" id="tA-sv-1">—</td><td class="py-2.5 text-right text-[#D4AF37]" id="tA-sv-2">—</td><td class="py-2.5 text-right text-[#D4AF37]" id="tA-sv-3">—</td></tr>
+                <tr class="border-b border-white/5"><td class="py-2.5 text-white/70">Difference (Saving)</td><td class="py-2.5 text-right text-emerald-400" id="tA-df-0">—</td><td class="py-2.5 text-right text-emerald-400" id="tA-df-1">—</td><td class="py-2.5 text-right text-emerald-400" id="tA-df-2">—</td><td class="py-2.5 text-right text-emerald-400" id="tA-df-3">—</td></tr>
+                <tr><td class="py-2.5 text-white/70 font-semibold">Average Saving</td><td colspan="4" class="py-2.5 text-right text-emerald-400 font-semibold" id="tA-avg">—</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="glass rounded-xl p-4 flex justify-between items-center">
+            <span class="text-white/60 text-sm">Pre-fixed Price to Pay (Table A)</span>
+            <span class="text-[#D4AF37] font-bold" id="tA-prefixed">—</span>
+          </div>
+
+          <h3 class="font-semibold text-[#D4AF37] mt-6 mb-2">Table B — Goods Sales: Pre-fixed Price</h3>
+          <div class="grid md:grid-cols-2 gap-5 mb-4">
+            <div>
+              <label class="block text-white/60 text-sm mb-2">Base Goods Name</label>
+              <input type="text" id="mint-goodsname" class="w-full input-field rounded-xl p-4" placeholder="e.g. Food & Beverage">
+            </div>
+            <div>
+              <label class="block text-white/60 text-sm mb-2">Base Unit for Sale</label>
+              <input type="text" id="mint-goodsunit" class="w-full input-field rounded-xl p-4" placeholder="e.g. Meal, Kg, Item">
+            </div>
+            <div class="md:col-span-2">
+              <label class="block text-white/60 text-sm mb-2">Base Price per Unit (excl. GST)</label>
+              <input type="number" id="mint-goodsprice" oninput="mintCalcTables()" class="w-full input-field rounded-xl p-4" placeholder="0">
+            </div>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm border-collapse">
+              <thead><tr class="border-b border-white/10 text-white/40 text-xs">
+                <th class="pb-3 text-left w-40">Item</th>
+                <th class="pb-3 text-right">Base</th>
+                <th class="pb-3 text-right">Year 2</th>
+                <th class="pb-3 text-right">Year 3</th>
+                <th class="pb-3 text-right">Year 4</th>
+              </tr></thead>
+              <tbody>
+                <tr class="border-b border-white/5"><td class="py-2.5 text-white/70">Base Price (market)</td><td class="py-2.5 text-right" id="tB-bp-0">—</td><td class="py-2.5 text-right" id="tB-bp-1">—</td><td class="py-2.5 text-right" id="tB-bp-2">—</td><td class="py-2.5 text-right" id="tB-bp-3">—</td></tr>
+                <tr class="border-b border-white/5"><td class="py-2.5 text-white/70">FTR Surrender Value</td><td class="py-2.5 text-right text-[#D4AF37]" id="tB-sv-0">—</td><td class="py-2.5 text-right text-[#D4AF37]" id="tB-sv-1">—</td><td class="py-2.5 text-right text-[#D4AF37]" id="tB-sv-2">—</td><td class="py-2.5 text-right text-[#D4AF37]" id="tB-sv-3">—</td></tr>
+                <tr class="border-b border-white/5"><td class="py-2.5 text-white/70">Difference (Saving)</td><td class="py-2.5 text-right text-emerald-400" id="tB-df-0">—</td><td class="py-2.5 text-right text-emerald-400" id="tB-df-1">—</td><td class="py-2.5 text-right text-emerald-400" id="tB-df-2">—</td><td class="py-2.5 text-right text-emerald-400" id="tB-df-3">—</td></tr>
+                <tr><td class="py-2.5 text-white/70 font-semibold">Average Saving</td><td colspan="4" class="py-2.5 text-right text-emerald-400 font-semibold" id="tB-avg">—</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="glass rounded-xl p-4 flex justify-between items-center">
+            <span class="text-white/60 text-sm">Pre-fixed Price to Pay (Table B)</span>
+            <span class="text-[#D4AF37] font-bold" id="tB-prefixed">—</span>
+          </div>
+        </div>
+
+        <!-- Step 4: Table C -->
+        <div id="mintStep4" class="hidden glass rounded-2xl p-6 mb-6">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="font-semibold text-[#D4AF37]">Table C — Underlying Goods &amp; Services</h3>
+            <button onclick="mintAddTableCRow()" class="text-xs btn-gold px-4 py-2 rounded-lg">+ Add Row</button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead><tr class="border-b border-white/10 text-white/40 text-xs">
+                <th class="pb-3 text-left">Sr.</th>
+                <th class="pb-3 text-left">Description</th>
+                <th class="pb-3 text-left">Unit</th>
+                <th class="pb-3 text-right">Units</th>
+                <th class="pb-3 text-right">Price/Unit (Minting date)</th>
+                <th class="pb-3 text-right">Present Price</th>
+                <th class="pb-3"></th>
+              </tr></thead>
+              <tbody id="tableCBody">
+                <tr class="text-white/30 text-center"><td colspan="7" class="py-8 text-sm">Click "+ Add Row" to add underlying goods and services</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="text-xs text-white/30 mt-4">Price per unit as on minting date: As provided by the Minter and verified by the Consultant. Present price: updated by link to price lists.</p>
+        </div>
+
+        <!-- Step 5: Minting Limits & Submit -->
+        <div id="mintStep5" class="hidden glass rounded-2xl p-6 mb-6 space-y-5">
+          <h3 class="font-semibold text-[#D4AF37] mb-2">FTR Minting Limits &amp; Review</h3>
+
+          <div class="grid md:grid-cols-2 gap-6">
+            <!-- Services limits -->
+            <div class="glass rounded-xl p-5 space-y-3">
+              <h4 class="text-sm font-semibold text-white/80 mb-3">Services &amp; Lease Rents</h4>
+              <div class="flex justify-between text-sm"><span class="text-white/50">Maximum Annual Revenue</span><span class="font-semibold" id="lim-svc-maxrev">—</span></div>
+              <div class="flex justify-between text-sm"><span class="text-white/50">Annual Capacity Earmarked %</span>
+                <input type="number" id="lim-svc-ear" value="45" min="0" max="100" oninput="mintCalcLimits()" class="w-20 input-field rounded-lg p-1.5 text-center text-xs">
+              </div>
+              <div class="flex justify-between text-sm"><span class="text-white/50">No. of Years Earmarked</span>
+                <input type="number" id="lim-svc-yrs" value="10" min="1" max="20" oninput="mintCalcLimits()" class="w-20 input-field rounded-lg p-1.5 text-center text-xs">
+              </div>
+              <div class="flex justify-between text-sm border-t border-white/10 pt-3"><span class="text-white/70 font-semibold">Max Value of FTRs</span><span class="text-[#D4AF37] font-bold" id="lim-svc-maxval">—</span></div>
+            </div>
+
+            <!-- Goods limits -->
+            <div class="glass rounded-xl p-5 space-y-3">
+              <h4 class="text-sm font-semibold text-white/80 mb-3">Goods</h4>
+              <div class="flex justify-between text-sm"><span class="text-white/50">Maximum Annual Revenue</span><span class="font-semibold" id="lim-goods-maxrev">—</span></div>
+              <div class="flex justify-between text-sm"><span class="text-white/50">Annual Capacity Earmarked %</span>
+                <input type="number" id="lim-goods-ear" value="0" min="0" max="100" oninput="mintCalcLimits()" class="w-20 input-field rounded-lg p-1.5 text-center text-xs">
+              </div>
+              <div class="flex justify-between text-sm"><span class="text-white/50">No. of Years Earmarked</span>
+                <input type="number" id="lim-goods-yrs" value="0" min="0" max="20" oninput="mintCalcLimits()" class="w-20 input-field rounded-lg p-1.5 text-center text-xs">
+              </div>
+              <div class="flex justify-between text-sm border-t border-white/10 pt-3"><span class="text-white/70 font-semibold">Max Value of FTRs</span><span class="text-[#D4AF37] font-bold" id="lim-goods-maxval">—</span></div>
+            </div>
+          </div>
+
+          <!-- Summary -->
+          <div class="glass rounded-xl p-5 space-y-3">
+            <div class="flex justify-between text-sm"><span class="text-white/50">Total Max Value of FTRs</span><span class="text-[#D4AF37] font-bold" id="lim-total-maxval">—</span></div>
+            <div class="flex justify-between text-sm"><span class="text-white/50">Value per FTR</span><span class="font-semibold">₹ 100.00</span></div>
+            <div class="flex justify-between text-sm border-t border-white/10 pt-3"><span class="text-white/70 font-semibold">Maximum No. of FTRs (limit)</span><span class="text-[#D4AF37] font-bold text-lg" id="lim-max-ftrs">—</span></div>
+            <div class="flex justify-between text-sm"><span class="text-white/50">FTRs Already Minted (unredeemed)</span><span class="font-semibold" id="lim-prev-minted">0</span></div>
+            <div class="flex justify-between text-sm"><span class="text-white/50">No. of Times Minted Earlier</span><span class="font-semibold" id="lim-mint-count">0</span></div>
+          </div>
+
+          <div class="grid md:grid-cols-2 gap-5">
+            <div>
+              <label class="block text-white/60 text-sm mb-2">FTRs to be Minted Now *</label>
+              <input type="number" id="mint-qty-now" oninput="mintCalcLimits()" class="w-full input-field rounded-xl p-4 text-lg font-bold" placeholder="e.g. 7,500,000">
+              <p class="text-xs text-white/40 mt-1">Cannot exceed maximum limit above</p>
+            </div>
+            <div>
+              <label class="block text-white/60 text-sm mb-2">Upfront Discount Offered (%)</label>
+              <input type="number" id="mint-discount" value="10" min="0" max="50" class="w-full input-field rounded-xl p-4">
+              <p class="text-xs text-white/40 mt-1">As % of FTR unit value (₹100)</p>
+            </div>
+          </div>
+
+          <div class="glass rounded-xl p-4 border border-[#D4AF37]/20">
+            <p class="text-sm text-white/60 mb-1">Effective Purchase Price per FTR</p>
+            <p class="text-2xl font-bold text-[#D4AF37]" id="mint-eff-price">₹ 90.00</p>
+            <p class="text-xs text-white/40 mt-1">After applying discount</p>
+          </div>
+
+          <div class="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4 text-sm text-yellow-200">
+            <strong>Declaration:</strong> The information provided above is true and correct. On submission, this application will be sent to two domain consultants for review. Minting will proceed only after consultant approval.
+          </div>
+        </div>
+
+        <!-- Nav buttons -->
+        <div class="flex gap-4">
+          <button onclick="mintPrev()" id="mintPrevBtn" class="hidden px-6 py-3 glass border border-white/20 rounded-xl hover:border-white/40 transition-all">← Previous</button>
+          <button onclick="mintNext()" id="mintNextBtn" class="btn-gold px-8 py-3 rounded-xl font-semibold">Next →</button>
+          <button onclick="mintSubmit()" id="mintSubmitBtn" class="hidden btn-gold px-8 py-3 rounded-xl font-semibold">Submit for Consultant Review</button>
         </div>
       `;
     }
 
-    function renderSponsorDashboard() {
-      return `
-        <div class="flex justify-between items-start mb-8">
-          <div>
-            <h1 class="text-3xl font-bold mb-2">Sponsor Dashboard</h1>
-            <p class="text-white/60">Welcome, ${escapeHtml(AppState.currentUser?.name || 'Sponsor')}</p>
-          </div>
-          <button onclick="logout()" class="px-6 py-2 rounded-full glass border border-white/20 hover:border-white/40">Sign Out</button>
-        </div>
-        <div class="glass rounded-2xl p-8 mb-8">
-          <h3 class="text-xl font-semibold mb-4">Support Education</h3>
-          <p class="text-white/70 mb-6">Purchase FTRs for employee benefits or donate to receive Sponsorship Units (80G + CSR eligible).</p>
-          <div class="flex gap-4 flex-wrap">
-            <button onclick="showComingSoon('Purchase FTRs')" class="btn-gold px-8 py-4 rounded-xl font-semibold">Purchase FTRs</button>
-            <button onclick="showComingSoon('Donate for SUs')" class="glass border border-[#D4AF37] text-[#D4AF37] px-8 py-4 rounded-xl font-semibold hover:bg-[#D4AF37]/10">Donate for SUs</button>
-          </div>
-        </div>
-        <div class="grid md:grid-cols-2 gap-8">
-          <div class="glass rounded-2xl p-6">
-            <h3 class="text-lg font-semibold mb-4">Your Impact</h3>
-            <p class="text-white/50 text-center py-8">No contributions yet. Start sponsoring to see your impact.</p>
-          </div>
-          <div class="glass rounded-2xl p-6">
-            <h3 class="text-lg font-semibold mb-4">Tax Benefits (India)</h3>
-            <ul class="space-y-3 text-sm text-white/70">
-              <li class="flex items-start gap-2"><span class="text-emerald-400">✓</span> 80G deduction for SU donations</li>
-              <li class="flex items-start gap-2"><span class="text-emerald-400">✓</span> CSR expenditure eligibility</li>
-              <li class="flex items-start gap-2"><span class="text-emerald-400">✓</span> Section 37 deduction for FTRs as employee benefits</li>
-            </ul>
-          </div>
-        </div>
-      `;
+    function panelApprovals(name) {
+      return panelHeader('Approvals', 'Redemption requests pending your institute confirmation') +
+        `<div class="glass rounded-2xl p-6">
+          <div id="approvalsContainer"><p class="text-white/40 text-center py-10 text-sm">Loading…</p></div>
+        </div>`;
     }
 
-    function renderHouseholdDashboard() {
-      return `
-        <div class="flex justify-between items-start mb-8">
-          <div>
-            <h1 class="text-3xl font-bold mb-2">Household Dashboard</h1>
-            <p class="text-white/60">Welcome, ${escapeHtml(AppState.currentUser?.name || 'Parent')}</p>
-          </div>
-          <button onclick="logout()" class="px-6 py-2 rounded-full glass border border-white/20 hover:border-white/40">Sign Out</button>
-        </div>
-        <div class="glass rounded-2xl p-8 mb-8">
-          <h3 class="text-xl font-semibold mb-4">Secure Your Child's Future</h3>
-          <p class="text-white/70 mb-6">Build your FTR portfolio over time to hedge against education fee inflation.</p>
-          <button onclick="showComingSoon('Browse Available FTRs')" class="btn-gold px-8 py-4 rounded-xl font-semibold">Browse Available FTRs</button>
-        </div>
-        <div class="grid md:grid-cols-2 gap-8">
-          <div class="glass rounded-2xl p-6">
-            <h3 class="text-lg font-semibold mb-4">Your FTR Portfolio</h3>
-            <p class="text-white/50 text-center py-8">No FTRs yet. Start building your portfolio today.</p>
-          </div>
-          <div class="glass rounded-2xl p-6">
-            <h3 class="text-lg font-semibold mb-4">Benefits</h3>
-            <ul class="space-y-3 text-sm text-white/70">
-              <li class="flex items-start gap-2"><span class="text-emerald-400">✓</span> Lock current fees against inflation</li>
-              <li class="flex items-start gap-2"><span class="text-emerald-400">✓</span> Swap between institutes globally</li>
-              <li class="flex items-start gap-2"><span class="text-emerald-400">✓</span> Trade or transfer to family members</li>
-              <li class="flex items-start gap-2"><span class="text-emerald-400">✓</span> Predictable education budgeting</li>
-            </ul>
-          </div>
-        </div>
-      `;
+    function panelComingSoon(panel) {
+      if (panel === 'reviewQueue') return panelConsultantReview();
+      if (panel === 'myTasks')    return panelConsultantTasks();
+      const labels = {complaints:'Complaints',resolutions:'Resolutions'};
+      return panelHeader(labels[panel]||panel, 'This module is coming soon') +
+        `<div class="glass rounded-2xl p-12 text-center max-w-md">
+          <div class="text-4xl mb-4">🔧</div>
+          <p class="text-white/50 text-sm">This section is under development and will be available in the next release.</p>
+        </div>`;
     }
 
-    function renderStudentDashboard() {
-      return `
-        <div class="flex justify-between items-start mb-8">
-          <div>
-            <h1 class="text-3xl font-bold mb-2">Student Dashboard</h1>
-            <p class="text-white/60">Welcome, ${escapeHtml(AppState.currentUser?.name || 'Student')}</p>
-          </div>
-          <button onclick="logout()" class="px-6 py-2 rounded-full glass border border-white/20 hover:border-white/40">Sign Out</button>
-        </div>
-        <div class="glass rounded-2xl p-8 mb-8">
-          <h3 class="text-xl font-semibold mb-4">Your Education Journey</h3>
-          <p class="text-white/70 mb-6">Check if you have FTR/SU coverage from family or sponsors. Update your profile to be discoverable by potential sponsors.</p>
-          <button onclick="showComingSoon('Update Profile')" class="btn-gold px-8 py-4 rounded-xl font-semibold">Update Profile</button>
-        </div>
-        <div class="glass rounded-2xl p-6">
-          <h3 class="text-lg font-semibold mb-4">Sponsorship Status</h3>
-          <p class="text-white/50 text-center py-8">No active sponsorship linked to your account.</p>
-        </div>
-      `;
+    function panelConsultantReview() {
+      return panelHeader('Review Queue', 'Minting applications awaiting your review') +
+        `<div class="glass rounded-2xl p-6">
+          <div id="consultantQueueContainer"><p class="text-white/40 text-center py-10 text-sm">Loading applications…</p></div>
+        </div>`;
     }
 
-    function showComingSoon(feature) {
-      showToast(feature + ' — Coming Soon!', 'info');
+    function panelConsultantTasks() {
+      return panelHeader('My Tasks', 'All minting reviews assigned to you') +
+        `<div class="glass rounded-2xl p-6">
+          <div id="myTasksContainer"><p class="text-white/40 text-center py-10 text-sm">Loading tasks…</p></div>
+        </div>`;
+    }
+
+    function panelAdminUsers() {
+      return panelHeader('Users', 'All registered platform users') +
+        `<div class="glass rounded-2xl p-6">
+          <div id="adminUsersContainer"><p class="text-white/40 text-center py-10 text-sm">Loading…</p></div>
+        </div>`;
+    }
+
+    function panelAdminConfig() {
+      return panelHeader('Configuration', 'Platform parametric rules') +
+        `<div class="grid md:grid-cols-2 gap-6 max-w-2xl">
+          <div class="glass rounded-2xl p-6">
+            <p class="text-white/50 text-xs mb-1">Issuance Cap</p>
+            <p class="text-2xl font-bold text-[#D4AF37]">600%</p>
+            <p class="text-white/40 text-xs mt-1">of annual sanctioned intake</p>
+          </div>
+          <div class="glass rounded-2xl p-6">
+            <p class="text-white/50 text-xs mb-1">SU Merit Minimum</p>
+            <p class="text-2xl font-bold text-emerald-400">70%</p>
+            <p class="text-white/40 text-xs mt-1">for merit/needy students</p>
+          </div>
+          <div class="glass rounded-2xl p-6">
+            <p class="text-white/50 text-xs mb-1">Earmarked Seats</p>
+            <p class="text-2xl font-bold text-blue-400">55%</p>
+            <p class="text-white/40 text-xs mt-1">reserved for FTR/SU holders</p>
+          </div>
+          <div class="glass rounded-2xl p-6">
+            <p class="text-white/50 text-xs mb-1">Admin Panel</p>
+            <a href="/admin/" class="btn-gold px-4 py-2 rounded-lg text-sm font-semibold inline-block mt-1">Open Admin Panel →</a>
+          </div>
+        </div>`;
+    }
+
+    // ==================== LOAD DASHBOARD DATA ====================
+    async function loadDashboardData() {
+      // Refresh the currently visible panel
+      if (AppState.activePanel) showDashPanel(AppState.activePanel);
+    }
+
+    async function loadInstituteData() {
+      try {
+        const snap = await db.collection('issuances')
+          .where('instituteId', '==', AppState.currentUser.uid)
+          .orderBy('createdAt', 'desc')
+          .get();
+
+        let totalIssued = 0, activeUnits = 0, sold = 0, redeemed = 0;
+        let rows = '';
+        snap.forEach(doc => {
+          const d = doc.data();
+          totalIssued += d.quantity || 0;
+          if (d.status === 'active') activeUnits += d.quantity || 0;
+          sold     += d.sold     || 0;
+          redeemed += d.redeemed || 0;
+          const ts = d.createdAt?.toDate?.()?.toLocaleDateString() || '—';
+          const badge = d.unitType === 'FTR'
+            ? '<span class="px-2 py-0.5 text-xs rounded-full bg-[#D4AF37]/20 text-[#D4AF37]">FTR</span>'
+            : '<span class="px-2 py-0.5 text-xs rounded-full bg-emerald-500/20 text-emerald-400">SU</span>';
+          rows += `<tr class="border-b border-white/5 hover:bg-white/5">
+            <td class="py-3 pr-4">${badge}</td>
+            <td class="py-3 pr-4 text-sm">${escapeHtml(d.course)}</td>
+            <td class="py-3 pr-4 text-sm text-right">${(d.quantity||0).toLocaleString()}</td>
+            <td class="py-3 pr-4 text-sm text-right text-[#D4AF37]">₹${(d.lockedFee||0).toLocaleString()}</td>
+            <td class="py-3 pr-4 text-sm text-white/50">${ts}</td>
+            <td class="py-3 text-sm"><span class="px-2 py-0.5 text-xs rounded-full ${d.status==='active'?'bg-emerald-500/20 text-emerald-400':'bg-white/10 text-white/40'}">${d.status}</span></td>
+          </tr>`;
+        });
+
+        document.getElementById('stat-total-issued').textContent = totalIssued.toLocaleString();
+        document.getElementById('stat-active-units').textContent = activeUnits.toLocaleString();
+        document.getElementById('stat-sold').textContent = sold.toLocaleString();
+        document.getElementById('stat-redeemed').textContent = redeemed.toLocaleString();
+
+        const c = document.getElementById('instituteIssuancesContainer');
+        if (!rows) {
+          c.innerHTML = '<p class="text-white/40 text-center py-10 text-sm">No issuances yet. Click "Issue FTR / SU" to get started.</p>';
+        } else {
+          c.innerHTML = `<div class="overflow-x-auto"><table class="w-full text-white">
+            <thead><tr class="border-b border-white/10 text-white/40 text-xs">
+              <th class="pb-3 text-left">Type</th><th class="pb-3 text-left">Course</th>
+              <th class="pb-3 text-right">Qty</th><th class="pb-3 text-right">Locked Fee</th>
+              <th class="pb-3 text-left">Date</th><th class="pb-3 text-left">Status</th>
+            </tr></thead>
+            <tbody>${rows}</tbody>
+          </table></div>`;
+        }
+      } catch (err) {
+        console.error(err);
+        const c = document.getElementById('instituteIssuancesContainer');
+        if (c) c.innerHTML = '<p class="text-red-400 text-center py-8 text-sm">Failed to load data.</p>';
+      }
+    }
+
+    async function loadMarketplace() {
+      const c = document.getElementById('marketplaceContainer');
+      if (!c) return;
+      c.innerHTML = '<p class="text-white/40 text-center py-10 text-sm">Loading…</p>';
+      try {
+        const snap = await db.collection('issuances')
+          .where('status', '==', 'active')
+          .limit(50)
+          .get();
+
+        AppState.marketplaceIssuances = [];
+        let cards = '';
+        snap.forEach(doc => {
+          const d = { id: doc.id, ...doc.data() };
+          AppState.marketplaceIssuances.push(d);
+          const available = (d.quantity || 0) - (d.sold || 0);
+          if (available <= 0) return;
+          const badge = d.unitType === 'FTR'
+            ? '<span class="px-2 py-0.5 text-xs rounded-full bg-[#D4AF37]/20 text-[#D4AF37] font-semibold">FTR</span>'
+            : '<span class="px-2 py-0.5 text-xs rounded-full bg-emerald-500/20 text-emerald-400 font-semibold">SU</span>';
+          cards += `
+            <div class="glass rounded-xl p-5 flex flex-col gap-3 border border-white/5 hover:border-[#D4AF37]/40 transition-all">
+              <div class="flex items-start justify-between gap-2">
+                <div>
+                  ${badge}
+                  <p class="font-semibold mt-2 text-sm">${escapeHtml(d.instituteName || 'Institute')}</p>
+                  <p class="text-white/50 text-xs">${escapeHtml(d.course)}</p>
+                </div>
+                <div class="text-right shrink-0">
+                  <p class="text-[#D4AF37] font-bold text-lg">₹${(d.lockedFee||0).toLocaleString()}</p>
+                  <p class="text-white/40 text-xs">${available.toLocaleString()} left</p>
+                </div>
+              </div>
+              <button onclick="openPurchaseModal('${doc.id}')" class="btn-gold w-full py-2.5 rounded-xl text-sm font-semibold mt-1">Buy Now</button>
+            </div>`;
+        });
+
+        if (!cards) {
+          c.innerHTML = '<p class="text-white/40 text-center py-10 text-sm">No active FTRs available in the marketplace yet.</p>';
+        } else {
+          c.innerHTML = `<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">${cards}</div>`;
+        }
+      } catch (err) {
+        console.error(err);
+        c.innerHTML = '<p class="text-red-400 text-center py-8 text-sm">Failed to load marketplace. Check Firestore rules.</p>';
+      }
+    }
+
+    async function loadMyHoldings() {
+      const c = document.getElementById('holdingsContainer');
+      if (!c) return;
+      c.innerHTML = '<p class="text-white/40 text-center py-10 text-sm">Loading…</p>';
+      try {
+        const snap = await db.collection('holdings')
+          .where('ownerId', '==', AppState.currentUser.uid)
+          .get();
+
+        AppState.myHoldings = [];
+        let ftrCount = 0, suCount = 0, totalInvested = 0;
+        let rows = '';
+        snap.forEach(doc => {
+          const d = { id: doc.id, ...doc.data() };
+          AppState.myHoldings.push(d);
+          if (d.status === 'active') {
+            if (d.unitType === 'FTR') ftrCount += d.quantity || 0;
+            else suCount += d.quantity || 0;
+            totalInvested += (d.quantity || 0) * (d.lockedFee || 0);
+          }
+          const ts = d.purchasedAt?.toDate?.()?.toLocaleDateString() || '—';
+          const badge = d.unitType === 'FTR'
+            ? '<span class="px-2 py-0.5 text-xs rounded-full bg-[#D4AF37]/20 text-[#D4AF37]">FTR</span>'
+            : '<span class="px-2 py-0.5 text-xs rounded-full bg-emerald-500/20 text-emerald-400">SU</span>';
+          const statusColor = d.status === 'active' ? 'text-emerald-400' : d.status === 'redeemed' ? 'text-purple-400' : 'text-white/40';
+          const actions = d.status === 'active' ? `
+            <button onclick="openSwapModal('${doc.id}')" class="text-xs px-3 py-1.5 glass border border-white/20 rounded-lg hover:border-[#D4AF37] hover:text-[#D4AF37] transition-all">Swap</button>
+            <button onclick="openRedeemModal('${doc.id}')" class="text-xs px-3 py-1.5 glass border border-white/20 rounded-lg hover:border-emerald-400 hover:text-emerald-400 transition-all">Redeem</button>
+          ` : `<span class="text-xs text-white/30">${d.status}</span>`;
+          rows += `<tr class="border-b border-white/5 hover:bg-white/5">
+            <td class="py-3 pr-4">${badge}</td>
+            <td class="py-3 pr-4 text-sm">${escapeHtml(d.instituteName || '—')}</td>
+            <td class="py-3 pr-4 text-sm">${escapeHtml(d.course || '—')}</td>
+            <td class="py-3 pr-4 text-sm text-right">${(d.quantity||0).toLocaleString()}</td>
+            <td class="py-3 pr-4 text-sm text-right text-[#D4AF37]">₹${(d.lockedFee||0).toLocaleString()}</td>
+            <td class="py-3 pr-4 text-sm text-white/50">${ts}</td>
+            <td class="py-3 flex gap-2 flex-wrap">${actions}</td>
+          </tr>`;
+        });
+
+        // Update stats
+        const heldEl = document.getElementById('stat-held');
+        if (heldEl) heldEl.textContent = ftrCount.toLocaleString();
+        const susEl = document.getElementById('stat-sus');
+        if (susEl) susEl.textContent = suCount.toLocaleString();
+        const invEl = document.getElementById('stat-invested');
+        if (invEl) invEl.textContent = totalInvested.toLocaleString();
+
+        if (!rows) {
+          c.innerHTML = '<p class="text-white/40 text-center py-10 text-sm">No holdings yet. Browse the marketplace above to purchase FTRs.</p>';
+        } else {
+          c.innerHTML = `<div class="overflow-x-auto"><table class="w-full text-white">
+            <thead><tr class="border-b border-white/10 text-white/40 text-xs">
+              <th class="pb-3 text-left">Type</th><th class="pb-3 text-left">Institute</th>
+              <th class="pb-3 text-left">Course</th><th class="pb-3 text-right">Qty</th>
+              <th class="pb-3 text-right">Fee</th><th class="pb-3 text-left">Purchased</th>
+              <th class="pb-3 text-left">Actions</th>
+            </tr></thead>
+            <tbody>${rows}</tbody>
+          </table></div>`;
+        }
+      } catch (err) {
+        console.error(err);
+        c.innerHTML = '<p class="text-red-400 text-center py-8 text-sm">Failed to load holdings.</p>';
+      }
+    }
+
+    async function loadSponsorships() {
+      const c = document.getElementById('sponsorshipsContainer');
+      if (!c) return;
+      try {
+        const snap = await db.collection('sponsorships')
+          .where('studentId', '==', AppState.currentUser.uid)
+          .get();
+
+        let rows = '';
+        snap.forEach(doc => {
+          const d = doc.data();
+          const ts = d.createdAt?.toDate?.()?.toLocaleDateString() || '—';
+          rows += `<tr class="border-b border-white/5">
+            <td class="py-3 pr-4 text-sm">${escapeHtml(d.sponsorName || '—')}</td>
+            <td class="py-3 pr-4 text-sm">${escapeHtml(d.instituteName || '—')}</td>
+            <td class="py-3 pr-4 text-sm text-right">${(d.quantity||0).toLocaleString()} SUs</td>
+            <td class="py-3 text-sm text-white/50">${ts}</td>
+          </tr>`;
+        });
+
+        const cntEl = document.getElementById('stat-sponsorships');
+        if (cntEl) cntEl.textContent = snap.size;
+
+        if (!rows) {
+          c.innerHTML = '<p class="text-white/40 text-center py-8 text-sm">No sponsorships linked to your account.</p>';
+        } else {
+          c.innerHTML = `<div class="overflow-x-auto"><table class="w-full text-white">
+            <thead><tr class="border-b border-white/10 text-white/40 text-xs">
+              <th class="pb-3 text-left">Sponsor</th><th class="pb-3 text-left">Institute</th>
+              <th class="pb-3 text-right">SUs</th><th class="pb-3 text-left">Date</th>
+            </tr></thead>
+            <tbody>${rows}</tbody>
+          </table></div>`;
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    // ==================== MINTING PROGRAM ====================
+    function mintUpdateSubIndustry() {
+      const ind = document.getElementById('mint-industry')?.value;
+      const sel = document.getElementById('mint-subindustry');
+      if (!sel) return;
+      const subs = INDUSTRY_MASTER[ind] || [];
+      sel.innerHTML = subs.length
+        ? subs.map(s => `<option value="${s}">${s}</option>`).join('')
+        : '<option value="">No sub-industries</option>';
+    }
+
+    function mintWordCount() {
+      const el = document.getElementById('mint-writeup');
+      const wc = document.getElementById('mint-wordcount');
+      if (!el || !wc) return;
+      const words = el.value.trim().split(/\s+/).filter(w => w).length;
+      wc.textContent = words;
+      wc.className = words > 500 ? 'text-red-400' : '';
+    }
+
+    function mintCalcTables() {
+      const infl  = parseFloat(document.getElementById('mint-infl')?.value) / 100 || 0.068;
+      const svcP  = parseFloat(document.getElementById('mint-svcprice')?.value) || 0;
+      const gooP  = parseFloat(document.getElementById('mint-goodsprice')?.value) || 0;
+
+      const fmt = v => v > 0 ? '₹' + v.toLocaleString('en-IN', {maximumFractionDigits:2}) : '—';
+
+      // Table A (services)
+      if (svcP > 0) {
+        let diffs = [];
+        for (let n = 0; n < 4; n++) {
+          const market   = svcP * Math.pow(1 + infl, n);
+          const sv       = svcP;                   // FTR locks base price
+          const diff     = market - sv;
+          diffs.push(diff);
+          const q = s => document.getElementById(s);
+          if (q(`tA-bp-${n}`)) q(`tA-bp-${n}`).textContent = fmt(market);
+          if (q(`tA-sv-${n}`)) q(`tA-sv-${n}`).textContent = fmt(sv);
+          if (q(`tA-df-${n}`)) q(`tA-df-${n}`).textContent = diff >= 0 ? '+' + fmt(diff) : fmt(diff);
+        }
+        const avg = diffs.reduce((a,b) => a+b, 0) / diffs.length;
+        const qEl = s => document.getElementById(s);
+        if (qEl('tA-avg'))      qEl('tA-avg').textContent      = '+' + fmt(avg) + ' avg saving';
+        if (qEl('tA-prefixed')) qEl('tA-prefixed').textContent = fmt(svcP) + ' / unit';
+      }
+
+      // Table B (goods)
+      if (gooP > 0) {
+        let diffs = [];
+        for (let n = 0; n < 4; n++) {
+          const market = gooP * Math.pow(1 + infl, n);
+          const sv     = gooP;
+          const diff   = market - sv;
+          diffs.push(diff);
+          const q = s => document.getElementById(s);
+          if (q(`tB-bp-${n}`)) q(`tB-bp-${n}`).textContent = fmt(market);
+          if (q(`tB-sv-${n}`)) q(`tB-sv-${n}`).textContent = fmt(sv);
+          if (q(`tB-df-${n}`)) q(`tB-df-${n}`).textContent = diff >= 0 ? '+' + fmt(diff) : fmt(diff);
+        }
+        const avg = diffs.reduce((a,b) => a+b, 0) / diffs.length;
+        const qEl = s => document.getElementById(s);
+        if (qEl('tB-avg'))      qEl('tB-avg').textContent      = '+' + fmt(avg) + ' avg saving';
+        if (qEl('tB-prefixed')) qEl('tB-prefixed').textContent = fmt(gooP) + ' / unit';
+      }
+    }
+
+    function mintCalcLimits() {
+      const svc3    = parseFloat(document.getElementById('mint-svc3')?.value) || 0;
+      const goods3  = parseFloat(document.getElementById('mint-goods3')?.value) || 0;
+      const svcEar  = parseFloat(document.getElementById('lim-svc-ear')?.value) / 100 || 0.45;
+      const svcYrs  = parseFloat(document.getElementById('lim-svc-yrs')?.value) || 10;
+      const gooEar  = parseFloat(document.getElementById('lim-goods-ear')?.value) / 100 || 0;
+      const gooYrs  = parseFloat(document.getElementById('lim-goods-yrs')?.value) || 0;
+      const disc    = parseFloat(document.getElementById('mint-discount')?.value) / 100 || 0.10;
+
+      const svcMax  = svc3 * 1e6 * svcEar * svcYrs;
+      const gooMax  = goods3 * 1e6 * gooEar * gooYrs;
+      const totMax  = svcMax + gooMax;
+      const maxFTRs = Math.floor(totMax / 100);
+
+      const fmt   = v => '₹' + Math.round(v).toLocaleString('en-IN');
+      const fmtN  = v => v.toLocaleString('en-IN');
+      const q     = s => document.getElementById(s);
+
+      if (q('lim-svc-maxrev'))   q('lim-svc-maxrev').textContent  = fmt(svc3 * 1e6) + ' / yr';
+      if (q('lim-svc-maxval'))   q('lim-svc-maxval').textContent  = fmt(svcMax);
+      if (q('lim-goods-maxrev')) q('lim-goods-maxrev').textContent = fmt(goods3 * 1e6) + ' / yr';
+      if (q('lim-goods-maxval')) q('lim-goods-maxval').textContent = fmt(gooMax);
+      if (q('lim-total-maxval')) q('lim-total-maxval').textContent = fmt(totMax);
+      if (q('lim-max-ftrs'))     q('lim-max-ftrs').textContent    = fmtN(maxFTRs);
+
+      const effPrice = 100 * (1 - disc);
+      if (q('mint-eff-price'))   q('mint-eff-price').textContent  = '₹ ' + effPrice.toFixed(2);
+    }
+
+    function mintAddTableCRow() {
+      AppState.mintTableC.push({ desc:'', unit:'', units:'', priceAtMint:'', presentPrice:'' });
+      mintRenderTableC();
+    }
+
+    function mintRemoveTableCRow(i) {
+      AppState.mintTableC.splice(i, 1);
+      mintRenderTableC();
+    }
+
+    function mintRenderTableC() {
+      const tbody = document.getElementById('tableCBody');
+      if (!tbody) return;
+      if (!AppState.mintTableC.length) {
+        tbody.innerHTML = '<tr class="text-white/30 text-center"><td colspan="7" class="py-8 text-sm">Click "+ Add Row" to add underlying goods and services</td></tr>';
+        return;
+      }
+      tbody.innerHTML = AppState.mintTableC.map((r, i) => `
+        <tr class="border-b border-white/5">
+          <td class="py-2 pr-2 text-white/40 text-xs w-8">${i+1}</td>
+          <td class="py-2 pr-2"><input type="text" value="${escapeHtml(r.desc)}" oninput="AppState.mintTableC[${i}].desc=this.value" class="w-full input-field rounded-lg p-2 text-sm" placeholder="Description"></td>
+          <td class="py-2 pr-2"><input type="text" value="${escapeHtml(r.unit)}" oninput="AppState.mintTableC[${i}].unit=this.value" class="w-full input-field rounded-lg p-2 text-sm" placeholder="Unit"></td>
+          <td class="py-2 pr-2"><input type="number" value="${r.units}" oninput="AppState.mintTableC[${i}].units=this.value" class="w-24 input-field rounded-lg p-2 text-sm text-right" placeholder="0"></td>
+          <td class="py-2 pr-2"><input type="number" value="${r.priceAtMint}" oninput="AppState.mintTableC[${i}].priceAtMint=this.value" class="w-28 input-field rounded-lg p-2 text-sm text-right" placeholder="0"></td>
+          <td class="py-2 pr-2"><input type="number" value="${r.presentPrice}" oninput="AppState.mintTableC[${i}].presentPrice=this.value" class="w-28 input-field rounded-lg p-2 text-sm text-right" placeholder="0"></td>
+          <td class="py-2"><button onclick="mintRemoveTableCRow(${i})" class="text-red-400/60 hover:text-red-400 text-xs px-2">✕</button></td>
+        </tr>`).join('');
+    }
+
+    function mintGoToStep(n) {
+      for (let i = 1; i <= 5; i++) {
+        const el = document.getElementById(`mintStep${i}`);
+        if (el) el.classList.toggle('hidden', i !== n);
+        const dot = document.getElementById(`mintDot${i}`);
+        if (dot) {
+          dot.className = `w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
+            i < n ? 'bg-emerald-500 text-white' : i === n ? 'bg-[#D4AF37] text-black' : 'bg-white/10 text-white/40'
+          }`;
+        }
+        const lbl = document.getElementById(`mintLbl${i}`);
+        if (lbl) lbl.className = `text-xs hidden sm:inline mr-2 ${i === n ? 'text-[#D4AF37]' : i < n ? 'text-emerald-400' : 'text-white/30'}`;
+      }
+      AppState.mintStep = n;
+      document.getElementById('mintPrevBtn')?.classList.toggle('hidden', n === 1);
+      document.getElementById('mintNextBtn')?.classList.toggle('hidden', n === 5);
+      document.getElementById('mintSubmitBtn')?.classList.toggle('hidden', n !== 5);
+      if (n === 5) mintCalcLimits();
+    }
+
+    function mintNext() {
+      const s = AppState.mintStep;
+      if (s === 1) {
+        if (!document.getElementById('mint-industry')?.value)    return showToast('Select an industry.', 'error');
+        if (!document.getElementById('mint-projname')?.value?.trim()) return showToast('Enter project name.', 'error');
+        if (!document.getElementById('mint-projloc')?.value?.trim())  return showToast('Enter project location.', 'error');
+      }
+      if (s === 3) mintCalcTables();
+      mintGoToStep(s + 1);
+      window.scrollTo(0, 0);
+    }
+
+    function mintPrev() {
+      mintGoToStep(AppState.mintStep - 1);
+      window.scrollTo(0, 0);
+    }
+
+    async function mintSubmit() {
+      if (AppState.isProcessing) return;
+      const qty = parseInt(document.getElementById('mint-qty-now')?.value);
+      if (!qty || qty < 1) return showToast('Enter the number of FTRs to mint.', 'error');
+
+      const maxFTRs = parseInt(document.getElementById('lim-max-ftrs')?.textContent?.replace(/,/g,'')) || 0;
+      if (maxFTRs > 0 && qty > maxFTRs) return showToast(`Quantity exceeds the maximum limit of ${maxFTRs.toLocaleString()} FTRs.`, 'error');
+
+      AppState.isProcessing = true;
+      const btn = document.getElementById('mintSubmitBtn');
+      if (btn) { btn.disabled = true; btn.textContent = 'Submitting…'; }
+
+      try {
+        const industry    = document.getElementById('mint-industry')?.value;
+        const subIndustry = document.getElementById('mint-subindustry')?.value;
+        const ftrPrefix   = industry.substring(0,4).toUpperCase() + '-' + Date.now().toString(36).toUpperCase();
+
+        await db.collection('mintingPrograms').add({
+          minterId:       AppState.currentUser.uid,
+          minterName:     AppState.currentUser.name,
+          status:         'submitted',
+          industry,
+          subIndustry,
+          projectName:    document.getElementById('mint-projname')?.value?.trim(),
+          projectLocation:document.getElementById('mint-projloc')?.value?.trim(),
+          writeUp:        document.getElementById('mint-writeup')?.value?.trim(),
+          baseCurrency:   document.getElementById('mint-currency')?.value,
+          revenue: {
+            svc1: parseFloat(document.getElementById('mint-svc1')?.value)||0,
+            svc2: parseFloat(document.getElementById('mint-svc2')?.value)||0,
+            svc3: parseFloat(document.getElementById('mint-svc3')?.value)||0,
+            goods1: parseFloat(document.getElementById('mint-goods1')?.value)||0,
+            goods2: parseFloat(document.getElementById('mint-goods2')?.value)||0,
+            goods3: parseFloat(document.getElementById('mint-goods3')?.value)||0,
+          },
+          params: {
+            roi:      parseFloat(document.getElementById('mint-roi')?.value)||9.2,
+            inflation:parseFloat(document.getElementById('mint-infl')?.value)||6.8,
+          },
+          baseService: {
+            name:      document.getElementById('mint-svcname')?.value?.trim(),
+            unit:      document.getElementById('mint-svcunit')?.value?.trim(),
+            basePrice: parseFloat(document.getElementById('mint-svcprice')?.value)||0,
+          },
+          baseGoods: {
+            name:      document.getElementById('mint-goodsname')?.value?.trim(),
+            unit:      document.getElementById('mint-goodsunit')?.value?.trim(),
+            basePrice: parseFloat(document.getElementById('mint-goodsprice')?.value)||0,
+          },
+          tableC:        AppState.mintTableC,
+          mintingLimits: {
+            svcEarmarkedPct:  parseFloat(document.getElementById('lim-svc-ear')?.value)||45,
+            svcYears:         parseFloat(document.getElementById('lim-svc-yrs')?.value)||10,
+            goodsEarmarkedPct:parseFloat(document.getElementById('lim-goods-ear')?.value)||0,
+            goodsYears:       parseFloat(document.getElementById('lim-goods-yrs')?.value)||0,
+            valuePerFTR:      100,
+            qtyToMintNow:     qty,
+            discount:         parseFloat(document.getElementById('mint-discount')?.value)||10,
+          },
+          ftrPrefix,
+          riskRating:    null,
+          approvedValue: null,
+          consultantIds: [],
+          reviews:       [],
+          createdAt:     firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        showToast('Minting application submitted! Assigned to consultants for review.', 'success');
+        // Reset and go to approvals
+        AppState.mintTableC = [];
+        showDashPanel('approvals');
+      } catch (err) {
+        console.error(err);
+        showToast('Submission failed. Please try again.', 'error');
+      } finally {
+        AppState.isProcessing = false;
+        if (btn) { btn.disabled = false; btn.textContent = 'Submit for Consultant Review'; }
+      }
+    }
+
+    // ── Consultant review ──
+    async function loadConsultantQueue(mode) {
+      const containerId = mode === 'all' ? 'myTasksContainer' : 'consultantQueueContainer';
+      const c = document.getElementById(containerId);
+      if (!c) return;
+      try {
+        let query = db.collection('mintingPrograms');
+        if (mode !== 'all') query = query.where('status', '==', 'submitted');
+        const snap = await query.limit(50).get();
+        if (snap.empty) { c.innerHTML = '<p class="text-white/40 text-center py-10 text-sm">No applications in queue.</p>'; return; }
+        let rows = '';
+        snap.forEach(doc => {
+          const d = doc.data();
+          const ts = d.createdAt?.toDate?.()?.toLocaleDateString() || '—';
+          const statusColor = {submitted:'text-yellow-400',approved:'text-emerald-400',rejected:'text-red-400',minted:'text-[#D4AF37]'}[d.status]||'text-white/40';
+          rows += `<tr class="border-b border-white/5 hover:bg-white/5">
+            <td class="py-3 pr-4 text-sm font-medium">${escapeHtml(d.projectName||'—')}</td>
+            <td class="py-3 pr-4 text-sm">${escapeHtml(d.industry||'—')}</td>
+            <td class="py-3 pr-4 text-sm">${escapeHtml(d.minterName||'—')}</td>
+            <td class="py-3 pr-4 text-sm text-white/50">${ts}</td>
+            <td class="py-3 pr-4"><span class="${statusColor} text-xs">${d.status}</span></td>
+            <td class="py-3">
+              <button onclick="openConsultantReview('${doc.id}')" class="text-xs px-3 py-1.5 btn-gold rounded-lg">Review</button>
+            </td>
+          </tr>`;
+        });
+        c.innerHTML = `<div class="overflow-x-auto"><table class="w-full text-white">
+          <thead><tr class="border-b border-white/10 text-white/40 text-xs">
+            <th class="pb-3 text-left">Project</th><th class="pb-3 text-left">Industry</th>
+            <th class="pb-3 text-left">Minter</th><th class="pb-3 text-left">Submitted</th>
+            <th class="pb-3 text-left">Status</th><th class="pb-3 text-left">Action</th>
+          </tr></thead><tbody>${rows}</tbody></table></div>`;
+      } catch (err) {
+        console.error(err);
+        c.innerHTML = '<p class="text-red-400 text-center py-8 text-sm">Failed to load queue.</p>';
+      }
+    }
+
+    async function openConsultantReview(programId) {
+      try {
+        const doc  = await db.collection('mintingPrograms').doc(programId).get();
+        if (!doc.exists) return showToast('Program not found.', 'error');
+        const d = doc.data();
+        const action = await new Promise(resolve => {
+          showConfirmModal(
+            `Review: ${d.projectName}`,
+            `Industry: ${d.industry} — ${d.subIndustry}\nMinter: ${d.minterName}\nFTRs requested: ${(d.mintingLimits?.qtyToMintNow||0).toLocaleString()}\n\nApprove or reject this minting application?`,
+            () => resolve('approve')
+          );
+          document.getElementById('confirmBtn').onclick = () => { closeConfirmModal(); resolve('approve'); };
+          // Add reject button
+          const btn = document.getElementById('confirmBtn');
+          const rejectBtn = btn.cloneNode(true);
+          rejectBtn.textContent = 'Reject';
+          rejectBtn.className = 'flex-1 py-3 rounded-xl glass border border-red-500/40 text-red-400';
+          rejectBtn.onclick = () => { closeConfirmModal(); resolve('reject'); };
+          btn.parentNode.insertBefore(rejectBtn, btn);
+        });
+        const riskRating = action === 'approve' ? 3 : 6;
+        await db.collection('mintingPrograms').doc(programId).update({
+          status:        action === 'approve' ? 'approved' : 'rejected',
+          riskRating,
+          approvedValue: action === 'approve' ? d.mintingLimits?.qtyToMintNow * 100 : null,
+          reviews: firebase.firestore.FieldValue.arrayUnion({
+            consultantId:   AppState.currentUser.uid,
+            consultantName: AppState.currentUser.name,
+            action,
+            riskRating,
+            timestamp:      new Date().toISOString()
+          })
+        });
+        showToast(`Application ${action === 'approve' ? 'approved' : 'rejected'} successfully.`, 'success');
+        loadConsultantQueue('submitted');
+      } catch (err) {
+        console.error(err);
+        showToast('Review failed.', 'error');
+      }
+    }
+
+    // ── Minting approvals (institute view) ──
+    async function loadApprovals() {
+      const c = document.getElementById('approvalsContainer');
+      if (!c) return;
+      try {
+        const [redeemSnap, mintSnap] = await Promise.all([
+          db.collection('redemptions').where('instituteId','==',AppState.currentUser.uid).get(),
+          db.collection('mintingPrograms').where('minterId','==',AppState.currentUser.uid).get()
+        ]);
+
+        let html = '';
+
+        // Minting programs status
+        if (!mintSnap.empty) {
+          html += `<h4 class="font-semibold text-white/70 mb-3 text-sm">Minting Program Status</h4>`;
+          let rows = '';
+          mintSnap.forEach(doc => {
+            const d = doc.data();
+            const ts = d.createdAt?.toDate?.()?.toLocaleDateString() || '—';
+            const sc = {submitted:'text-yellow-400',approved:'text-emerald-400',rejected:'text-red-400',minted:'text-[#D4AF37]'}[d.status]||'text-white/40';
+            const mintBtn = d.status === 'approved'
+              ? `<button onclick="executeMint('${doc.id}')" class="text-xs px-3 py-1.5 btn-gold rounded-lg">Mint FTRs</button>` : '';
+            rows += `<tr class="border-b border-white/5 hover:bg-white/5">
+              <td class="py-3 pr-4 text-sm font-medium">${escapeHtml(d.projectName||'—')}</td>
+              <td class="py-3 pr-4 text-sm">${escapeHtml(d.industry||'—')}</td>
+              <td class="py-3 pr-4 text-sm text-right">${(d.mintingLimits?.qtyToMintNow||0).toLocaleString()}</td>
+              <td class="py-3 pr-4 text-sm ${sc}">${d.status}${d.riskRating?` (Risk: ${d.riskRating})`:''}
+                ${d.approvedValue?`<span class="text-white/40 ml-1">₹${(d.approvedValue/1e6).toFixed(2)}M approved</span>`:''}</td>
+              <td class="py-3 pr-4 text-sm text-white/40">${ts}</td>
+              <td class="py-3">${mintBtn}</td>
+            </tr>`;
+          });
+          html += `<div class="overflow-x-auto mb-6"><table class="w-full text-white">
+            <thead><tr class="border-b border-white/10 text-white/40 text-xs">
+              <th class="pb-3 text-left">Project</th><th class="pb-3 text-left">Industry</th>
+              <th class="pb-3 text-right">FTRs</th><th class="pb-3 text-left">Status</th>
+              <th class="pb-3 text-left">Date</th><th class="pb-3 text-left">Action</th>
+            </tr></thead><tbody>${rows}</tbody></table></div>`;
+        }
+
+        // Redemption approvals
+        if (!redeemSnap.empty) {
+          html += `<h4 class="font-semibold text-white/70 mb-3 text-sm mt-4">Redemption Requests</h4>`;
+          let rows = '';
+          redeemSnap.forEach(doc => {
+            const d = doc.data();
+            const ts = d.createdAt?.toDate?.()?.toLocaleDateString() || '—';
+            const badge = d.status === 'pending_verification'
+              ? '<span class="text-xs text-yellow-400">Pending</span>'
+              : '<span class="text-xs text-emerald-400">Verified</span>';
+            rows += `<tr class="border-b border-white/5">
+              <td class="py-3 pr-4 text-sm">${escapeHtml(d.ownerName||'—')}</td>
+              <td class="py-3 pr-4 text-sm">${escapeHtml(d.course||'—')}</td>
+              <td class="py-3 pr-4 text-sm text-right">${d.quantity||0} ${d.unitType}</td>
+              <td class="py-3 pr-4 text-sm">${escapeHtml(d.admissionId||'—')}</td>
+              <td class="py-3 pr-4 text-sm text-white/40">${ts}</td>
+              <td class="py-3">${badge}</td>
+            </tr>`;
+          });
+          html += `<div class="overflow-x-auto"><table class="w-full text-white">
+            <thead><tr class="border-b border-white/10 text-white/40 text-xs">
+              <th class="pb-3 text-left">Student</th><th class="pb-3 text-left">Course</th>
+              <th class="pb-3 text-right">Units</th><th class="pb-3 text-left">Adm ID</th>
+              <th class="pb-3 text-left">Date</th><th class="pb-3 text-left">Status</th>
+            </tr></thead><tbody>${rows}</tbody></table></div>`;
+        }
+
+        if (!html) html = '<p class="text-white/40 text-center py-10 text-sm">No pending items.</p>';
+        c.innerHTML = html;
+      } catch (err) {
+        console.error(err);
+        c.innerHTML = '<p class="text-red-400 text-center py-8 text-sm">Failed to load.</p>';
+      }
+    }
+
+    async function executeMint(programId) {
+      if (AppState.isProcessing) return;
+      showConfirmModal('Execute Minting', 'This will create the FTR issuance on the platform. This action cannot be undone. Proceed?', async () => {
+        AppState.isProcessing = true;
+        try {
+          const doc = await db.collection('mintingPrograms').doc(programId).get();
+          const d   = doc.data();
+          const batch = db.batch();
+          // Create issuance from minting program
+          const issRef = db.collection('issuances').doc();
+          batch.set(issRef, {
+            instituteId:   AppState.currentUser.uid,
+            instituteName: AppState.currentUser.name,
+            mintingProgramId: programId,
+            industry:      d.industry,
+            subIndustry:   d.subIndustry,
+            projectName:   d.projectName,
+            ftrPrefix:     d.ftrPrefix,
+            unitType:      'FTR',
+            course:        d.subIndustry || d.industry,
+            quantity:      d.mintingLimits?.qtyToMintNow || 0,
+            lockedFee:     100,
+            discount:      d.mintingLimits?.discount || 10,
+            status:        'active',
+            sold:          0,
+            redeemed:      0,
+            createdAt:     firebase.firestore.FieldValue.serverTimestamp()
+          });
+          // Update program status to minted
+          batch.update(db.collection('mintingPrograms').doc(programId), {
+            status: 'minted',
+            mintedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            issuanceId: issRef.id
+          });
+          await batch.commit();
+          showToast('FTRs minted successfully! Issuance is now live in the marketplace.', 'success');
+          loadApprovals();
+        } catch (err) {
+          console.error(err);
+          showToast('Minting failed. Please try again.', 'error');
+        } finally {
+          AppState.isProcessing = false;
+        }
+      });
+    }
+
+    // ==================== TRANSACTIONS ====================
+    async function loadTransactions() {
+      const c = document.getElementById('transactionsContainer');
+      if (!c) return;
+      try {
+        const [holdSnap, redeemSnap, swapSnap] = await Promise.all([
+          db.collection('holdings').where('ownerId','==',AppState.currentUser.uid).get(),
+          db.collection('redemptions').where('ownerId','==',AppState.currentUser.uid).get(),
+          db.collection('swaps').where('userId','==',AppState.currentUser.uid).get()
+        ]);
+        const rows = [];
+        holdSnap.forEach(d => {
+          const v = d.data();
+          rows.push({ type:'Purchase', detail:`${v.quantity} ${v.unitType} @ ${v.instituteName}`, date: v.purchasedAt, badge:'bg-emerald-500/20 text-emerald-400' });
+        });
+        redeemSnap.forEach(d => {
+          const v = d.data();
+          rows.push({ type:'Redemption', detail:`${v.quantity} ${v.unitType} @ ${v.instituteName} (Adm: ${v.admissionId})`, date: v.createdAt, badge:'bg-purple-500/20 text-purple-400' });
+        });
+        swapSnap.forEach(d => {
+          const v = d.data();
+          rows.push({ type:'Swap', detail:`${v.quantity} ${v.unitType}: ${v.fromInstitute} → ${v.toInstitute}`, date: v.createdAt, badge:'bg-blue-500/20 text-blue-400' });
+        });
+        rows.sort((a,b) => (b.date?.toMillis?.() || 0) - (a.date?.toMillis?.() || 0));
+        if (!rows.length) { c.innerHTML = '<p class="text-white/40 text-center py-10 text-sm">No transactions yet.</p>'; return; }
+        c.innerHTML = `<div class="space-y-3">${rows.map(r => `
+          <div class="flex items-start gap-4 py-3 border-b border-white/5">
+            <span class="px-2 py-0.5 text-xs rounded-full ${r.badge} shrink-0">${r.type}</span>
+            <span class="text-sm text-white/80 flex-1">${escapeHtml(r.detail)}</span>
+            <span class="text-xs text-white/40 shrink-0">${r.date?.toDate?.()?.toLocaleDateString() || '—'}</span>
+          </div>`).join('')}</div>`;
+      } catch (err) {
+        console.error(err);
+        c.innerHTML = '<p class="text-red-400 text-center py-8 text-sm">Failed to load transactions.</p>';
+      }
+    }
+
+    // ==================== APPROVALS (Institute) ====================
+    async function loadApprovals() {
+      const c = document.getElementById('approvalsContainer');
+      if (!c) return;
+      try {
+        const snap = await db.collection('redemptions')
+          .where('instituteId','==',AppState.currentUser.uid)
+          .get();
+        if (snap.empty) { c.innerHTML = '<p class="text-white/40 text-center py-10 text-sm">No pending redemption requests.</p>'; return; }
+        let rows = '';
+        snap.forEach(doc => {
+          const d = doc.data();
+          const ts = d.createdAt?.toDate?.()?.toLocaleDateString() || '—';
+          const badge = d.status === 'pending_verification'
+            ? '<span class="px-2 py-0.5 text-xs rounded-full bg-yellow-500/20 text-yellow-400">Pending</span>'
+            : '<span class="px-2 py-0.5 text-xs rounded-full bg-emerald-500/20 text-emerald-400">Verified</span>';
+          rows += `<tr class="border-b border-white/5 hover:bg-white/5">
+            <td class="py-3 pr-4 text-sm">${escapeHtml(d.ownerName||'—')}</td>
+            <td class="py-3 pr-4 text-sm">${escapeHtml(d.course||'—')}</td>
+            <td class="py-3 pr-4 text-sm text-right">${d.quantity||0} ${d.unitType}</td>
+            <td class="py-3 pr-4 text-sm text-white/50">${escapeHtml(d.admissionId||'—')}</td>
+            <td class="py-3 pr-4 text-sm text-white/50">${ts}</td>
+            <td class="py-3">${badge}</td>
+          </tr>`;
+        });
+        c.innerHTML = `<div class="overflow-x-auto"><table class="w-full text-white">
+          <thead><tr class="border-b border-white/10 text-white/40 text-xs">
+            <th class="pb-3 text-left">Student</th><th class="pb-3 text-left">Course</th>
+            <th class="pb-3 text-right">Units</th><th class="pb-3 text-left">Adm ID</th>
+            <th class="pb-3 text-left">Date</th><th class="pb-3 text-left">Status</th>
+          </tr></thead><tbody>${rows}</tbody></table></div>`;
+      } catch (err) {
+        console.error(err);
+        c.innerHTML = '<p class="text-red-400 text-center py-8 text-sm">Failed to load approvals.</p>';
+      }
+    }
+
+    // ==================== ADMIN USERS ====================
+    async function loadAdminUsers() {
+      const c = document.getElementById('adminUsersContainer');
+      if (!c) return;
+      try {
+        const snap = await db.collection('users').limit(100).get();
+        if (snap.empty) { c.innerHTML = '<p class="text-white/40 text-center py-10 text-sm">No users yet.</p>'; return; }
+        let rows = '';
+        snap.forEach(doc => {
+          const d = doc.data();
+          const ts = d.createdAt?.toDate?.()?.toLocaleDateString() || '—';
+          const roleBadge = {
+            institute:'bg-[#D4AF37]/20 text-[#D4AF37]',
+            sponsor:'bg-blue-500/20 text-blue-400',
+            household:'bg-emerald-500/20 text-emerald-400',
+            student:'bg-purple-500/20 text-purple-400'
+          }[d.role] || 'bg-white/10 text-white/40';
+          rows += `<tr class="border-b border-white/5 hover:bg-white/5">
+            <td class="py-3 pr-4 text-sm">${escapeHtml(d.name||'—')}</td>
+            <td class="py-3 pr-4 text-sm text-white/60">${escapeHtml(d.email||'—')}</td>
+            <td class="py-3 pr-4"><span class="px-2 py-0.5 text-xs rounded-full ${roleBadge}">${d.role||'—'}</span></td>
+            <td class="py-3 text-sm text-white/40">${ts}</td>
+          </tr>`;
+        });
+        c.innerHTML = `<div class="overflow-x-auto"><table class="w-full text-white">
+          <thead><tr class="border-b border-white/10 text-white/40 text-xs">
+            <th class="pb-3 text-left">Name</th><th class="pb-3 text-left">Email</th>
+            <th class="pb-3 text-left">Role</th><th class="pb-3 text-left">Joined</th>
+          </tr></thead><tbody>${rows}</tbody></table></div>`;
+      } catch (err) {
+        console.error(err);
+        c.innerHTML = '<p class="text-red-400 text-center py-8 text-sm">Failed to load users.</p>';
+      }
+    }
+
+    // ==================== PURCHASE FLOW ====================
+    function openPurchaseModal(issuanceId) {
+      const iss = (AppState.marketplaceIssuances || []).find(i => i.id === issuanceId);
+      if (!iss) return showToast('Could not load issuance data.', 'error');
+      AppState.activePurchase = iss;
+      document.getElementById('pm-institute').textContent = iss.instituteName || '—';
+      document.getElementById('pm-course').textContent    = iss.course;
+      document.getElementById('pm-type').textContent      = iss.unitType;
+      document.getElementById('pm-fee').textContent       = (iss.lockedFee || 0).toLocaleString();
+      document.getElementById('pm-qty').value             = 1;
+      updatePurchaseTotal();
+      document.getElementById('purchaseModal').classList.remove('hidden');
+    }
+
+    function closePurchaseModal() {
+      document.getElementById('purchaseModal').classList.add('hidden');
+      AppState.activePurchase = null;
+    }
+
+    function updatePurchaseTotal() {
+      const qty = parseInt(document.getElementById('pm-qty').value) || 0;
+      const fee = AppState.activePurchase?.lockedFee || 0;
+      document.getElementById('pm-total').textContent = (qty * fee).toLocaleString();
+    }
+
+    async function confirmPurchase() {
+      if (AppState.isProcessing) return;
+      const iss = AppState.activePurchase;
+      if (!iss) return;
+      const qty = parseInt(document.getElementById('pm-qty').value);
+      if (!qty || qty < 1) return showToast('Enter a valid quantity.', 'error');
+      const available = (iss.quantity || 0) - (iss.sold || 0);
+      if (qty > available) return showToast(`Only ${available} units available.`, 'error');
+
+      AppState.isProcessing = true;
+      const btn = document.getElementById('purchaseConfirmBtn');
+      btn.disabled = true;
+      btn.textContent = 'Processing…';
+
+      try {
+        const batch = db.batch();
+        // Create holding
+        const holdingRef = db.collection('holdings').doc();
+        batch.set(holdingRef, {
+          ownerId:       AppState.currentUser.uid,
+          ownerName:     AppState.currentUser.name,
+          issuanceId:    iss.id,
+          instituteId:   iss.instituteId,
+          instituteName: iss.instituteName,
+          course:        iss.course,
+          unitType:      iss.unitType,
+          quantity:      qty,
+          lockedFee:     iss.lockedFee,
+          status:        'active',
+          purchasedAt:   firebase.firestore.FieldValue.serverTimestamp()
+        });
+        // Increment sold on issuance
+        const issuanceRef = db.collection('issuances').doc(iss.id);
+        batch.update(issuanceRef, { sold: firebase.firestore.FieldValue.increment(qty) });
+        await batch.commit();
+
+        closePurchaseModal();
+        showToast(`${qty} ${iss.unitType} unit(s) purchased successfully!`, 'success');
+        await loadDashboardData();
+      } catch (err) {
+        console.error(err);
+        showToast('Purchase failed. Please try again.', 'error');
+      } finally {
+        AppState.isProcessing = false;
+        btn.disabled = false;
+        btn.textContent = 'Confirm Purchase';
+      }
+    }
+
+    // ==================== SWAP FLOW ====================
+    function openSwapModal(holdingId) {
+      const holding = (AppState.myHoldings || []).find(h => h.id === holdingId);
+      if (!holding) return showToast('Could not load holding data.', 'error');
+      AppState.activeSwap = holding;
+      document.getElementById('sw-from').textContent = `${holding.instituteName} — ${holding.course} (${holding.quantity} ${holding.unitType})`;
+      document.getElementById('sw-qty').value = 1;
+      document.getElementById('sw-qty').max   = holding.quantity;
+
+      // Populate target options
+      const sel = document.getElementById('sw-target');
+      sel.innerHTML = '<option value="">Select target issuance…</option>';
+      (AppState.marketplaceIssuances || []).forEach(iss => {
+        if (iss.id === holding.issuanceId) return; // skip same issuance
+        if (iss.unitType !== holding.unitType) return;
+        const available = (iss.quantity || 0) - (iss.sold || 0);
+        if (available <= 0) return;
+        sel.innerHTML += `<option value="${iss.id}">${escapeHtml(iss.instituteName)} — ${escapeHtml(iss.course)} (${available} left)</option>`;
+      });
+
+      document.getElementById('swapModal').classList.remove('hidden');
+    }
+
+    function closeSwapModal() {
+      document.getElementById('swapModal').classList.add('hidden');
+      AppState.activeSwap = null;
+    }
+
+    async function confirmSwap() {
+      if (AppState.isProcessing) return;
+      const holding  = AppState.activeSwap;
+      const targetId = document.getElementById('sw-target').value;
+      const qty      = parseInt(document.getElementById('sw-qty').value);
+      if (!targetId) return showToast('Select a target issuance.', 'error');
+      if (!qty || qty < 1) return showToast('Enter a valid quantity.', 'error');
+      if (qty > holding.quantity) return showToast(`You only have ${holding.quantity} units.`, 'error');
+
+      const targetIss = (AppState.marketplaceIssuances || []).find(i => i.id === targetId);
+      if (!targetIss) return showToast('Target issuance not found.', 'error');
+      const available = (targetIss.quantity || 0) - (targetIss.sold || 0);
+      if (qty > available) return showToast(`Only ${available} units available at target.`, 'error');
+
+      AppState.isProcessing = true;
+      const btn = document.getElementById('swapConfirmBtn');
+      btn.disabled = true;
+      btn.textContent = 'Processing…';
+
+      try {
+        const batch = db.batch();
+        // Reduce / close old holding
+        const oldRef = db.collection('holdings').doc(holding.id);
+        if (qty === holding.quantity) {
+          batch.update(oldRef, { status: 'swapped', swappedAt: firebase.firestore.FieldValue.serverTimestamp() });
+        } else {
+          batch.update(oldRef, { quantity: firebase.firestore.FieldValue.increment(-qty) });
+        }
+        // Create new holding
+        const newRef = db.collection('holdings').doc();
+        batch.set(newRef, {
+          ownerId:       AppState.currentUser.uid,
+          ownerName:     AppState.currentUser.name,
+          issuanceId:    targetIss.id,
+          instituteId:   targetIss.instituteId,
+          instituteName: targetIss.instituteName,
+          course:        targetIss.course,
+          unitType:      targetIss.unitType,
+          quantity:      qty,
+          lockedFee:     targetIss.lockedFee,
+          status:        'active',
+          swappedFrom:   holding.instituteName,
+          purchasedAt:   firebase.firestore.FieldValue.serverTimestamp()
+        });
+        // Update sold on target
+        batch.update(db.collection('issuances').doc(targetId), { sold: firebase.firestore.FieldValue.increment(qty) });
+        // Log swap
+        const swapRef = db.collection('swaps').doc();
+        batch.set(swapRef, {
+          userId:          AppState.currentUser.uid,
+          fromHoldingId:   holding.id,
+          fromInstitute:   holding.instituteName,
+          toIssuanceId:    targetId,
+          toInstitute:     targetIss.instituteName,
+          unitType:        holding.unitType,
+          quantity:        qty,
+          status:          'completed',
+          createdAt:       firebase.firestore.FieldValue.serverTimestamp()
+        });
+        await batch.commit();
+
+        closeSwapModal();
+        showToast(`Swap completed! ${qty} units moved to ${targetIss.instituteName}.`, 'success');
+        await loadDashboardData();
+      } catch (err) {
+        console.error(err);
+        showToast('Swap failed. Please try again.', 'error');
+      } finally {
+        AppState.isProcessing = false;
+        btn.disabled = false;
+        btn.textContent = 'Confirm Swap';
+      }
+    }
+
+    // ==================== REDEMPTION FLOW ====================
+    function openRedeemModal(holdingId) {
+      const holding = (AppState.myHoldings || []).find(h => h.id === holdingId);
+      if (!holding) return showToast('Could not load holding data.', 'error');
+      AppState.activeRedeem = holding;
+      document.getElementById('rd-holding').textContent = `${holding.instituteName} — ${holding.course} (${holding.quantity} ${holding.unitType})`;
+      document.getElementById('rd-qty').value = 1;
+      document.getElementById('rd-qty').max   = holding.quantity;
+      document.getElementById('rd-admid').value = '';
+      document.getElementById('redeemModal').classList.remove('hidden');
+    }
+
+    function closeRedeemModal() {
+      document.getElementById('redeemModal').classList.add('hidden');
+      AppState.activeRedeem = null;
+    }
+
+    async function confirmRedeem() {
+      if (AppState.isProcessing) return;
+      const holding = AppState.activeRedeem;
+      const admId   = document.getElementById('rd-admid').value.trim();
+      const qty     = parseInt(document.getElementById('rd-qty').value);
+      if (!admId)  return showToast('Enter your admission / enrollment ID.', 'error');
+      if (!qty || qty < 1) return showToast('Enter a valid quantity.', 'error');
+      if (qty > holding.quantity) return showToast(`You only have ${holding.quantity} units.`, 'error');
+
+      AppState.isProcessing = true;
+      const btn = document.getElementById('redeemConfirmBtn');
+      btn.disabled = true;
+      btn.textContent = 'Processing…';
+
+      try {
+        const batch = db.batch();
+        const holdingRef = db.collection('holdings').doc(holding.id);
+        if (qty === holding.quantity) {
+          batch.update(holdingRef, { status: 'redeemed', redeemedAt: firebase.firestore.FieldValue.serverTimestamp(), admissionId: admId });
+        } else {
+          batch.update(holdingRef, { quantity: firebase.firestore.FieldValue.increment(-qty) });
+          const rdRef = db.collection('holdings').doc();
+          batch.set(rdRef, {
+            ...holding,
+            id: undefined,
+            quantity:    qty,
+            status:      'redeemed',
+            admissionId: admId,
+            redeemedAt:  firebase.firestore.FieldValue.serverTimestamp()
+          });
+        }
+        // Record redemption
+        const redemRef = db.collection('redemptions').doc();
+        batch.set(redemRef, {
+          ownerId:       AppState.currentUser.uid,
+          ownerName:     AppState.currentUser.name,
+          holdingId:     holding.id,
+          issuanceId:    holding.issuanceId,
+          instituteId:   holding.instituteId,
+          instituteName: holding.instituteName,
+          course:        holding.course,
+          unitType:      holding.unitType,
+          quantity:      qty,
+          lockedFee:     holding.lockedFee,
+          admissionId:   admId,
+          status:        'pending_verification',
+          createdAt:     firebase.firestore.FieldValue.serverTimestamp()
+        });
+        // Update redeemed counter on issuance
+        batch.update(db.collection('issuances').doc(holding.issuanceId), {
+          redeemed: firebase.firestore.FieldValue.increment(qty)
+        });
+        await batch.commit();
+
+        closeRedeemModal();
+        showToast(`${qty} unit(s) redeemed! Admission ID: ${admId}. Institute notified.`, 'success');
+        await loadDashboardData();
+      } catch (err) {
+        console.error(err);
+        showToast('Redemption failed. Please try again.', 'error');
+      } finally {
+        AppState.isProcessing = false;
+        btn.disabled = false;
+        btn.textContent = 'Confirm Redemption';
+      }
     }
 
     function logout() {
