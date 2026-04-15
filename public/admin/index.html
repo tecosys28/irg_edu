@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TROT Edu — Insider Admin</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <style>
+    :root { --navy:#000052; --navy-dark:#000033; --gold:#D4AF37; }
+    body { background:#f0f2f5; font-family:'Segoe UI',system-ui,sans-serif; }
+
+    /* ── Login ── */
+    #loginScreen { min-height:100vh; background:linear-gradient(135deg,var(--navy) 0%,var(--navy-dark) 100%); }
+    .login-card { background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); border-radius:20px; backdrop-filter:blur(20px); }
+
+    /* ── Sidebar ── */
+    #sidebar { width:240px; min-height:100vh; background:var(--navy); position:fixed; top:0; left:0; z-index:100; transition:.3s; }
+    #sidebar .brand { border-bottom:1px solid rgba(255,255,255,.1); }
+    #sidebar .nav-link { color:rgba(255,255,255,.65); border-radius:8px; margin:2px 8px; padding:10px 14px; transition:.2s; }
+    #sidebar .nav-link:hover, #sidebar .nav-link.active { background:rgba(212,175,55,.15); color:#D4AF37; }
+    #sidebar .nav-link i { width:20px; }
+
+    /* ── Main ── */
+    #mainWrap { margin-left:240px; min-height:100vh; }
+    .topbar { background:#fff; border-bottom:1px solid #e5e7eb; height:60px; position:sticky; top:0; z-index:99; }
+    .stat-card { border:none; border-radius:14px; transition:.2s; }
+    .stat-card:hover { transform:translateY(-3px); box-shadow:0 8px 24px rgba(0,0,0,.1); }
+    .stat-icon { width:48px; height:48px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.3rem; }
+
+    /* ── Tables ── */
+    .table-card { border:none; border-radius:14px; overflow:hidden; }
+    .table thead th { background:#f8f9fa; font-size:.75rem; text-transform:uppercase; letter-spacing:.05em; color:#6b7280; border:none; }
+    .table tbody tr:hover { background:#fafafa; }
+    .badge-role { font-size:.7rem; padding:3px 8px; border-radius:20px; }
+
+    /* ── Modal ── */
+    .modal-header { background:var(--navy); color:#fff; }
+
+    /* ── Misc ── */
+    .gold-text { color:var(--gold); }
+    .btn-gold { background:linear-gradient(135deg,#D4AF37,#F4CF67); color:#000; font-weight:600; border:none; }
+    .btn-gold:hover { opacity:.9; color:#000; }
+    .search-box { max-width:280px; }
+    #toastContainer { position:fixed; bottom:24px; right:24px; z-index:9999; }
+
+    @media(max-width:768px){
+      #sidebar{width:0;overflow:hidden;}
+      #mainWrap{margin-left:0;}
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════ LOGIN SCREEN ════════════════════════ -->
+<div id="loginScreen" class="d-flex align-items-center justify-content-center">
+  <div class="login-card p-5 text-white" style="width:420px;">
+    <div class="text-center mb-4">
+      <div class="d-inline-flex align-items-center justify-content-center rounded-3 mb-3" style="width:56px;height:56px;background:linear-gradient(135deg,#D4AF37,#F4CF67);">
+        <i class="bi bi-shield-lock-fill text-dark fs-4"></i>
+      </div>
+      <h4 class="fw-bold mb-1">Insider Admin</h4>
+      <p class="text-white-50 small">TROT Edu Platform — Restricted Access</p>
+    </div>
+    <div class="mb-3">
+      <label class="form-label text-white-50 small">Email</label>
+      <input type="email" id="loginEmail" class="form-control bg-white bg-opacity-10 border-white border-opacity-25 text-white" placeholder="tidkejp@gmail.com" style="--bs-form-control-color:#fff;">
+    </div>
+    <div class="mb-4">
+      <label class="form-label text-white-50 small">Password</label>
+      <input type="password" id="loginPassword" class="form-control bg-white bg-opacity-10 border-white border-opacity-25 text-white" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="btn btn-gold w-100 py-2" onclick="doLogin()" id="loginBtn">Sign In</button>
+    <p id="loginError" class="text-danger text-center small mt-3 d-none"></p>
+    <p class="text-center text-white-50 small mt-4 mb-0">Access restricted to authorised personnel only.</p>
+  </div>
+</div>
+
+<!-- ════════════════════════ ADMIN PANEL ════════════════════════ -->
+<div id="adminPanel" class="d-none">
+
+  <!-- Sidebar -->
+  <nav id="sidebar" class="d-flex flex-column py-3">
+    <div class="brand px-4 pb-3 mb-2">
+      <div class="d-flex align-items-center gap-2">
+        <div class="rounded-2 d-flex align-items-center justify-content-center" style="width:36px;height:36px;background:linear-gradient(135deg,#D4AF37,#F4CF67);">
+          <i class="bi bi-mortarboard-fill text-dark"></i>
+        </div>
+        <div>
+          <div class="text-white fw-bold" style="font-size:.9rem;">TROT Edu</div>
+          <div class="text-white-50" style="font-size:.7rem;">Insider Admin</div>
+        </div>
+      </div>
+    </div>
+    <ul class="nav flex-column flex-grow-1 px-1">
+      <li class="nav-item"><a class="nav-link active" onclick="showTab('dashboard')" href="#"><i class="bi bi-grid-fill me-2"></i>Dashboard</a></li>
+      <li class="nav-item"><a class="nav-link" onclick="showTab('users')" href="#"><i class="bi bi-people-fill me-2"></i>Users</a></li>
+      <li class="nav-item"><a class="nav-link" onclick="showTab('issuances')" href="#"><i class="bi bi-file-earmark-text-fill me-2"></i>Issuances</a></li>
+    </ul>
+    <div class="px-3 pb-2">
+      <div class="text-white-50 small px-2 mb-2" id="sidebarUser"></div>
+      <button class="btn btn-sm btn-outline-danger w-100" onclick="doLogout()"><i class="bi bi-box-arrow-right me-1"></i>Sign Out</button>
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <div id="mainWrap">
+    <!-- Topbar -->
+    <div class="topbar d-flex align-items-center justify-content-between px-4">
+      <h6 class="mb-0 fw-semibold text-secondary" id="pageTitle">Dashboard</h6>
+      <div class="d-flex align-items-center gap-3">
+        <span class="badge bg-success">● Live</span>
+        <span class="small text-muted" id="topbarEmail"></span>
+      </div>
+    </div>
+
+    <div class="p-4">
+
+      <!-- ── DASHBOARD TAB ── -->
+      <div id="tab-dashboard">
+        <div class="row g-3 mb-4" id="statsRow">
+          <div class="col-sm-6 col-lg-3"><div class="stat-card card p-4"><div class="d-flex justify-content-between align-items-start"><div><div class="text-muted small mb-1">Total Users</div><div class="fs-2 fw-bold" id="s-users">—</div></div><div class="stat-icon bg-primary bg-opacity-10 text-primary"><i class="bi bi-people-fill"></i></div></div></div></div>
+          <div class="col-sm-6 col-lg-3"><div class="stat-card card p-4"><div class="d-flex justify-content-between align-items-start"><div><div class="text-muted small mb-1">Total Issuances</div><div class="fs-2 fw-bold" id="s-issuances">—</div></div><div class="stat-icon bg-success bg-opacity-10 text-success"><i class="bi bi-file-earmark-check-fill"></i></div></div></div></div>
+          <div class="col-sm-6 col-lg-3"><div class="stat-card card p-4"><div class="d-flex justify-content-between align-items-start"><div><div class="text-muted small mb-1">FTR Issued</div><div class="fs-2 fw-bold" id="s-ftr">—</div></div><div class="stat-icon bg-warning bg-opacity-10 text-warning"><i class="bi bi-shield-fill-check"></i></div></div></div></div>
+          <div class="col-sm-6 col-lg-3"><div class="stat-card card p-4"><div class="d-flex justify-content-between align-items-start"><div><div class="text-muted small mb-1">SU Issued</div><div class="fs-2 fw-bold" id="s-su">—</div></div><div class="stat-icon bg-danger bg-opacity-10 text-danger"><i class="bi bi-heart-fill"></i></div></div></div></div>
+        </div>
+        <!-- Role breakdown -->
+        <div class="row g-3 mb-4">
+          <div class="col-sm-6 col-lg-3"><div class="card border-0 rounded-3 p-3 text-center"><div class="text-muted small">Institutes</div><div class="fs-3 fw-bold text-primary" id="s-institute">—</div></div></div>
+          <div class="col-sm-6 col-lg-3"><div class="card border-0 rounded-3 p-3 text-center"><div class="text-muted small">Sponsors</div><div class="fs-3 fw-bold text-success" id="s-sponsor">—</div></div></div>
+          <div class="col-sm-6 col-lg-3"><div class="card border-0 rounded-3 p-3 text-center"><div class="text-muted small">Households</div><div class="fs-3 fw-bold text-warning" id="s-household">—</div></div></div>
+          <div class="col-sm-6 col-lg-3"><div class="card border-0 rounded-3 p-3 text-center"><div class="text-muted small">Students</div><div class="fs-3 fw-bold text-danger" id="s-student">—</div></div></div>
+        </div>
+        <!-- Recent users -->
+        <div class="card table-card mb-4">
+          <div class="card-header bg-white border-0 pt-3 pb-2 px-4 d-flex justify-content-between align-items-center">
+            <span class="fw-semibold">Recent Registrations</span>
+            <button class="btn btn-sm btn-outline-secondary" onclick="showTab('users')">View All</button>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Joined</th></tr></thead>
+              <tbody id="recentUsersBody"><tr><td colspan="4" class="text-center text-muted py-4">Loading...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── USERS TAB ── -->
+      <div id="tab-users" class="d-none">
+        <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between mb-3">
+          <div class="d-flex gap-2 flex-wrap">
+            <input type="text" id="userSearch" class="form-control form-control-sm search-box" placeholder="Search name / email / mobile…" oninput="filterUsers()">
+            <select id="roleFilter" class="form-select form-select-sm" style="width:140px;" onchange="filterUsers()">
+              <option value="">All Roles</option>
+              <option>institute</option><option>sponsor</option><option>household</option><option>student</option>
+            </select>
+          </div>
+          <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-outline-success" onclick="exportCSV('users')"><i class="bi bi-download me-1"></i>Export CSV</button>
+            <button class="btn btn-sm btn-outline-danger" onclick="bulkDelete('users')" id="userBulkDel" disabled><i class="bi bi-trash me-1"></i>Delete Selected</button>
+          </div>
+        </div>
+        <div class="card table-card">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead><tr>
+                <th><input type="checkbox" id="selAllUsers" onchange="toggleSelectAll('users')"></th>
+                <th>Name</th><th>Email</th><th>Mobile</th><th>Role</th><th>Joined</th><th>Actions</th>
+              </tr></thead>
+              <tbody id="usersBody"><tr><td colspan="7" class="text-center text-muted py-4">Loading...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── ISSUANCES TAB ── -->
+      <div id="tab-issuances" class="d-none">
+        <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between mb-3">
+          <div class="d-flex gap-2 flex-wrap">
+            <input type="text" id="issuanceSearch" class="form-control form-control-sm search-box" placeholder="Search institute / course…" oninput="filterIssuances()">
+            <select id="unitFilter" class="form-select form-select-sm" style="width:120px;" onchange="filterIssuances()">
+              <option value="">All Types</option><option>FTR</option><option>SU</option>
+            </select>
+            <select id="statusFilter" class="form-select form-select-sm" style="width:130px;" onchange="filterIssuances()">
+              <option value="">All Statuses</option><option>active</option><option>redeemed</option><option>cancelled</option>
+            </select>
+          </div>
+          <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-outline-success" onclick="exportCSV('issuances')"><i class="bi bi-download me-1"></i>Export CSV</button>
+            <button class="btn btn-sm btn-outline-danger" onclick="bulkDelete('issuances')" id="issuanceBulkDel" disabled><i class="bi bi-trash me-1"></i>Delete Selected</button>
+          </div>
+        </div>
+        <div class="card table-card">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead><tr>
+                <th><input type="checkbox" id="selAllIssuances" onchange="toggleSelectAll('issuances')"></th>
+                <th>Institute</th><th>Course</th><th>Type</th><th>Qty</th><th>Fee (₹)</th><th>Status</th><th>Date</th><th>Actions</th>
+              </tr></thead>
+              <tbody id="issuancesBody"><tr><td colspan="9" class="text-center text-muted py-4">Loading...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /p-4 -->
+  </div><!-- /mainWrap -->
+</div><!-- /adminPanel -->
+
+<!-- ════ EDIT USER MODAL ════ -->
+<div class="modal fade" id="editUserModal" tabindex="-1">
+  <div class="modal-dialog"><div class="modal-content">
+    <div class="modal-header"><h5 class="modal-title">Edit User</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+    <div class="modal-body">
+      <input type="hidden" id="editUserId">
+      <div class="mb-3"><label class="form-label">Name</label><input type="text" id="editUserName" class="form-control"></div>
+      <div class="mb-3"><label class="form-label">Email</label><input type="email" id="editUserEmail" class="form-control"></div>
+      <div class="mb-3"><label class="form-label">Mobile</label><input type="text" id="editUserMobile" class="form-control"></div>
+      <div class="mb-3"><label class="form-label">Role</label>
+        <select id="editUserRole" class="form-select">
+          <option>institute</option><option>sponsor</option><option>household</option><option>student</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+      <button class="btn btn-gold" onclick="saveUser()">Save Changes</button>
+    </div>
+  </div></div>
+</div>
+
+<!-- ════ EDIT ISSUANCE MODAL ════ -->
+<div class="modal fade" id="editIssuanceModal" tabindex="-1">
+  <div class="modal-dialog"><div class="modal-content">
+    <div class="modal-header"><h5 class="modal-title">Edit Issuance</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+    <div class="modal-body">
+      <input type="hidden" id="editIssuanceId">
+      <div class="mb-3"><label class="form-label">Institute Name</label><input type="text" id="editInstituteName" class="form-control"></div>
+      <div class="mb-3"><label class="form-label">Course</label><input type="text" id="editCourse" class="form-control"></div>
+      <div class="row">
+        <div class="col mb-3"><label class="form-label">Unit Type</label>
+          <select id="editUnitType" class="form-select"><option>FTR</option><option>SU</option></select>
+        </div>
+        <div class="col mb-3"><label class="form-label">Status</label>
+          <select id="editStatus" class="form-select"><option>active</option><option>redeemed</option><option>cancelled</option></select>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col mb-3"><label class="form-label">Quantity</label><input type="number" id="editQuantity" class="form-control"></div>
+        <div class="col mb-3"><label class="form-label">Locked Fee (₹)</label><input type="number" id="editLockedFee" class="form-control"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+      <button class="btn btn-gold" onclick="saveIssuance()">Save Changes</button>
+    </div>
+  </div></div>
+</div>
+
+<!-- ════ CONFIRM DELETE MODAL ════ -->
+<div class="modal fade" id="confirmModal" tabindex="-1">
+  <div class="modal-dialog modal-sm"><div class="modal-content">
+    <div class="modal-header bg-danger text-white"><h6 class="modal-title">Confirm Delete</h6><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+    <div class="modal-body small" id="confirmMsg">Are you sure?</div>
+    <div class="modal-footer py-2">
+      <button class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+      <button class="btn btn-sm btn-danger" id="confirmOkBtn">Delete</button>
+    </div>
+  </div></div>
+</div>
+
+<!-- Toast -->
+<div id="toastContainer"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// ══════════════════════════════════════════════════════
+// FIREBASE INIT
+// ══════════════════════════════════════════════════════
+const firebaseConfig = {
+  apiKey: "AIzaSyAGxsnwZmwSvUWxEXTzijfIuAS8m5bXwXM",
+  authDomain: "irgedu-dde86.firebaseapp.com",
+  projectId: "irgedu-dde86",
+  storageBucket: "irgedu-dde86.firebasestorage.app",
+  messagingSenderId: "947804202808",
+  appId: "1:947804202808:web:a53e48fb7641262ffbc3cd"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db   = firebase.firestore();
+
+// ══════════════════════════════════════════════════════
+// ACCESS CONTROL — only this email may enter
+// ══════════════════════════════════════════════════════
+const ALLOWED_EMAIL = 'tidkejp@gmail.com';
+
+// ══════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════
+let allUsers      = [];
+let allIssuances  = [];
+let filteredUsers     = [];
+let filteredIssuances = [];
+
+// ══════════════════════════════════════════════════════
+// AUTH
+// ══════════════════════════════════════════════════════
+auth.onAuthStateChanged(async user => {
+  if (user && user.email === ALLOWED_EMAIL) {
+    document.getElementById('loginScreen').classList.add('d-none');
+    document.getElementById('adminPanel').classList.remove('d-none');
+    document.getElementById('topbarEmail').textContent = user.email;
+    document.getElementById('sidebarUser').textContent = user.email;
+    loadAll();
+  } else {
+    if (user) { await auth.signOut(); }
+    document.getElementById('loginScreen').classList.remove('d-none');
+    document.getElementById('adminPanel').classList.add('d-none');
+  }
+});
+
+async function doLogin() {
+  const btn   = document.getElementById('loginBtn');
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass  = document.getElementById('loginPassword').value;
+  const err   = document.getElementById('loginError');
+  err.classList.add('d-none');
+
+  if (email !== ALLOWED_EMAIL) {
+    err.textContent = 'Access denied. Unauthorised email.';
+    err.classList.remove('d-none');
+    return;
+  }
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Signing in…';
+  try {
+    await auth.signInWithEmailAndPassword(email, pass);
+  } catch(e) {
+    err.textContent = e.code === 'auth/invalid-credential' ? 'Wrong password.' : e.message;
+    err.classList.remove('d-none');
+    btn.disabled = false;
+    btn.innerHTML = 'Sign In';
+  }
+}
+
+async function doLogout() {
+  await auth.signOut();
+}
+
+// ══════════════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════════════
+function showTab(tab) {
+  ['dashboard','users','issuances'].forEach(t => {
+    document.getElementById('tab-'+t).classList.toggle('d-none', t !== tab);
+  });
+  document.querySelectorAll('#sidebar .nav-link').forEach(l => l.classList.remove('active'));
+  document.querySelector(`[onclick="showTab('${tab}')"]`).classList.add('active');
+  const titles = {dashboard:'Dashboard', users:'Users', issuances:'Issuances'};
+  document.getElementById('pageTitle').textContent = titles[tab];
+  if (tab === 'users')     renderUsers();
+  if (tab === 'issuances') renderIssuances();
+}
+
+// ══════════════════════════════════════════════════════
+// LOAD ALL DATA
+// ══════════════════════════════════════════════════════
+async function loadAll() {
+  try {
+    const [uSnap, iSnap] = await Promise.all([
+      db.collection('users').orderBy('createdAt','desc').get(),
+      db.collection('issuances').orderBy('createdAt','desc').get()
+    ]);
+    allUsers      = uSnap.docs.map(d => ({id:d.id,...d.to_dict ? d.to_dict() : d.data()}));
+    allIssuances  = iSnap.docs.map(d => ({id:d.id,...d.data()}));
+    filteredUsers     = [...allUsers];
+    filteredIssuances = [...allIssuances];
+    renderStats();
+    renderRecentUsers();
+    renderUsers();
+    renderIssuances();
+  } catch(e) {
+    showToast('Firestore error: ' + e.message, 'danger');
+  }
+}
+
+// helper: Firestore timestamp → string
+function tsStr(ts) {
+  if (!ts) return '—';
+  try { return ts.toDate ? ts.toDate().toLocaleDateString('en-IN') : String(ts); }
+  catch { return '—'; }
+}
+
+// ══════════════════════════════════════════════════════
+// STATS
+// ══════════════════════════════════════════════════════
+function renderStats() {
+  document.getElementById('s-users').textContent     = allUsers.length;
+  document.getElementById('s-issuances').textContent = allIssuances.length;
+  document.getElementById('s-ftr').textContent       = allIssuances.filter(i=>i.unitType==='FTR').length;
+  document.getElementById('s-su').textContent        = allIssuances.filter(i=>i.unitType==='SU').length;
+  const roles = {institute:0,sponsor:0,household:0,student:0};
+  allUsers.forEach(u => { if(roles[u.role]!==undefined) roles[u.role]++; });
+  Object.entries(roles).forEach(([r,c]) => {
+    const el = document.getElementById('s-'+r);
+    if(el) el.textContent = c;
+  });
+}
+
+// ══════════════════════════════════════════════════════
+// RECENT USERS (dashboard)
+// ══════════════════════════════════════════════════════
+function renderRecentUsers() {
+  const tbody = document.getElementById('recentUsersBody');
+  const rows  = allUsers.slice(0,8);
+  if (!rows.length) { tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-4">No users yet.</td></tr>'; return; }
+  tbody.innerHTML = rows.map(u => `
+    <tr>
+      <td class="fw-medium">${esc(u.name||'—')}</td>
+      <td class="text-muted small">${esc(u.email||'—')}</td>
+      <td>${roleBadge(u.role)}</td>
+      <td class="text-muted small">${tsStr(u.createdAt)}</td>
+    </tr>`).join('');
+}
+
+// ══════════════════════════════════════════════════════
+// USERS TABLE
+// ══════════════════════════════════════════════════════
+function filterUsers() {
+  const q  = document.getElementById('userSearch').value.toLowerCase();
+  const rf = document.getElementById('roleFilter').value;
+  filteredUsers = allUsers.filter(u =>
+    (!q  || (u.name||'').toLowerCase().includes(q) || (u.email||'').toLowerCase().includes(q) || (u.mobile||'').includes(q)) &&
+    (!rf || u.role === rf)
+  );
+  renderUsers();
+}
+
+function renderUsers() {
+  const tbody = document.getElementById('usersBody');
+  if (!filteredUsers.length) { tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-4">No users found.</td></tr>'; return; }
+  tbody.innerHTML = filteredUsers.map(u => `
+    <tr>
+      <td><input type="checkbox" class="user-cb" value="${u.id}" onchange="updateBulkBtn('users')"></td>
+      <td class="fw-medium">${esc(u.name||'—')}</td>
+      <td class="text-muted small">${esc(u.email||'—')}</td>
+      <td class="text-muted small">${esc(u.mobile||'—')}</td>
+      <td>${roleBadge(u.role)}</td>
+      <td class="text-muted small">${tsStr(u.createdAt)}</td>
+      <td>
+        <button class="btn btn-sm btn-outline-primary me-1" onclick="openEditUser('${u.id}')"><i class="bi bi-pencil"></i></button>
+        <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete('users','${u.id}','${esc(u.name||u.id)}')"><i class="bi bi-trash"></i></button>
+      </td>
+    </tr>`).join('');
+}
+
+function openEditUser(id) {
+  const u = allUsers.find(x=>x.id===id);
+  if(!u) return;
+  document.getElementById('editUserId').value    = id;
+  document.getElementById('editUserName').value  = u.name||'';
+  document.getElementById('editUserEmail').value = u.email||'';
+  document.getElementById('editUserMobile').value= u.mobile||'';
+  document.getElementById('editUserRole').value  = u.role||'student';
+  new bootstrap.Modal(document.getElementById('editUserModal')).show();
+}
+
+async function saveUser() {
+  const id = document.getElementById('editUserId').value;
+  const data = {
+    name:   document.getElementById('editUserName').value.trim(),
+    email:  document.getElementById('editUserEmail').value.trim(),
+    mobile: document.getElementById('editUserMobile').value.trim(),
+    role:   document.getElementById('editUserRole').value,
+  };
+  try {
+    await db.collection('users').doc(id).update(data);
+    const idx = allUsers.findIndex(u=>u.id===id);
+    if(idx>-1) allUsers[idx] = {...allUsers[idx],...data};
+    filteredUsers = [...allUsers];
+    renderUsers(); renderStats(); renderRecentUsers();
+    bootstrap.Modal.getInstance(document.getElementById('editUserModal')).hide();
+    showToast('User updated.', 'success');
+  } catch(e) { showToast('Update failed: '+e.message,'danger'); }
+}
+
+// ══════════════════════════════════════════════════════
+// ISSUANCES TABLE
+// ══════════════════════════════════════════════════════
+function filterIssuances() {
+  const q  = document.getElementById('issuanceSearch').value.toLowerCase();
+  const uf = document.getElementById('unitFilter').value;
+  const sf = document.getElementById('statusFilter').value;
+  filteredIssuances = allIssuances.filter(i =>
+    (!q  || (i.instituteName||'').toLowerCase().includes(q) || (i.course||'').toLowerCase().includes(q)) &&
+    (!uf || i.unitType === uf) &&
+    (!sf || i.status   === sf)
+  );
+  renderIssuances();
+}
+
+function renderIssuances() {
+  const tbody = document.getElementById('issuancesBody');
+  if (!filteredIssuances.length) { tbody.innerHTML = '<tr><td colspan="9" class="text-center text-muted py-4">No issuances found.</td></tr>'; return; }
+  tbody.innerHTML = filteredIssuances.map(i => `
+    <tr>
+      <td><input type="checkbox" class="issuance-cb" value="${i.id}" onchange="updateBulkBtn('issuances')"></td>
+      <td class="fw-medium">${esc(i.instituteName||'—')}</td>
+      <td class="text-muted small">${esc(i.course||'—')}</td>
+      <td><span class="badge ${i.unitType==='FTR'?'bg-primary':'bg-success'}">${i.unitType||'—'}</span></td>
+      <td>${i.quantity||0}</td>
+      <td>₹${(i.lockedFee||0).toLocaleString('en-IN')}</td>
+      <td>${statusBadge(i.status)}</td>
+      <td class="text-muted small">${tsStr(i.createdAt)}</td>
+      <td>
+        <button class="btn btn-sm btn-outline-primary me-1" onclick="openEditIssuance('${i.id}')"><i class="bi bi-pencil"></i></button>
+        <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete('issuances','${i.id}','issuance')"><i class="bi bi-trash"></i></button>
+      </td>
+    </tr>`).join('');
+}
+
+function openEditIssuance(id) {
+  const i = allIssuances.find(x=>x.id===id);
+  if(!i) return;
+  document.getElementById('editIssuanceId').value    = id;
+  document.getElementById('editInstituteName').value = i.instituteName||'';
+  document.getElementById('editCourse').value        = i.course||'';
+  document.getElementById('editUnitType').value      = i.unitType||'FTR';
+  document.getElementById('editStatus').value        = i.status||'active';
+  document.getElementById('editQuantity').value      = i.quantity||0;
+  document.getElementById('editLockedFee').value     = i.lockedFee||0;
+  new bootstrap.Modal(document.getElementById('editIssuanceModal')).show();
+}
+
+async function saveIssuance() {
+  const id = document.getElementById('editIssuanceId').value;
+  const data = {
+    instituteName: document.getElementById('editInstituteName').value.trim(),
+    course:        document.getElementById('editCourse').value.trim(),
+    unitType:      document.getElementById('editUnitType').value,
+    status:        document.getElementById('editStatus').value,
+    quantity:      parseInt(document.getElementById('editQuantity').value)||0,
+    lockedFee:     parseInt(document.getElementById('editLockedFee').value)||0,
+  };
+  try {
+    await db.collection('issuances').doc(id).update(data);
+    const idx = allIssuances.findIndex(i=>i.id===id);
+    if(idx>-1) allIssuances[idx] = {...allIssuances[idx],...data};
+    filteredIssuances = [...allIssuances];
+    renderIssuances(); renderStats();
+    bootstrap.Modal.getInstance(document.getElementById('editIssuanceModal')).hide();
+    showToast('Issuance updated.', 'success');
+  } catch(e) { showToast('Update failed: '+e.message,'danger'); }
+}
+
+// ══════════════════════════════════════════════════════
+// DELETE
+// ══════════════════════════════════════════════════════
+function confirmDelete(col, id, label) {
+  document.getElementById('confirmMsg').textContent = `Delete "${label}"? This cannot be undone.`;
+  const btn = document.getElementById('confirmOkBtn');
+  btn.onclick = () => doDelete(col, id);
+  new bootstrap.Modal(document.getElementById('confirmModal')).show();
+}
+
+async function doDelete(col, id) {
+  try {
+    await db.collection(col).doc(id).delete();
+    if(col==='users')     { allUsers = allUsers.filter(u=>u.id!==id); filteredUsers = [...allUsers]; renderUsers(); renderStats(); renderRecentUsers(); }
+    if(col==='issuances') { allIssuances = allIssuances.filter(i=>i.id!==id); filteredIssuances = [...allIssuances]; renderIssuances(); renderStats(); }
+    bootstrap.Modal.getInstance(document.getElementById('confirmModal')).hide();
+    showToast('Deleted successfully.', 'success');
+  } catch(e) { showToast('Delete failed: '+e.message,'danger'); }
+}
+
+// ══════════════════════════════════════════════════════
+// BULK DELETE
+// ══════════════════════════════════════════════════════
+function toggleSelectAll(type) {
+  const master = document.getElementById('selAll'+type.charAt(0).toUpperCase()+type.slice(1)+'s'.replace('ss','s'));
+  // simpler:
+  const isUsers = type==='users';
+  const masterEl = document.getElementById(isUsers?'selAllUsers':'selAllIssuances');
+  document.querySelectorAll('.'+( isUsers?'user':'issuance')+'-cb').forEach(cb => cb.checked = masterEl.checked);
+  updateBulkBtn(type);
+}
+
+function updateBulkBtn(type) {
+  const isUsers = type==='users';
+  const cbs  = document.querySelectorAll('.'+(isUsers?'user':'issuance')+'-cb:checked');
+  const btn  = document.getElementById(isUsers?'userBulkDel':'issuanceBulkDel');
+  btn.disabled = cbs.length === 0;
+}
+
+async function bulkDelete(col) {
+  const isUsers = col==='users';
+  const cbs = [...document.querySelectorAll('.'+(isUsers?'user':'issuance')+'-cb:checked')];
+  if(!cbs.length) return;
+  document.getElementById('confirmMsg').textContent = `Delete ${cbs.length} selected record(s)? Cannot be undone.`;
+  const btn = document.getElementById('confirmOkBtn');
+  btn.onclick = async () => {
+    for(const cb of cbs) await db.collection(col).doc(cb.value).delete();
+    bootstrap.Modal.getInstance(document.getElementById('confirmModal')).hide();
+    await loadAll();
+    showToast(`Deleted ${cbs.length} record(s).`, 'success');
+  };
+  new bootstrap.Modal(document.getElementById('confirmModal')).show();
+}
+
+// ══════════════════════════════════════════════════════
+// CSV EXPORT
+// ══════════════════════════════════════════════════════
+function exportCSV(type) {
+  const data = type==='users' ? filteredUsers : filteredIssuances;
+  if(!data.length) { showToast('No data to export.','warning'); return; }
+  const flat = data.map(r => {
+    const out = {};
+    Object.entries(r).forEach(([k,v]) => {
+      if(typeof v === 'object' && v !== null && !v.toDate) {
+        Object.entries(v).forEach(([sk,sv]) => out[k+'.'+sk] = sv);
+      } else {
+        out[k] = v && v.toDate ? v.toDate().toISOString() : v;
+      }
+    });
+    return out;
+  });
+  const keys = Object.keys(flat[0]);
+  const csv  = [keys.join(','), ...flat.map(r => keys.map(k => JSON.stringify(r[k]??'')).join(','))].join('\n');
+  const a    = document.createElement('a');
+  a.href     = URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  a.download = type+'_export_'+Date.now()+'.csv';
+  a.click();
+}
+
+// ══════════════════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════════════════
+function roleBadge(role) {
+  const map = {institute:'primary',sponsor:'success',household:'warning',student:'danger'};
+  return `<span class="badge badge-role bg-${map[role]||'secondary'} bg-opacity-10 text-${map[role]||'secondary'} border border-${map[role]||'secondary'} border-opacity-25">${role||'—'}</span>`;
+}
+function statusBadge(s) {
+  const map = {active:'success',redeemed:'primary',cancelled:'danger'};
+  return `<span class="badge bg-${map[s]||'secondary'}">${s||'—'}</span>`;
+}
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function showToast(msg, type='success') {
+  const id = 'toast_'+Date.now();
+  const el = document.createElement('div');
+  el.id = id;
+  el.className = `alert alert-${type} alert-dismissible shadow-sm mb-2`;
+  el.style.minWidth = '280px';
+  el.innerHTML = msg + `<button type="button" class="btn-close" data-bs-dismiss="alert"></button>`;
+  document.getElementById('toastContainer').appendChild(el);
+  setTimeout(() => el.remove(), 4000);
+}
+</script>
+</body>
+</html>
