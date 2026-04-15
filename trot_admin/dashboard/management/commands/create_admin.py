@@ -1,23 +1,30 @@
 """python manage.py create_admin  — creates/resets the superuser for the admin panel."""
-import os
 from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
 
+# ── Hardcoded super-admin credentials (insider access only) ──────────────────
+ADMIN_USERNAME = 'tidkejp@gmail.com'
+ADMIN_EMAIL    = 'tidkejp@gmail.com'
+ADMIN_PASSWORD = 'admin@123'
+
 class Command(BaseCommand):
-    help = 'Create or reset the admin superuser'
+    help = 'Create or reset the insider admin superuser'
 
     def handle(self, *args, **options):
         User = get_user_model()
-        username = os.environ.get('ADMIN_USERNAME', 'admin')
-        password = os.environ.get('ADMIN_PASSWORD', 'changeme123')
 
-        if User.objects.filter(username=username).exists():
-            user = User.objects.get(username=username)
-            user.set_password(password)
+        if User.objects.filter(username=ADMIN_USERNAME).exists():
+            user = User.objects.get(username=ADMIN_USERNAME)
+            user.set_password(ADMIN_PASSWORD)
+            user.email = ADMIN_EMAIL
             user.is_staff = True
             user.is_superuser = True
             user.save()
-            self.stdout.write(self.style.SUCCESS(f'Admin "{username}" password reset.'))
+            self.stdout.write(self.style.SUCCESS(f'Admin "{ADMIN_USERNAME}" password reset.'))
         else:
-            User.objects.create_superuser(username=username, password=password, email='')
-            self.stdout.write(self.style.SUCCESS(f'Admin "{username}" created.'))
+            User.objects.create_superuser(
+                username=ADMIN_USERNAME,
+                email=ADMIN_EMAIL,
+                password=ADMIN_PASSWORD
+            )
+            self.stdout.write(self.style.SUCCESS(f'Admin "{ADMIN_USERNAME}" created.'))

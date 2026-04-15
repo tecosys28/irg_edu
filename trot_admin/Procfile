@@ -1,0 +1,2 @@
+web: gunicorn trot_admin.wsgi --bind 0.0.0.0:$PORT
+release: python manage.py migrate && python manage.py create_admin && python manage.py collectstatic --noinput

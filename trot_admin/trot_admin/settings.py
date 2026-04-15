@@ -1,8 +1,19 @@
 import os
+import json
+import tempfile
 from pathlib import Path
 from dotenv import load_dotenv
 
 load_dotenv()
+
+# If service account JSON is supplied as a raw string env var (Railway/Render),
+# write it to a temp file so firebase_admin can read it as a path.
+_sa_json = os.environ.get('FIREBASE_SERVICE_ACCOUNT_JSON')
+if _sa_json:
+    _tmp = tempfile.NamedTemporaryFile(delete=False, suffix='.json', mode='w')
+    _tmp.write(_sa_json)
+    _tmp.close()
+    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = _tmp.name
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -30,6 +41,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -64,6 +76,8 @@ DATABASES = {
 }
 
 STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
