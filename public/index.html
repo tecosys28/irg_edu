@@ -180,8 +180,8 @@
       <div class="max-w-7xl mx-auto px-6 pt-16 pb-24">
         <div class="max-w-4xl mx-auto text-center space-y-8">
           <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] tracking-tight">
-            Lock Today's Education Cost.
-            <span class="text-transparent bg-clip-text gold-gradient block mt-2">For Any Future Seat.</span>
+            Secure Your Future Education
+            <span class="text-transparent bg-clip-text gold-gradient block mt-2">At Today's Prices.</span>
           </h1>
           <p class="text-xl text-white/70 max-w-3xl mx-auto leading-relaxed">
             Future Tuition Rights (FTRs) &amp; Sponsorship Units (SUs) — blockchain-registered instruments enabling debt-free education funding for post-12th programmes with full transparency and global interchangeability.
@@ -317,7 +317,7 @@
           </div>
           <div class="glass rounded-2xl p-6 text-center">
             <div class="text-3xl mb-3">🔒</div>
-            <h4 class="font-semibold mb-2">Non-Security</h4>
+            <h4 class="font-semibold mb-2">Legally Compliant</h4>
             <p class="text-sm text-white/60">Not a security, CIS, or VDA investment product.</p>
           </div>
           <div class="glass rounded-2xl p-6 text-center">
@@ -329,23 +329,6 @@
             <div class="text-3xl mb-3">📊</div>
             <h4 class="font-semibold mb-2">Blockchain Audit</h4>
             <p class="text-sm text-white/60">End-to-end traceable from sponsor to student to institute.</p>
-          </div>
-        </div>
-        <div class="mt-8 glass rounded-2xl p-6 max-w-3xl mx-auto">
-          <h4 class="font-semibold mb-3 text-center text-[#D4AF37]">Parametric Controls</h4>
-          <div class="grid md:grid-cols-3 gap-4 text-sm text-center">
-            <div>
-              <p class="text-white/60">Maximum Issuance Cap</p>
-              <p class="font-semibold">600% of annual intake</p>
-            </div>
-            <div>
-              <p class="text-white/60">SU Merit Allocation</p>
-              <p class="font-semibold">Minimum 70% to merit/needy</p>
-            </div>
-            <div>
-              <p class="text-white/60">Earmarked Admissions</p>
-              <p class="font-semibold">Default 55% for FTR/SU holders</p>
-            </div>
           </div>
         </div>
       </div>
@@ -587,7 +570,7 @@
         <div>
           <label class="block text-white/70 text-sm mb-2">Password</label>
           <div class="relative">
-            <input type="password" id="signupPassword" class="w-full input-field rounded-xl p-4 pr-12" placeholder="Min 8 chars, mixed case, number, special" oninput="checkPasswordStrength(this.value)">
+            <input type="password" id="signupPassword" class="w-full input-field rounded-xl p-4 pr-12" placeholder="Minimum 8 characters" oninput="checkPasswordStrength(this.value)">
             <button type="button" onclick="togglePw('signupPassword',this)" tabindex="-1" class="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/80 transition-colors">
               <svg id="signupPassword-eye" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
             </button>
@@ -597,22 +580,6 @@
             <div class="flex items-center gap-2 text-xs" id="chk-len">
               <span class="w-4 h-4 rounded-full border border-white/20 flex items-center justify-center text-[10px] transition-all" id="chk-len-icon">○</span>
               <span class="text-white/50" id="chk-len-text">At least 8 characters</span>
-            </div>
-            <div class="flex items-center gap-2 text-xs" id="chk-upper">
-              <span class="w-4 h-4 rounded-full border border-white/20 flex items-center justify-center text-[10px] transition-all" id="chk-upper-icon">○</span>
-              <span class="text-white/50" id="chk-upper-text">One uppercase letter (A–Z)</span>
-            </div>
-            <div class="flex items-center gap-2 text-xs" id="chk-lower">
-              <span class="w-4 h-4 rounded-full border border-white/20 flex items-center justify-center text-[10px] transition-all" id="chk-lower-icon">○</span>
-              <span class="text-white/50" id="chk-lower-text">One lowercase letter (a–z)</span>
-            </div>
-            <div class="flex items-center gap-2 text-xs" id="chk-num">
-              <span class="w-4 h-4 rounded-full border border-white/20 flex items-center justify-center text-[10px] transition-all" id="chk-num-icon">○</span>
-              <span class="text-white/50" id="chk-num-text">One number (0–9)</span>
-            </div>
-            <div class="flex items-center gap-2 text-xs" id="chk-special">
-              <span class="w-4 h-4 rounded-full border border-white/20 flex items-center justify-center text-[10px] transition-all" id="chk-special-icon">○</span>
-              <span class="text-white/50" id="chk-special-text">One special character (!@#$…)</span>
             </div>
           </div>
         </div>
@@ -1246,36 +1213,20 @@
     }
 
     function checkPasswordStrength(val) {
-      const checks = {
-        len:     val.length >= PLATFORM_CONFIG.PASSWORD_MIN_LENGTH,
-        upper:   /[A-Z]/.test(val),
-        lower:   /[a-z]/.test(val),
-        num:     /[0-9]/.test(val),
-        special: /[^A-Za-z0-9]/.test(val),
-      };
-      Object.entries(checks).forEach(([key, passed]) => {
-        const icon = document.getElementById(`chk-${key}-icon`);
-        const text = document.getElementById(`chk-${key}-text`);
-        if (!icon || !text) return;
-        if (passed) {
-          icon.textContent = '✓';
-          icon.className = 'w-4 h-4 rounded-full flex items-center justify-center text-[10px] transition-all bg-emerald-500 border-emerald-500 text-white';
-          text.className = 'text-emerald-400';
-        } else {
-          icon.textContent = '○';
-          icon.className = 'w-4 h-4 rounded-full border border-white/20 flex items-center justify-center text-[10px] transition-all';
-          text.className = 'text-white/50';
-        }
-      });
+      const passed = val.length >= PLATFORM_CONFIG.PASSWORD_MIN_LENGTH;
+      const icon = document.getElementById('chk-len-icon');
+      const text = document.getElementById('chk-len-text');
+      if (icon) {
+        icon.textContent = passed ? '✓' : '○';
+        icon.className = passed
+          ? 'w-4 h-4 rounded-full flex items-center justify-center text-[10px] transition-all bg-emerald-500 border-emerald-500 text-white'
+          : 'w-4 h-4 rounded-full border border-white/20 flex items-center justify-center text-[10px] transition-all';
+      }
+      if (text) text.className = passed ? 'text-emerald-400' : 'text-white/50';
     }
 
     function validatePassword(password) {
-      if (password.length < PLATFORM_CONFIG.PASSWORD_MIN_LENGTH) return false;
-      if (!/[A-Z]/.test(password)) return false;
-      if (!/[a-z]/.test(password)) return false;
-      if (!/[0-9]/.test(password)) return false;
-      if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) return false;
-      return true;
+      return password.length >= PLATFORM_CONFIG.PASSWORD_MIN_LENGTH;
     }
 
     // ==================== FIREBASE AUTH: SIGN UP ====================
@@ -1294,7 +1245,7 @@
       if (!name)    return showToast('Please enter your name', 'error');
       if (!email || !email.includes('@')) return showToast('Please enter a valid email', 'error');
       if (!mobileRaw || mobileRaw.length !== 10) return showToast('Please enter a valid 10-digit mobile number', 'error');
-      if (!validatePassword(password))    return showToast(`Password must be ${PLATFORM_CONFIG.PASSWORD_MIN_LENGTH}+ chars with uppercase, lowercase, number, and special character`, 'error');
+      if (!validatePassword(password))    return showToast(`Password must be at least ${PLATFORM_CONFIG.PASSWORD_MIN_LENGTH} characters`, 'error');
 
       AppState.isProcessing = true;
       btn.disabled = true;
@@ -2907,7 +2858,7 @@
     }
 
     // ==================== SWAP FLOW ====================
-    function openSwapModal(holdingId) {
+    async function openSwapModal(holdingId) {
       const holding = (AppState.myHoldings || []).find(h => h.id === holdingId);
       if (!holding) return showToast('Could not load holding data.', 'error');
       AppState.activeSwap = holding;
@@ -2915,18 +2866,25 @@
       document.getElementById('sw-qty').value = 1;
       document.getElementById('sw-qty').max   = holding.quantity;
 
-      // Populate target options
       const sel = document.getElementById('sw-target');
+      sel.innerHTML = '<option value="">Loading…</option>';
+      document.getElementById('swapModal').classList.remove('hidden');
+
+      // Always fetch fresh marketplace data
+      if (!AppState.marketplaceIssuances?.length) await loadMarketplace();
+
       sel.innerHTML = '<option value="">Select target issuance…</option>';
       (AppState.marketplaceIssuances || []).forEach(iss => {
-        if (iss.id === holding.issuanceId) return; // skip same issuance
+        if (iss.id === holding.issuanceId) return;
         if (iss.unitType !== holding.unitType) return;
         const available = (iss.quantity || 0) - (iss.sold || 0);
         if (available <= 0) return;
         sel.innerHTML += `<option value="${iss.id}">${escapeHtml(iss.instituteName)} — ${escapeHtml(iss.course)} (${available} left)</option>`;
       });
 
-      document.getElementById('swapModal').classList.remove('hidden');
+      if (sel.options.length === 1) {
+        sel.innerHTML = '<option value="">No other FTRs available to swap into</option>';
+      }
     }
 
     function closeSwapModal() {
